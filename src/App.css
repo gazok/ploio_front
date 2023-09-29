@@ -1,0 +1,82 @@
+/* App.css */
+
+/*window*/
+body {
+  background-color: rgb(234, 234, 234);
+  margin: 0;
+  padding: 0;
+}
+
+/*top bar*/
+.top-bar {
+  background-color: rgb(234, 234, 234);
+  color: black;
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 100;
+  right: 0;
+}
+
+/*When clicking on the top bar menu*/
+.top-bar a {
+  margin-bottom: 0px;
+  padding: 10px 10px;
+  color: black;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.top-bar a:hover {
+  border-bottom: 4px solid rgb(24, 108, 243);
+  color: rgb(24, 108, 243);
+}
+
+/*Output screen*/
+.app {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  background-color: rgb(234, 234, 234);
+}
+
+/*top of menu bar*/
+.menu-bar {
+  width: 200px;
+  background-color: rgb(234, 234, 234);
+  color: black;
+  padding: 0px;
+  margin: 0;
+}
+
+/*bottom of menu bar*/
+.menu-bar .bottom-items {
+  margin-top: auto;
+  margin-top: 210px;
+}
+
+/*When clicking on menu*/
+.menu-bar a {
+  display: block;
+  margin-bottom: 5px;
+  padding: 10px 10px;
+  color: black;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.menu-bar a:hover {
+  border-left: 4px solid rgb(24, 108, 243);
+  color: rgb(24, 108, 243);
+}
+
+/*contents*/
+.content {
+  flex-grow: 1;
+  background-color: rgb(255, 255, 255);
+  padding: 20px;
+  color: black;
+  border-radius: 10px;
+  margin-left: 30px;
+  margin-top: 50px;
+}
