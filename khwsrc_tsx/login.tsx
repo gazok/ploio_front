@@ -46,14 +46,12 @@ function Login() {
       <div className="content">
         <h2>Login</h2>
         <div className={styles.root}>
-          <Label htmlFor={inputId}>UserID</Label>
           <form method="post" action="#" id="login-form">
             <div className={styles.field}>
-              <Label htmlFor={outlineId}>Outline appearance (default)</Label>
+              <Label htmlFor={outlineId}>UserID</Label>
               <Input appearance="outline" id={outlineId} />
             </div>
-            <input id={inputId} placeholder='userid' />
-            <input id={inputPw} placeholder='password' />
+
           </form>
         </div>
       </div>

@@ -1,13 +1,14 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./login";
 import Main from "./App";
-import { Appearance } from "./inputtest";
+import { ContentBeforeAfter } from "./inputtest";
+import React from "react";
 
-function Router() {
+const Router: React.FC = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element = { <Appearance /> }></Route>
+                <Route path="/" element = { <Main /> }></Route>
                 <Route path="/login" element = { <Login /> }></Route>
             </Routes>
         </BrowserRouter>
