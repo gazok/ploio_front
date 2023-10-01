@@ -14,8 +14,7 @@ body {
   display: flex;
   position: absolute;
   top: 0;
-  left: 100;
-  right: 0;
+  left: 250px;
 }
 
 /*When clicking on the top bar menu*/
@@ -52,7 +51,7 @@ body {
 /*bottom of menu bar*/
 .menu-bar .bottom-items {
   margin-top: auto;
-  margin-top: 210px;
+  margin-top: 340px;
 }
 
 /*When clicking on menu*/
