@@ -3,11 +3,16 @@ import * as ReactDOM from 'react-dom';
 import './index.css';
 import Router from './Router'
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
+import { Menubar, Top } from './background';
 
 ReactDOM.render(
   <React.StrictMode>
     <FluentProvider theme={webLightTheme}>
-      <Router />
+      <div className="app">
+        <Menubar />
+        <Top />
+        <Router />
+      </div>
     </FluentProvider>
   </React.StrictMode>,
   document.getElementById('root'),

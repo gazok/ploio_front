@@ -1,68 +1,116 @@
 import * as React from "react";
 import {
   makeStyles,
-  mergeClasses,
   shorthands,
+  Button,
+  Caption1,
   tokens,
-  useId,
-  Input,
-  Label,
+  Text,
+} from "@fluentui/react-components";
+import { MoreHorizontal20Regular } from "@fluentui/react-icons";
+import {
+  Card,
+  CardHeader,
+  CardPreview,
+  CardProps,
 } from "@fluentui/react-components";
 
+const resolveAsset = (asset: string) => {
+  const ASSET_URL =
+    "https://raw.githubusercontent.com/microsoft/fluentui/master/packages/react-components/react-card/stories/assets/";
+
+  return `${ASSET_URL}${asset}`;
+};
+
 const useStyles = makeStyles({
-  base: {
+  main: {
+    ...shorthands.gap("16px"),
     display: "flex",
-    flexDirection: "column",
-    maxWidth: "400px",
+    flexWrap: "wrap",
   },
-  field: {
-    display: "grid",
-    gridRowGap: tokens.spacingVerticalXXS,
-    marginTop: tokens.spacingVerticalMNudge,
-    ...shorthands.padding(tokens.spacingHorizontalMNudge),
+
+  card: {
+    width: "400px",
+    maxWidth: "100%",
+    height: "fit-content",
   },
-  filledLighter: {
-    backgroundColor: tokens.colorNeutralBackgroundInverted,
-    "> label": {
-      color: tokens.colorNeutralForegroundInverted2,
-    },
+
+  caption: {
+    color: tokens.colorNeutralForeground3,
   },
-  filledDarker: {
-    backgroundColor: tokens.colorNeutralBackgroundInverted,
-    "> label": {
-      color: tokens.colorNeutralForegroundInverted2,
-    },
+
+  smallRadius: {
+    ...shorthands.borderRadius(tokens.borderRadiusSmall),
+  },
+
+  grayBackground: {
+    backgroundColor: tokens.colorNeutralBackground3,
+  },
+
+  logoBadge: {
+    ...shorthands.padding("5px"),
+    ...shorthands.borderRadius(tokens.borderRadiusSmall),
+    backgroundColor: "#FFF",
+    boxShadow:
+      "0px 1px 2px rgba(0, 0, 0, 0.14), 0px 0px 2px rgba(0, 0, 0, 0.12)",
   },
 });
 
-export const Appearance = () => {
-  const outlineId = useId("input-outline");
-  const underlineId = useId("input-underline");
-  const filledLighterId = useId("input-filledLighter");
-  const filledDarkerId = useId("input-filledDarker");
+const CardExample = (props: CardProps) => {
   const styles = useStyles();
 
   return (
-    <div className={styles.base}>
-      <div className={styles.field}>
-        <Label htmlFor={outlineId}>Outline appearance (default)</Label>
-        <Input appearance="outline" id={outlineId} />
-      </div>
+    <Card className={styles.card} {...props}>
+      <CardPreview
+        className={styles.grayBackground}
+        logo={
+          <img
+            className={styles.logoBadge}
+            src={resolveAsset("logo3.svg")}
+            alt="Figma app logo"
+          />
+        }
+      >
+        <img
+          className={styles.smallRadius}
+          src={resolveAsset("office1.png")}
+          alt="Presentation Preview"
+        />
+      </CardPreview>
 
-      <div className={styles.field}>
-        <Label htmlFor={underlineId}>Underline appearance</Label>
-        <Input appearance="underline" id={underlineId} />
-      </div>
+      <CardHeader
+        header={<Text weight="semibold">iOS App Prototype</Text>}
+        description={
+          <Caption1 className={styles.caption}>You created 53m ago</Caption1>
+        }
+        action={
+          <Button
+            appearance="transparent"
+            icon={<MoreHorizontal20Regular />}
+            aria-label="More actions"
+          />
+        }
+      />
+    </Card>
+  );
+};
 
-      <div className={mergeClasses(styles.field, styles.filledLighter)}>
-        <Label htmlFor={filledLighterId}>Filled lighter appearance</Label>
-        <Input appearance="filled-lighter" id={filledLighterId} />
-      </div>
+export const Selectable = () => {
+  const styles = useStyles();
 
-      <div className={mergeClasses(styles.field, styles.filledDarker)}>
-        <Label htmlFor={filledDarkerId}>Filled darker appearance</Label>
-        <Input appearance="filled-darker" id={filledDarkerId} />
-      </div>
+  const [selected1, setSelected1] = React.useState(false);
+  const [selected2, setSelected2] = React.useState(false);
+
+  return (
+    <div className={styles.main}>
+      <CardExample
+        selected={selected1}
+        onSelectionChange={(_, { selected }) => setSelected1(selected)}
+      />
+      <CardExample
+        selected={selected2}
+        onSelectionChange={(_, { selected }) => setSelected2(selected)}
+      />
     </div>
   );
 };

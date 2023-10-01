@@ -23,7 +23,7 @@ export function Menubar() {
           </svg>
           Home
         </a>
-        <a href="./temp.html">
+        <a href="#">
           <svg
             fill="black"
             height="24"
@@ -119,7 +119,7 @@ export function Menubar() {
           </svg>
           Login
         </a>
-        <a href="#">
+        <a href="/signup">
           <svg
             fill="black"
             height="24"
