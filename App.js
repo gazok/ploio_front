@@ -83,8 +83,8 @@ function App() {
           </Switch>
         <Menubar />
         <Switch>
-          <Route path="/Login" component={Login} /> /*형욱님 코드 필요!!*/
-          <Route path="/Signup" component={Signup} /> /*형욱님 코드 필요!!*/
+          <Route path="/Login" component={Login} /> 
+          <Route path="/Signup" component={Signup} /> 
           <Route path="/Summary" component={Summary} />
           <Route path="/Notice" component={Notice} />
           <Route path="/Profile" component={Profile} />
