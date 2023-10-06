@@ -2,14 +2,21 @@
 
 /*window*/
 body {
-  background-color: rgb(234, 234, 234);
+  background-color: #F3F3F3;
   margin: 0;
   padding: 0;
 }
 
+/*Output screen*/
+.app {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  background-color: #F3F3F3;
+}
+
 /*top bar*/
 .top-bar {
-  background-color: rgb(234, 234, 234);
   color: black;
   display: flex;
   position: absolute;
@@ -20,38 +27,28 @@ body {
 /*When clicking on the top bar menu*/
 .top-bar a {
   margin-bottom: 0px;
-  padding: 10px 10px;
+  padding: 9px 5px;
+  margin-right: 10px;
   color: black;
   text-decoration: none;
   transition: background-color 0.2s, color 0.2s;
 }
 
-.top-bar a:hover {
+.top-bar a:hover, .active-top {
   border-bottom: 4px solid rgb(24, 108, 243);
   color: rgb(24, 108, 243);
-}
-
-/*Output screen*/
-.app {
-  display: flex;
-  flex-direction: row;
-  height: 100vh;
-  background-color: rgb(234, 234, 234);
 }
 
 /*top of menu bar*/
 .menu-bar {
   width: 200px;
-  background-color: rgb(234, 234, 234);
   color: black;
-  padding: 0px;
-  margin: 0;
 }
 
 /*bottom of menu bar*/
 .menu-bar .bottom-items {
   margin-top: auto;
-  margin-top: 340px;
+  margin-top: 337px;
 }
 
 /*When clicking on menu*/
@@ -64,7 +61,7 @@ body {
   transition: background-color 0.2s, color 0.2s;
 }
 
-.menu-bar a:hover {
+.menu-bar a:hover, .active-menu {
   border-left: 4px solid rgb(24, 108, 243);
   color: rgb(24, 108, 243);
 }
@@ -75,7 +72,8 @@ body {
   background-color: rgb(255, 255, 255);
   padding: 20px;
   color: black;
-  border-radius: 10px;
   margin-left: 30px;
   margin-top: 50px;
+  box-shadow: -4px 4px 24px -1px rgba(0, 0, 0, 0.25);
+  border-radius: 15px;
 }
