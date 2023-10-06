@@ -3,8 +3,8 @@
 
 import React from "react";
 import "./App.css";
-import Login from "./Login";
-import Signup from "./Signup";
+import Login from "./Login"; //형욱님 코드 필요!!
+import Signup from "./Signup"; //형욱님 코드 필요!!
 import { SummaryTop, Summary } from "./Summary";
 import { NoticeTop, Notice } from "./Notice";
 import Profile from "./Profile";
@@ -83,8 +83,8 @@ function App() {
           </Switch>
         <Menubar />
         <Switch>
-          <Route path="/Login" component={Login} />
-          <Route path="/Signup" component={Signup} />
+          <Route path="/Login" component={Login} /> //형욱님 코드 필요!!
+          <Route path="/Signup" component={Signup} /> //형욱님 코드 필요!!
           <Route path="/Summary" component={Summary} />
           <Route path="/Notice" component={Notice} />
           <Route path="/Profile" component={Profile} />
