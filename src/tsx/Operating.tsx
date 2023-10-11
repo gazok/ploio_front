@@ -1,4 +1,4 @@
-//Operating.js
+//Operating.tsx
 //수정중
 
 import React, { useState } from "react";
