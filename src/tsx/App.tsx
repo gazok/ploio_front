@@ -28,11 +28,11 @@ function Menubar() {
         <VscHome style={iconStyle} />
         Home
       </Link>
-      <Link to="/summary/Summary" className={` ${activeButton === 'summary' ? 'active-menu' : ''}`} onClick={() => handleButtonClick('summary')}>
+      <Link to="/Summary" className={` ${activeButton === 'summary' ? 'active-menu' : ''}`} onClick={() => handleButtonClick('summary')}>
         <VscOutput style={iconStyle} />
         Summary
       </Link>
-      <Link to="/notice/Notice" className={` ${activeButton === 'notice' ? 'active-menu' : ''}`} onClick={() => handleButtonClick('notice')}>
+      <Link to="/Notice" className={` ${activeButton === 'notice' ? 'active-menu' : ''}`} onClick={() => handleButtonClick('notice')}>
         <VscWarning style={iconStyle} />
         Notice
       </Link>
