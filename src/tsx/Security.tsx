@@ -4,7 +4,7 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../App.css";
+import "./App.css";
 import "./Summary.css";
 import { VscExport } from "react-icons/vsc"; //icon 정의
 
