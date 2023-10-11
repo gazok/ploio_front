@@ -1,14 +1,19 @@
-//Operating.tsx
-//수정중
+//Operation.tsx
+//Ops 부문 가시화
+//수정 중중
 
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./App.css";
 import "./Summary.css";
+import { VscExport } from "react-icons/vsc"; //icon 정의
 
-//트래픽 가시화 구현
-function Operating() {
-  const history = useHistory();
+interface OperationProps {
+  // 필요한 경우 props 정의
+}
+
+const Operation: React.FC<OperationProps> = () => {
+  const navigate = useNavigate();
   const [showCircles, setShowCircles] = useState(true);
   const [showInfo, setShowInfo] = useState(false); // 선을 클릭했을 때 창을 보여주는 상태
 
@@ -89,21 +94,7 @@ function Operating() {
           <div className="info-content">
           <button onClick={handleLineClick} className="info-top">
             {/*닫기 버튼*/}
-            <svg
-              fill="full"
-              height="20"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="1"
-              viewBox="-1 0 25 25"
-              width="13"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M0 3.795l2.995-2.98 11.132 11.185-11.132 11.186-2.995-2.981 8.167-8.205-8.167-8.205zm18.04 8.205l-8.167 8.205 2.995 2.98 11.132-11.185-11.132-11.186-2.995 2.98 8.167 8.206z"
-              />
-            </svg>
+            <VscExport />
             <b>Details</b>
           </button>
             {/* 내용 */}
@@ -115,4 +106,4 @@ function Operating() {
   );
 }
 
-export default Operating;
+export default Operation;
