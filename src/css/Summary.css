@@ -5,17 +5,16 @@
     color: black;
     display: flex;
     position: absolute;
+    margin-left: 15px;
     top: 0;
-    left: 250px;
   }
   
   /*When clicking on the top bar menu*/
   .summary-top a {
-    margin-bottom: 0px;
     padding: 9px 10px;
-    margin-right: 10px;
     color: black;
     text-decoration: none;
+    margin-right: 10px;
   }
 
   .summary-top a:hover, .active-summary {
@@ -26,12 +25,11 @@
   .summary-menu {
     position: absolute;
     display: flex;
-    width: 1238px; /* 너비 설정 */
+    width: 1280px; /* 너비 설정 */
     align-items: center; /* 내용을 세로 중앙 정렬 */
     background-color: #f0f0f0;
     padding: 10px;
     color: black;
-    margin-left: 230px;
     margin-top: 50px;
     border-top-left-radius: 15px;
   }
