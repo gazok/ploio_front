@@ -2,34 +2,9 @@
 
 /*window*/
 body {
-  background-color: rgb(234, 234, 234);
+  background-color: #F3F3F3;
   margin: 0;
   padding: 0;
-}
-
-/*top bar*/
-.top-bar {
-  background-color: rgb(234, 234, 234);
-  color: black;
-  display: flex;
-  position: absolute;
-  top: 0;
-  left: 100;
-  right: 0;
-}
-
-/*When clicking on the top bar menu*/
-.top-bar a {
-  margin-bottom: 0px;
-  padding: 10px 10px;
-  color: black;
-  text-decoration: none;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.top-bar a:hover {
-  border-bottom: 4px solid rgb(24, 108, 243);
-  color: rgb(24, 108, 243);
 }
 
 /*Output screen*/
@@ -37,22 +12,42 @@ body {
   display: flex;
   flex-direction: row;
   height: 100vh;
-  background-color: rgb(234, 234, 234);
+  background-color: #F3F3F3;
+}
+
+/*top bar*/
+.top-bar {
+  color: black;
+  display: flex;
+  position: absolute;
+  margin-left: 15px;
+}
+
+/*When clicking on the top bar menu*/
+.top-bar a {
+  margin-bottom: 0px;
+  padding: 9px 5px;
+  margin-right: 10px;
+  color: black;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.top-bar a:hover, .active-top {
+  border-bottom: 4px solid rgb(24, 108, 243);
+  color: rgb(24, 108, 243);
 }
 
 /*top of menu bar*/
 .menu-bar {
   width: 200px;
-  background-color: rgb(234, 234, 234);
   color: black;
-  padding: 0px;
-  margin: 0;
 }
 
 /*bottom of menu bar*/
 .menu-bar .bottom-items {
   margin-top: auto;
-  margin-top: 210px;
+  margin-top: 340px;
 }
 
 /*When clicking on menu*/
@@ -65,12 +60,12 @@ body {
   transition: background-color 0.2s, color 0.2s;
 }
 
-.menu-bar a:hover {
+.menu-bar a:hover, .active-menu {
   border-left: 4px solid rgb(24, 108, 243);
   color: rgb(24, 108, 243);
 }
 
-/*contents*/
+/*contents
 .content {
   flex-grow: 1;
   background-color: rgb(255, 255, 255);
@@ -80,4 +75,18 @@ body {
   margin-left: 30px;
   margin-top: 50px;
   position: relative;
+}*/
+
+/*contents*/
+.content {
+  display: flex;
+  flex-direction: row;
+  background-color: rgb(255, 255, 255);
+  height: 648px;
+  width: 1300px;
+  padding-top: 10px;
+  color: black;
+  margin-top: 50px;
+  box-shadow: -4px 4px 24px -1px rgba(0, 0, 0, 0.25);
+  border-top-left-radius: 15px;
 }

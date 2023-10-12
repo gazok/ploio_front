@@ -1,0 +1,16 @@
+{
+    "success": true,
+    "Data": {
+        "sPod": {
+            "sIp": "192.168",
+            "sPort": 1111
+        },
+        "dPod": {
+            "dIp": "192.168",
+            "dPort": 2222
+        },
+        "httpHeader": {
+            "QUIC": true
+        }
+    }
+}

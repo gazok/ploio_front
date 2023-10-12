@@ -1,0 +1,55 @@
+/*Notice.css
+1차 발표 이후 보완 예정*/
+
+
+/*top bar*/
+.notice-top {
+    color: black;
+    display: flex;
+    position: absolute;
+    margin-left: 15px;
+    top: 0;
+  }
+  
+  /*When clicking on the top bar menu*/
+  .notice-top a {
+    padding: 9px 10px;
+    color: black;
+    text-decoration: none;
+    margin-right: 10px;
+  }
+  
+  .notice-top a:hover, .active-notice {
+    border-bottom: 4px solid rgb(24, 108, 243);
+    color: rgb(24, 108, 243);
+  }
+  
+  .notice-menu {
+    position: absolute;
+    display: flex;
+    width: 1280px; 
+    align-items: center; 
+    background-color: #f0f0f0;
+    padding: 10px;
+    color: black;
+    border-top-left-radius: 15px;
+    margin-top: 50px;
+  }
+  
+  /* Searching filed */
+  .search {
+    left: 10px; 
+    display: flex;
+  }
+  
+  .search input[type="text"] {
+    width: 200px;
+    flex: 1; 
+    padding: 3px;
+    border: none;
+    border: 1px solid #ccc;
+    border-bottom: 3px solid rgb(82, 82, 82);
+    border-radius: 3px;
+  }
+  
+  
