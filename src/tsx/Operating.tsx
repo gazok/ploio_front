@@ -2,108 +2,100 @@
 //Ops 부문 가시화
 //수정 중중
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./App.css";
-import "./Summary.css";
-import { VscExport } from "react-icons/vsc"; //icon 정의
+import React, { useState } from 'react';
+import { XYPlot, MarkSeries, LineSeries } from 'react-vis';
+import data from './data.json';
+import './App.css';
+import './Summary.css';
+import { VscExport } from 'react-icons/vsc';
 
-interface OperationProps {
-  // 필요한 경우 props 정의
+interface PodData {
+  [podName: string]: {
+    [key: string]: any; // 모든 데이터 유형을 수용하는 더 유연한 타입
+  };
 }
 
-const Operation: React.FC<OperationProps> = () => {
-  const navigate = useNavigate();
-  const [showCircles, setShowCircles] = useState(true);
-  const [showInfo, setShowInfo] = useState(false); // 선을 클릭했을 때 창을 보여주는 상태
+const Operation: React.FC = () => {
+  const [showInfo, setShowInfo] = useState(false);
+  const [selectedPod, setSelectedPod] = useState<string | null>(null);
 
-  // Service 1
-  const circle1X = 300; // 원의 중심 X 좌표
-  const circle1Y = 300; // 원의 중심 Y 좌표
-  const circle1Radius = 250; // 원의 반지름
+  // Extract Pod data from data.json
+  const podData: PodData = data.Data;
 
-  // Service 2
-  const circle2X = 1000;
-  const circle2Y = 400;
-  const circle2Radius = 200;
+  // Extract Pod names
+  const podNames = Object.keys(podData);
 
-  // Service 1의 Subpath
-  const circle3X = circle1X + 100;
-  const circle3Y = circle1Y - 80;
-  const circle3Radius = 70;
+  // Extracting data for react-vis
+  const nodes: { x: number; y: number; name: string }[] = [];
+  const links: { source: string; target: string }[] = [];
 
-  // Service 2의 Subpath
-  const circle4X = circle2X + 120;
-  const circle4Y = circle2Y - 30;
-  const circle4Radius = 60;
+  for (const podName of podNames) {
+    const pod = podData[podName];
+    nodes.push({
+      x: Math.random() * 400,
+      y: Math.random() * 200,
+      name: podName,
+    });
 
-  // 화살표를 그리기 위한 거리 및 각도 계산
-  const distance = Math.sqrt(
-    Math.pow(circle4X - circle3X, 2) + Math.pow(circle4Y - circle3Y, 2)
-  );
-  const angle = Math.asin((circle4Y - circle3Y) / distance);
+    if (pod.Dest) {
+      links.push({ source: podName, target: pod.Dest });
+    }
+  }
 
-  // 선을 클릭했을 때 창을 토글하는 함수
-  const handleLineClick = () => {
-    setShowInfo(!showInfo);
+  // Click handlers
+  const handlePodClick = (pod: { x: number, y: number, name: string }) => {
+    setSelectedPod(pod.name);
+    setShowInfo(true);
+  };
+
+  const handleArrowClick = (sourcePod: string, destPod: string) => {
+    setSelectedPod(`Communication from ${sourcePod} to ${destPod}`);
+    setShowInfo(true);
+  };
+
+  const renderMarkSeries = () => {
+    return nodes.map((node) => (
+      <MarkSeries
+        key={node.name}
+        data={[node]}
+        onValueClick={() => handlePodClick(node)}
+      />
+    ));
+  };
+
+  const renderLineSeries = () => {
+    return links.map((link, index) => (
+      <LineSeries
+        key={index}
+        data={[
+          nodes.find((n) => n.name === link.source)!,
+          nodes.find((n) => n.name === link.target)!,
+        ]}
+      />
+    ));
   };
 
   return (
-    <main className="content">
-      {showCircles && (
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          {/* Service 1 */}
-          <circle className="fill-lightblue" cx={circle1X} cy={circle1Y} r={circle1Radius} />
-
-          {/* Service 2 */}
-          <circle className="fill-lightcoral" cx={circle2X} cy={circle2Y} r={circle2Radius} />
-
-          <circle className="fill-white" cx={circle3X} cy={circle3Y} r={circle3Radius} />
-
-          <circle className="fill-white" cx={circle4X} cy={circle4Y} r={circle4Radius} />
-
-          {/* 화살표*/}
-          <defs>
-            <marker
-              id="arrowhead"
-              markerWidth="20"
-              markerHeight="20"
-              refX="0"
-              refY="3.5"
-              orient="auto"
-            >
-              <polygon fill="gray" points="0 0, 5 3.5, 0 7" />
-            </marker>
-          </defs>
-
-          <line
-            x1={circle3X + circle3Radius * Math.cos(angle)}
-            y1={circle3Y + circle3Radius * Math.sin(angle)}
-            x2={circle4X - circle4Radius * Math.cos(angle) - 50}
-            y2={circle4Y - circle4Radius * Math.sin(angle) - 20}
-            className="line-style" // CSS 클래스 적용
-            markerEnd="url(#arrowhead)"
-            onClick={handleLineClick}
-          />
-        </svg>
-      )}
-      
-      {/*화살표 클릭 시 상세 정보 확인 가능하도록 창 띄움*/}
+    <div className='content'>
+      <XYPlot width={800} height={400}>
+        {renderMarkSeries()}
+        {renderLineSeries()}
+      </XYPlot>
       {showInfo && (
-        <div className="info-box">
-          <div className="info-content">
-          <button onClick={handleLineClick} className="info-top">
-            {/*닫기 버튼*/}
-            <VscExport />
-            <b>Details</b>
-          </button>
-            {/* 내용 */}
-            <p>정보 창</p>
+        <div className='info-box'>
+          <div className='info-content'>
+            <button onClick={() => setShowInfo(false)} className='info-top'>
+              <b>Details</b>
+              <VscExport />
+            </button>
+            <p className='metadata'>
+              {selectedPod ? `Name: ${selectedPod}` : ''}
+            </p>
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
-}
+};
 
 export default Operation;
