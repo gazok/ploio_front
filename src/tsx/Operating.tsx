@@ -11,7 +11,7 @@ import { VscExport } from 'react-icons/vsc';
 
 interface PodData {
   [podName: string]: {
-    [key: string]: any; // 모든 데이터 유형을 수용하는 더 유연한 타입
+    [key: string]: any;
   };
 }
 
@@ -19,13 +19,10 @@ const Operation: React.FC = () => {
   const [showInfo, setShowInfo] = useState(false);
   const [selectedPod, setSelectedPod] = useState<string | null>(null);
 
-  // Extract Pod data from data.json
   const podData: PodData = data.Data;
 
-  // Extract Pod names
   const podNames = Object.keys(podData);
 
-  // Extracting data for react-vis
   const nodes: { x: number; y: number; name: string }[] = [];
   const links: { source: string; target: string }[] = [];
 
@@ -42,7 +39,7 @@ const Operation: React.FC = () => {
     }
   }
 
-  // Click handlers
+  //handlers
   const handlePodClick = (pod: { x: number, y: number, name: string }) => {
     setSelectedPod(pod.name);
     setShowInfo(true);
@@ -65,14 +62,16 @@ const Operation: React.FC = () => {
 
   const renderLineSeries = () => {
     return links.map((link, index) => (
-      <LineSeries
-        key={index}
-        data={[
-          nodes.find((n) => n.name === link.source)!,
-          nodes.find((n) => n.name === link.target)!,
-        ]}
-      />
-    ));
+
+<LineSeries
+  key={index}
+  data={[
+    nodes.find((n) => n.name === link.source)!,
+    nodes.find((n) => n.name === link.target)!,
+  ]}
+  strokeWidth={5}
+/>
+   ));
   };
 
   return (
