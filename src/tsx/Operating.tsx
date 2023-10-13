@@ -1,6 +1,6 @@
 //Operation.tsx
 //Ops 부문 가시화
-//수정 중중
+//수정 중
 
 import React, { useState } from 'react';
 import { XYPlot, MarkSeries, LineSeries } from 'react-vis';
