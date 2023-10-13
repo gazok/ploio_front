@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./login";
 import { Signup, SignupPage1, SignupPage2, SignupPage3, SignupPage4 } from "./signup";
-import React from "react";
-import { Selectable } from "./test";
+import React, { useEffect, useState } from "react";
+import { Timer } from "./test";
 import Summary from "./summary";
 import { Content, Menubar, Top } from "./background";
 import Operation from "./Operating";
@@ -14,6 +14,7 @@ import Profile from "./Profile";
 import Setting from "./Setting";
 
 const Router: React.FC = () => {
+
     return (
         <BrowserRouter>
             <Menubar />
@@ -24,7 +25,7 @@ const Router: React.FC = () => {
                 <Route path="/signup/su2" element = { <SignupPage2 /> }></Route>
                 <Route path="/signup/su3" element = { <SignupPage3 /> }></Route>
                 <Route path="/signup/su4" element = { <SignupPage4 /> }></Route>
-                <Route path="/card" element = { <Selectable /> }></Route>
+                <Route path="/test" element = { <Timer time={10}/> }></Route>
                 <Route path="/summary" element={<Summary />}>
                     <Route index element={<Operation />} />
                     <Route path="Operation" element={<Operation />} />
