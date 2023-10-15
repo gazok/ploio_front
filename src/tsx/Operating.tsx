@@ -126,7 +126,7 @@ const Operation: React.FC = () => {
 
   return (
     <div className='content'>
-      <XYPlot width={1300} height={640}>
+      <XYPlot width={1300} height={610} style={{marginTop:'34px'}}>
         {renderMarkSeries()}
         {renderLineSeries()}
       </XYPlot>
