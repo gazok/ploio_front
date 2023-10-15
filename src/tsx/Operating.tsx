@@ -2,14 +2,14 @@
 //Ops 부문 가시화
 //수정 중
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { XYPlot, MarkSeries, LineSeries } from 'react-vis';
-import data from './data.json';
-import './App.css';
+import data from '../data.json';
+import '../App.css';
 import './Summary.css';
 import { VscExport } from 'react-icons/vsc';
 
-//데이터 형식 정의
+// 데이터 형식 정의
 interface Data {
   src_ip: string;
   src_port: number;
@@ -23,61 +23,100 @@ const Operation: React.FC = () => {
   const [showInfo, setShowInfo] = useState(false);
   const [selectedPod, setSelectedPod] = useState<string | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
-
   const podData: Data[] = data;
 
-  const nodeGroups: { [key: string]: number } = {}; //같은 src를 가진 것끼리 묶음
+  // 노드 위치 및 색상을 관리하는 상태 추가
+  const [nodePositions, setNodePositions] = useState<{ [key: string]: { x: number; y: number } }>({});
+  const [nodeColors, setNodeColors] = useState<{ [key: string]: string }>({});
+
+  const nodeGroups: { [key: string]: number } = {}; // 같은 src를 가진 것끼리 묶음
   const nodes: { x: number; y: number; name: string; size: number }[] = [];
   const links: { source: string; target: string }[] = [];
-  const nodePositions: { [key: string]: { x: number; y: number } } = {};
 
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
 
-    for (const pod of podData) {
-      const nodeKey = `${pod.src_ip}:${pod.src_port}`;
-      if (!nodePositions[nodeKey]) {
-        nodePositions[nodeKey] = {
-          x: Math.random() * 400,
-          y: Math.random() * 200,
-        };
+  // 그래프의 크기 설정
+  const graphWidth = 1300;
+  const graphHeight = 610;
+
+  for (const pod of podData) {
+    const nodeKey = `${pod.src_ip}:${pod.src_port}`;
+    if (!nodePositions[nodeKey]) { //노드 위치 고정
+      const position = {
+        x: Math.random() * graphWidth*3,
+        y: Math.random() * graphHeight,
+      };
+      setNodePositions((prevPositions) => ({ ...prevPositions, [nodeKey]: position }));
+
+      if (!nodeColors[nodeKey]) { //노드 색상 고정
+        const color = getRandomColor();
+        setNodeColors((prevColors) => ({ ...prevColors, [nodeKey]: color }));
       }
+    }
+    if (nodeGroups[nodeKey]) {
+      nodeGroups[nodeKey]++;
+    } else {
+      nodeGroups[nodeKey] = 1;
+    }
 
-      //개수 확인하려고 넣은 겁니다. 잘 되나 확인하려고
-      if (nodeGroups[nodeKey]) {
-        nodeGroups[nodeKey]++;
-      } else {
-        nodeGroups[nodeKey] = 1;
-      }
-
-      //노드 위치
+    const position = nodePositions[nodeKey];
+    if (position) { // 노드 존재하는지 확인
       nodes.push({
-        x: nodePositions[nodeKey].x,
-        y: nodePositions[nodeKey].y,
+        x: position.x,
+        y: position.y,
         name: nodeKey,
         size: nodeGroups[nodeKey] * 10,
       });
-
-      //간선 위치치
-      const targetNodeKey = `${pod.dst_ip}:${pod.dst_port}`;
-      if (nodePositions[targetNodeKey]) {
-        nodes.push({
-          x: nodePositions[targetNodeKey].x,
-          y: nodePositions[targetNodeKey].y,
-          name: targetNodeKey,
-          size: nodeGroups[targetNodeKey] * 10,
-        });
-        links.push({ source: nodeKey, target: targetNodeKey });
-      }
     }
 
+    // 간선 그리기
+    const targetNodeKey = `${pod.dst_ip}:${pod.dst_port}`;
+    const targetPosition = nodePositions[targetNodeKey];
+    if (targetPosition) { // target이 존재하는지 확인
+      nodes.push({
+        x: targetPosition.x,
+        y: targetPosition.y,
+        name: targetNodeKey,
+        size: nodeGroups[targetNodeKey] * 10,
+      });
+      links.push({ source: nodeKey, target: targetNodeKey });
+    }
+  }
 
-  // 파드(원) 클릭
+  // 뷰포트
+  const [viewport, setViewport] = useState({ 
+    x: 0,
+    y: 0,
+  });
+  
+  // 마우스 드래그 핸들러
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (e.buttons === 1) { 
+      const dx = e.movementX;
+      const dy = e.movementY;
+  
+      setViewport((prevViewport) => ({
+        x: prevViewport.x - dx,
+        y: prevViewport.y + dy, 
+      }));
+    }
+  };
+
+  // 파드(원) 클릭 핸들러
   const handlePodClick = (pod: { x: number; y: number; name: string }) => {
     setSelectedPod(`${pod.name}\nsrc_ip: ${pod.name.split(':')[0]}\nsrc_port: ${pod.name.split(':')[1]}`);
     setSelectedEdge(null);
     setShowInfo(true);
   };
 
-  //간선(화살표) 클릭
+  //간선(화살표) 클릭 핸들러
   const handleArrowClick = (sourcePod: string, destPod: string) => {
     setSelectedPod(`Communication from ${sourcePod} to ${destPod}`);
     const edgeData = findEdgeData(sourcePod, destPod);
@@ -103,6 +142,8 @@ const Operation: React.FC = () => {
       <MarkSeries
         key={node.name}
         data={[node]}
+        fill={nodeColors[node.name]} // 노드의 색상 사용
+        stroke="none"
         sizeRange={[0, 100]}
         onValueClick={() => handlePodClick(node)}
       />
@@ -125,23 +166,23 @@ const Operation: React.FC = () => {
   };
 
   return (
-    <div className='content'>
-      <XYPlot width={1300} height={610} style={{marginTop:'34px'}}>
-        {renderMarkSeries()}
-        {renderLineSeries()}
-      </XYPlot>
-      {showInfo && (
-        <div className='info-box'>
-          <div className='info-content'>
-            <button onClick={() => setShowInfo(false)} className='info-top'>
-              <b>Details</b>
-              <VscExport />
-            </button>
-            <p className='metadata'>{selectedPod}</p>
-            {selectedEdge && <p className='metadata'>{selectedEdge}</p>}
+    <div className='content' onMouseMove={handleMouseMove}>
+        <XYPlot width={graphWidth} height={graphHeight} style={{ marginTop: '30px' }} xDomain={[viewport.x, viewport.x + 3000]} yDomain={[viewport.y, viewport.y + 610]}>
+          {renderMarkSeries()}
+          {renderLineSeries()}
+        </XYPlot>
+        {showInfo && (
+          <div className='info-box'>
+            <div className='info-content'>
+              <button onClick={() => setShowInfo(false)} className='info-top'>
+                <b>Details</b>
+                <VscExport />
+              </button>
+              <p className='metadata'>{selectedPod}</p>
+              {selectedEdge && <p className='metadata'>{selectedEdge}</p>}
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };
