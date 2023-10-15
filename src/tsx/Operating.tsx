@@ -142,9 +142,9 @@ const Operation: React.FC = () => {
       <MarkSeries
         key={node.name}
         data={[node]}
-        fill={nodeColors[node.name]} // 노드의 색상 사용
+        fill={nodeColors[node.name]} 
         stroke="none"
-        sizeRange={[0, 100]}
+        sizeRange={[0, 100]} 
         onValueClick={() => handlePodClick(node)}
       />
     ));
