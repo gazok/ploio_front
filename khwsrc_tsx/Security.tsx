@@ -2,6 +2,7 @@
 //Sec 부문 가시화
 //수정 중
 
+/*
 import React, { useState } from 'react';
 import { XYPlot, MarkSeries, LineSeries } from 'react-vis';
 import data from './data.json';
@@ -9,10 +10,13 @@ import './App.css';
 import './Summary.css';
 import { VscExport } from 'react-icons/vsc';
 
-interface PodData {
-  [podName: string]: {
-    [key: string]: any; // 모든 데이터 유형을 수용하는 더 유연한 타입
-  };
+interface Data {
+  src_ip: string;
+  src_port: number;
+  dst_ip: string;
+  dst_port: number;
+  data_len: number;
+  protocol: string;
 }
 
 const Security: React.FC = () => {
@@ -20,7 +24,7 @@ const Security: React.FC = () => {
   const [selectedPod, setSelectedPod] = useState<string | null>(null);
 
   // Extract Pod data from data.json
-  const podData: PodData = data.Data;
+  const podData: Data[] = data.data;
 
   // Extract Pod names
   const podNames = Object.keys(podData);
@@ -99,3 +103,4 @@ const Security: React.FC = () => {
 };
 
 export default Security;
+*/

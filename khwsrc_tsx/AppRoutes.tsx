@@ -11,11 +11,12 @@ import NOps from "./NOps";
 import NSec from "./NSec";
 import Profile from "./Profile";
 import Setting from "./Setting";
-import Security from "./Security";
+//import Security from "./Security";
 import Operation from "./Operating";
 import { Top, Menubar, Content } from "./background";
 import "./App.css";
 
+//            <Route path="Security" element={<Security />} />
 function AppRoutes() {
   return (
     <div className="app">
@@ -27,7 +28,7 @@ function AppRoutes() {
           <Route path="/Summary" element={<Summary />}>
             <Route index element={<Operation />} />
             <Route path="Operation" element={<Operation />} />
-            <Route path="Security" element={<Security />} />
+
           </Route>
           <Route path="/Notice" element={<Notice />}>
             <Route index element={<NOps />} />

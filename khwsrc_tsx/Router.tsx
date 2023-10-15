@@ -6,13 +6,14 @@ import { Timer } from "./test";
 import Summary from "./summary";
 import { Content, Menubar, Top } from "./background";
 import Operation from "./Operating";
-import Security from "./Security";
+//import Security from "./Security";
 import Notice from "./Notice";
 import NOps from "./NOps";
 import NSec from "./NSec";
 import Profile from "./Profile";
 import Setting from "./Setting";
 
+// Security 수정하기.
 const Router: React.FC = () => {
 
     return (
@@ -29,7 +30,7 @@ const Router: React.FC = () => {
                 <Route path="/summary" element={<Summary />}>
                     <Route index element={<Operation />} />
                     <Route path="Operation" element={<Operation />} />
-                    <Route path="Security" element={<Security />} />
+                    <Route path="Security" element={<Operation />} />
                 </Route>
                 <Route path="/Notice" element={<Notice />}>
                     <Route index element={<NOps />} />

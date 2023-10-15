@@ -1,7 +1,7 @@
 //Summary.tsx
 //Visualization
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 import "./Summary.css";
 import { Link, Outlet } from "react-router-dom";
@@ -11,6 +11,19 @@ const iconStyle: React.CSSProperties = {
   marginRight: '8px',
   fontSize: '25px',
 };
+
+interface Data {
+    src_ip: string;
+    src_port: number;
+    dst_ip: string;
+    dst_port: number;
+    data_len: number;
+    protocol: string;
+}
+
+interface JsonData {
+    data: Data[];
+}
 
 function SummaryTop() {
   const [activeButton, setActiveButton] = useState('operation'); // Default to 'home'
@@ -49,64 +62,34 @@ function SummaryMenu() {
   );
 }
 
-function Logic() {
-    let jsonData = {"data": []};
-    let success = false;
-
+const Logic = async (callback: (data: JsonData | null) => void) => {
     //'http://serverIp:Port/Path'
-    // 할 것: json input 얻기, 
-    fetch('http://127.0.0.1:8000/summary/tmp', {
+    const res: JsonData = await fetch('http://127.0.0.1:8000/summary/tmp', {
         method: 'GET',
         headers: {'Content-Type': 'application/json'}
-    })
-    .then(response => {
-        if(response.ok){
-            //alert("응답 성공함");
-            success = true;
-        }
-        else{
-            //alert("응답 실패함");
-            success = false;
-        }
-        return response.json();}).then(response => {
-        if(success){
-            alert("응답 성공함");
-            jsonData = response;
-            
-            
-            let p1 = document.getElementById("ptest1");
-            if(p1){
-                p1.innerHTML = JSON.stringify(jsonData);
-                //p1.innerHTML = JSON.stringify(jsonData.data[1]);
-            }
-            console.log(jsonData);
-        }
-        else{
-            alert("응답 실패함");
-        }
-    });
-    /*.then(response => console.log(response)) */
-    //console.log(jsonData);
-    //console.log(success); //false
-    return {jsonData, success}; //Ignore this. This doesn't work well.
+    }).then(response => response.json());
+
+    console.log(res);
+    callback(res);
 }
 
 // Outlet이 뭘까?
 function Representation() {
-    let {jsonData, success} = Logic(); //10초 후에 Logic 재실행 및 반복.
-    //console.log(jsonData);
-
+    const [tdata, setTdata] = useState<JsonData | null>(null);
+    
     useEffect(() => {
+        Logic(res => setTdata(res));
         let timer = setInterval(() => {
-            let {jsonData, success} = Logic();
+            Logic(res => setTdata(res));
         }, 10000);
 
         return () => {clearTimeout(timer)};
     }, []);
     
+    //console.log(tdata);
     if(true){ //success로 바꾸기?
         //return (<div><Outlet /></div>)
-        return (<div><p id="ptest1"></p></div>);
+        return (<div><Outlet /><p id="ptest1">{tdata && JSON.stringify(tdata.data[1])}</p></div>);
     }
     else{
         return (<div>route B</div>);
