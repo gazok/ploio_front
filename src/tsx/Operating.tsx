@@ -84,7 +84,7 @@ const Operation: React.FC = () => {
 
     //노드 생성 함수 (타원형으로 노드 배열)
     const createNode = (dstPodKey: string, index: number, totalNodes: number) => {
-      const horizontalRadius = 1000; // 타원의 긴 반지름(가로)
+      const horizontalRadius = 1000; // 타원의 긴 반지름(가로) - data.json 파일 크기에 맞춰 조정 필요
       const verticalRadius = 300;   // 타원의 짧은 반지름(세로)
       const angle = (index / totalNodes) * 2 * Math.PI;
       const centerX = graphWidth / 2;
