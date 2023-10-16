@@ -114,22 +114,23 @@ const Operation: React.FC = () => {
       };
     };
 
-    podData?.forEach((pod) => {
+    podData?.forEach((pod, index) => {
       const srcNodeKey = `${pod.src_ip}:${pod.src_port}`;
       const targetNodeKey = `${pod.dst_ip}:${pod.dst_port}`;
-    
+      const totalNodes = podData.length;
+
       //src 노드가 존재하지 않으면 생성
      if (!groupedNodes[srcNodeKey]) {
         newNodes.push(createNode(srcNodeKey, index, totalNodes));
       }else{
-        groupedNodes[srcNodeKey]++; ///!!!
+        groupedNodes[srcNodeKey]++; 
       }
     
       //dst 노드가 존재하지 않으면 생성
       if (!groupedNodes[targetNodeKey]) {
         newNodes.push(createNode(targetNodeKey, index, totalNodes));
       }else{
-        groupedNodes[targetNodeKey]++;  ///!!!
+        groupedNodes[targetNodeKey]++; 
       }
     
       newLinks.push({ source: srcNodeKey, target: targetNodeKey });
