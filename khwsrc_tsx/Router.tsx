@@ -6,7 +6,7 @@ import { Timer } from "./test";
 import Summary from "./summary";
 import { Content, Menubar, Top } from "./background";
 import Operation from "./Operating";
-//import Security from "./Security";
+import Security from "./Security";
 import Notice from "./Notice";
 import NOps from "./NOps";
 import NSec from "./NSec";
@@ -30,7 +30,7 @@ const Router: React.FC = () => {
                 <Route path="/summary" element={<Summary />}>
                     <Route index element={<Operation />} />
                     <Route path="Operation" element={<Operation />} />
-                    <Route path="Security" element={<Operation />} />
+                    <Route path="Security" element={<Security />} />
                 </Route>
                 <Route path="/Notice" element={<Notice />}>
                     <Route index element={<NOps />} />

@@ -62,7 +62,7 @@ function SummaryMenu() {
   );
 }
 
-const Logic = async (callback: (data: JsonData | null) => void) => {
+export const Logic = async (callback: (data: JsonData | null) => void) => {
     //'http://serverIp:Port/Path'
     const res: JsonData = await fetch('http://127.0.0.1:8000/summary/tmp', {
         method: 'GET',
@@ -74,22 +74,29 @@ const Logic = async (callback: (data: JsonData | null) => void) => {
 }
 
 // Outlet이 뭘까?
-function Representation() {
+function Representation() { // 이 함수는 실행되지 않는다.
     const [tdata, setTdata] = useState<JsonData | null>(null);
+    let a = 1;
     
     useEffect(() => {
         Logic(res => setTdata(res));
+        console.log(tdata);
         let timer = setInterval(() => {
             Logic(res => setTdata(res));
+            console.log(tdata);
         }, 10000);
 
         return () => {clearTimeout(timer)};
     }, []);
+
+    useEffect(() => {
+
+    }, [a]);
     
     //console.log(tdata);
     if(true){ //success로 바꾸기?
-        //return (<div><Outlet /></div>)
-        return (<div><Outlet /><p id="ptest1">{tdata && JSON.stringify(tdata.data[1])}</p></div>);
+        //return (<div><Outlet /><p id="ptest1">{tdata && JSON.stringify(tdata.data[1])}</p></div>)
+        return (<div><p id="ptest1">{tdata && JSON.stringify(tdata.data[1])}</p></div>);
     }
     else{
         return (<div>route B</div>);
@@ -101,7 +108,7 @@ function Summary() {
     <div>
       <SummaryTop />
       <SummaryMenu />
-      <Representation />
+      <Outlet />
     </div>
   );
 }

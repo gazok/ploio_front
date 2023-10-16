@@ -2,7 +2,7 @@
 //Sec 부문 가시화
 //수정 중
 
-/*
+
 import React, { useState } from 'react';
 import { XYPlot, MarkSeries, LineSeries } from 'react-vis';
 import data from './data.json';
@@ -33,16 +33,16 @@ const Security: React.FC = () => {
   const nodes: { x: number; y: number; name: string }[] = [];
   const links: { source: string; target: string }[] = [];
 
-  for (const podName of podNames) {
-    const pod = podData[podName];
+  for (const data of podData) {
+    const pod = data;
     nodes.push({
       x: Math.random() * 400,
       y: Math.random() * 200,
-      name: podName,
+      name: "sample",
     });
 
-    if (pod.Dest) {
-      links.push({ source: podName, target: pod.Dest });
+    if (pod.dst_ip) {
+      links.push({ source: pod.src_ip, target: pod.dst_ip });
     }
   }
 
@@ -103,4 +103,3 @@ const Security: React.FC = () => {
 };
 
 export default Security;
-*/
