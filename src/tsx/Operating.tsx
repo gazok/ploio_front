@@ -115,7 +115,7 @@ const Operation: React.FC = () => {
         data={[node]}
         fill={nodeColors[node.name]}
         stroke="none"
-        sizeRange={[0, (groupedNodes[node.name] || 1) * 100]} //data.json 내 파드 수에 비례하게 노드 크기 조정
+        sizeRange={[0, (groupedNodes[node.name] || 1) * 25]} //data.json 내 파드 수에 비례하게 노드 크기 조정
         onValueClick={() => handlePodClick(node)}
       />
     ));
