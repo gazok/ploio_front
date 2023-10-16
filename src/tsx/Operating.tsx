@@ -130,7 +130,7 @@ const renderLineSeries = () => {
             nodes.find((n) => n.name === link.source)!,
             nodes.find((n) => n.name === link.target)!,
           ]}
-          style={{stroke: 'lightgray', strokeWidth: 5 }} 
+          style={{stroke: 'lightgray', strokeWidth: 2 }} 
           onSeriesClick={() => handleEdgeClick(link)} 
         /> 
     ));
