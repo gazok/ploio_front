@@ -1,7 +1,3 @@
-//Operation.tsx
-//Ops 부문 가시화
-//수정 중 
-
 import React, { useState, useEffect } from 'react';
 import { XYPlot, MarkSeries, LineSeries  } from 'react-vis';
 import data from '../data.json';
@@ -135,7 +131,7 @@ const Operation: React.FC = () => {
             nodes.find((n) => n.name === link.source)!,
             nodes.find((n) => n.name === link.target)!,
           ]}
-          style={{stroke: 'black', strokeWidth: 5 }} 
+          style={{stroke: 'lightgray', strokeWidth: 5 }} 
           onSeriesClick={() => handleEdgeClick(link)} 
         /> 
     ));
