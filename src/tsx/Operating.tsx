@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { XYPlot, MarkSeries, LineSeries  } from 'react-vis';
-import data from '../data.json';
+import data from './data.json';
+import './App.css';
 import './Summary.css';
 import { VscExport, VscCircleSmall } from 'react-icons/vsc';
 
@@ -52,44 +53,42 @@ const Operation: React.FC = () => {
     const newLinks: { source: string; target: string }[] = [];
 
     //노드 생성 함수
-    const createNode = (dstPodKey: string) => {
-      const padding = 100; 
+    const createNode = (podKey: string) => {
+      const padding = 100;
       const position = {
-        x: Math.random() * (graphWidth + padding) * 3,
+        x: Math.random() * (graphWidth + padding),
         y: Math.random() * (graphHeight + padding),
       };
-    
-      groupedNodes[dstPodKey] = 1;
-    
-      if (!nodePositions[dstPodKey]) {
+
+      groupedNodes[podKey] = 1;
+
+      if (!nodePositions[podKey]) {
         const color = getRandomColor();
-        setNodePositions((nodePositions) => ({ ...nodePositions, [dstPodKey]: position }));
-        setNodeColors((nodeColors) => ({ ...nodeColors, [dstPodKey]: color }));
-        setGroupedNodes((groupedNodes) => ({ ...groupedNodes, [dstPodKey]: groupedNodes[dstPodKey] + 1 }));
+        setNodePositions({ ...nodePositions, [podKey]: position });
+        setNodeColors({ ...nodeColors, [podKey]: color });
+        setGroupedNodes({ ...groupedNodes, [podKey]: groupedNodes[podKey] + 1 });
       }
-    
+
       return {
         x: position.x,
         y: position.y,
-        name: dstPodKey,
+        name: podKey,
         size: 100,
       };
     };
-
+    
     podData.forEach((pod) => {
       const srcNodeKey = `${pod.src_ip}:${pod.src_port}`;
       const targetNodeKey = `${pod.dst_ip}:${pod.dst_port}`;
-    
-      //src 노드가 존재하지 않으면 생성
+
       if (!groupedNodes[srcNodeKey]) {
         newNodes.push(createNode(srcNodeKey));
       }
-    
-      //dst 노드가 존재하지 않으면 생성
+
       if (!groupedNodes[targetNodeKey]) {
         newNodes.push(createNode(targetNodeKey));
       }
-    
+
       newLinks.push({ source: srcNodeKey, target: targetNodeKey });
     });
 
@@ -111,19 +110,19 @@ const Operation: React.FC = () => {
   // 노드 렌더링
   const renderMarkSeries = () => {
     return nodes.map((node) => (
-        <MarkSeries
-          key={node.name}
-          data={[node]}
-          fill={nodeColors[node.name]}
-          stroke="none"
-          sizeRange={[0, (groupedNodes[node.name] || 1) * 100]}
-          onValueClick={() => handlePodClick(node)}
-        />
-     ));
-   };
+      <MarkSeries
+        key={node.name}
+        data={[node]}
+        fill={nodeColors[node.name]}
+        stroke="none"
+        sizeRange={[0, (groupedNodes[node.name] || 1) * 100]} //data.json 내 파드 수에 비례하게 노드 크기 조정
+        onValueClick={() => handlePodClick(node)}
+      />
+    ));
+  };
 
   // 엣지 렌더링
-  const renderLineSeries = () => {
+const renderLineSeries = () => {
     return links.map((link, index) => (
         <LineSeries
           key={index}
@@ -189,7 +188,7 @@ const Operation: React.FC = () => {
     setSelectedPod(null);
     setShowInfo(true);
   };
-  
+
   return (
     <div className='content' onMouseMove={handleMouseMove}>
       <XYPlot
