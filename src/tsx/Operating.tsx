@@ -1,9 +1,14 @@
+//Operation.tsx
+//Ops 부문 가시화
+//수정 중 
+
 import React, { useState, useEffect } from 'react';
 import { XYPlot, MarkSeries, LineSeries  } from 'react-vis';
 import data from './data.json';
 import './App.css';
 import './Summary.css';
 import { VscExport, VscCircleSmall } from 'react-icons/vsc';
+import { Logic } from './summary';
 
 // 데이터 인터페이스 정의
 interface Data {
@@ -13,6 +18,10 @@ interface Data {
   dst_port: number;
   data_len: number;
   protocol: string;
+}
+
+interface JsonData {
+  data: Data[];
 }
 
 const Operation: React.FC = () => {
@@ -29,14 +38,35 @@ const Operation: React.FC = () => {
   const [groupedNodes, setGroupedNodes] = useState<{ [key: string]: number }>({});
 
   // data.json 데이터 로드
-  const podData: Data[] = data;
+  const [tdata, setTdata] = useState<JsonData | null>(null); //json 받는 컨테이너
+  const [podData, setPodData] = useState<Data[] | null>(null);
+  //const podData: Data[] = data.data;
 
   // 그래프 크기 정의
   const graphWidth = 1300;
   const graphHeight = 610;
 
   useEffect(() => {
+    Logic(res => setTdata(res));
+    //console.log(tdata);
+    let timer = setInterval(() => {
+      Logic(res => setTdata(res));
+      //console.log(tdata);
+    }, 10000);
 
+    // 타이머 클리어 (for setInterval)
+    return () => {clearTimeout(timer)};
+  }, []);
+
+  useEffect(() => {
+    console.log(tdata);
+    if(tdata){
+      setPodData(tdata.data); // 받아온 데이터 리스트 집어넣기.
+    }
+    else{
+      return;
+    }
+    
     // 노드 색 랜덤 지정
     const getRandomColor = () => {
       const letters = '0123456789ABCDEF';
@@ -52,54 +82,67 @@ const Operation: React.FC = () => {
     const newNodes: { x: number; y: number; name: string; size: number }[] = [];
     const newLinks: { source: string; target: string }[] = [];
 
-    //노드 생성 함수
-    const createNode = (podKey: string) => {
-      const padding = 100;
+    //노드 생성 함수 (타원형으로 노드 배열)
+    const createNode = (dstPodKey: string, index: number, totalNodes: number) => {
+      const horizontalRadius = 1000; // 타원의 긴 반지름(가로)
+      const verticalRadius = 300;   // 타원의 짧은 반지름(세로)
+      const angle = (index / totalNodes) * 2 * Math.PI;
+      const centerX = graphWidth / 2;
+      const centerY = graphHeight / 2;
+      const x = centerX + horizontalRadius * Math.cos(angle);
+      const y = centerY + verticalRadius * Math.sin(angle);
+  
       const position = {
-        x: Math.random() * (graphWidth + padding),
-        y: Math.random() * (graphHeight + padding),
+        x,
+        y,
       };
-
-      groupedNodes[podKey] = 1;
-
-      if (!nodePositions[podKey]) {
+    
+      groupedNodes[dstPodKey] = 1;
+    
+      if (!nodePositions[dstPodKey]) {
         const color = getRandomColor();
-        setNodePositions({ ...nodePositions, [podKey]: position });
-        setNodeColors({ ...nodeColors, [podKey]: color });
-        setGroupedNodes({ ...groupedNodes, [podKey]: groupedNodes[podKey] + 1 });
+        setNodePositions((nodePositions) => ({ ...nodePositions, [dstPodKey]: position }));
+        setNodeColors((nodeColors) => ({ ...nodeColors, [dstPodKey]: color }));
+        setGroupedNodes((groupedNodes) => ({ ...groupedNodes, [dstPodKey]: groupedNodes[dstPodKey] + 1 }));
       }
-
+    
       return {
         x: position.x,
         y: position.y,
-        name: podKey,
+        name: dstPodKey,
         size: 25,
       };
     };
-    
-    podData.forEach((pod) => {
+
+    podData?.forEach((pod) => {
       const srcNodeKey = `${pod.src_ip}:${pod.src_port}`;
       const targetNodeKey = `${pod.dst_ip}:${pod.dst_port}`;
-
-      if (!groupedNodes[srcNodeKey]) {
-        newNodes.push(createNode(srcNodeKey));
+    
+      //src 노드가 존재하지 않으면 생성
+     if (!groupedNodes[srcNodeKey]) {
+        newNodes.push(createNode(srcNodeKey, index, totalNodes));
+      }else{
+        groupedNodes[srcNodeKey]++; ///!!!
       }
-
+    
+      //dst 노드가 존재하지 않으면 생성
       if (!groupedNodes[targetNodeKey]) {
-        newNodes.push(createNode(targetNodeKey));
+        newNodes.push(createNode(targetNodeKey, index, totalNodes));
+      }else{
+        groupedNodes[targetNodeKey]++;  ///!!!
       }
-
+    
       newLinks.push({ source: srcNodeKey, target: targetNodeKey });
     });
 
     // 상태 업데이트
     setNodes(newNodes);
     setLinks(newLinks);
-  }, [podData, nodePositions, nodeColors]);
+  }, [tdata, nodePositions, nodeColors]); //end of useEffect
 
   // 엣지 데이터 검색
   const findEdgeData = (sourcePod: string, destPod: string) => {
-    const edgeData = podData.find(
+    const edgeData = podData?.find(
       (pod) =>
         `${pod.src_ip}:${pod.src_port}` === sourcePod &&
         `${pod.dst_ip}:${pod.dst_port}` === destPod
@@ -110,19 +153,19 @@ const Operation: React.FC = () => {
   // 노드 렌더링
   const renderMarkSeries = () => {
     return nodes.map((node) => (
-      <MarkSeries
-        key={node.name}
-        data={[node]}
-        fill={nodeColors[node.name]}
-        stroke="none"
-        sizeRange={[0, (groupedNodes[node.name] || 1) * 25]} //data.json 내 파드 수에 비례하게 노드 크기 조정
-        onValueClick={() => handlePodClick(node)}
-      />
-    ));
-  };
+        <MarkSeries
+          key={node.name}
+          data={[node]}
+          fill={nodeColors[node.name]}
+          stroke="none"
+          sizeRange={[0, (groupedNodes[node.name] || 1) * 25]}
+          onValueClick={() => handlePodClick(node)}
+        />
+     ));
+   };
 
   // 엣지 렌더링
-const renderLineSeries = () => {
+  const renderLineSeries = () => {
     return links.map((link, index) => (
         <LineSeries
           key={index}
@@ -130,7 +173,7 @@ const renderLineSeries = () => {
             nodes.find((n) => n.name === link.source)!,
             nodes.find((n) => n.name === link.target)!,
           ]}
-          style={{stroke: 'lightgray', strokeWidth: 2 }} 
+          style={{stroke: 'lightgray', strokeWidth: 3 }} 
           onSeriesClick={() => handleEdgeClick(link)} 
         /> 
     ));
@@ -188,7 +231,7 @@ const renderLineSeries = () => {
     setSelectedPod(null);
     setShowInfo(true);
   };
-
+  
   return (
     <div className='content' onMouseMove={handleMouseMove}>
       <XYPlot
