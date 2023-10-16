@@ -73,7 +73,7 @@ const Operation: React.FC = () => {
         x: position.x,
         y: position.y,
         name: podKey,
-        size: 100,
+        size: 25,
       };
     };
     
