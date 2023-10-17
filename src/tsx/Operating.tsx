@@ -78,23 +78,16 @@ const Operation: React.FC = () => {
     };
 
     //노드 및 간선 생성 변수
-    const groupedNodes: { [key: string]: number } = {};
+     const groupedNodes: { [key: string]: number } = {};
     const newNodes: { x: number; y: number; name: string; size: number }[] = [];
     const newLinks: { source: string; target: string }[] = [];
 
-    //노드 생성 함수 (타원형으로 노드 배열)
-    const createNode = (dstPodKey: string, index: number, totalNodes: number) => {
-      const horizontalRadius = 1000; // 타원의 긴 반지름(가로) - data.json 파일 크기에 맞춰 조정 필요
-      const verticalRadius = 300;   // 타원의 짧은 반지름(세로)
-      const angle = (index / totalNodes) * 2 * Math.PI;
-      const centerX = graphWidth / 2;
-      const centerY = graphHeight / 2;
-      const x = centerX + horizontalRadius * Math.cos(angle);
-      const y = centerY + verticalRadius * Math.sin(angle);
-  
+    //노드 생성 함수
+    const createNode = (dstPodKey: string) => {
+      const padding = 100; 
       const position = {
-        x,
-        y,
+        x: Math.random() * graphWidth * 3 + padding,
+        y: Math.random() * graphHeight + padding,
       };
     
       groupedNodes[dstPodKey] = 1;
@@ -113,6 +106,27 @@ const Operation: React.FC = () => {
         size: 25,
       };
     };
+
+    podData?.forEach((pod) => {
+      const srcNodeKey = `${pod.src_ip}:${pod.src_port}`;
+      const targetNodeKey = `${pod.dst_ip}:${pod.dst_port}`;
+    
+      //src 노드가 존재하지 않으면 생성
+      if (!groupedNodes[srcNodeKey]) {
+        newNodes.push(createNode(srcNodeKey));
+      }else{
+        groupedNodes[srcNodeKey]++
+      }
+    
+      //dst 노드가 존재하지 않으면 생성
+      if (!groupedNodes[targetNodeKey]) {
+        newNodes.push(createNode(targetNodeKey));
+      }else{
+        groupedNodes[targetNodeKey]++
+      }
+    
+      newLinks.push({ source: srcNodeKey, target: targetNodeKey });
+    });
 
     podData?.forEach((pod, index) => {
       const srcNodeKey = `${pod.src_ip}:${pod.src_port}`;
@@ -136,8 +150,21 @@ const Operation: React.FC = () => {
       newLinks.push({ source: srcNodeKey, target: targetNodeKey });
     });
 
-    // 상태 업데이트
-    setNodes(newNodes);
+    //노드의 원형 배열
+    const angleStep = (2 * Math.PI) / newNodes.length;
+    const horizontalRadius = 1000; // 타원의 긴 반지름(가로) - data.json 파일 크기에 맞춰 조정 필요
+    const verticalRadius = 300;   // 타원의 짧은 반지름(세로)
+    const centerX = graphWidth / 2;
+    const centerY = graphHeight / 2;
+
+    const circleNodes = newNodes.map((node, i) => ({
+      x: centerX + horizontalRadius * Math.cos(i * angleStep),
+      y: centerY + verticalRadius * Math.sin(i * angleStep),
+      name: node.name,
+      size: node.size,
+    }));
+
+    setNodes(circleNodes);
     setLinks(newLinks);
   }, [tdata, nodePositions, nodeColors]); //end of useEffect
 
