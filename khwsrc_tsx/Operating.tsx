@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { XYPlot, MarkSeries, LineSeries  } from 'react-vis';
 import data from './data.json';
+import './App.css';
 import './Summary.css';
 import { VscExport, VscCircleSmall } from 'react-icons/vsc';
 import { Logic } from './summary';
@@ -81,12 +82,19 @@ const Operation: React.FC = () => {
     const newNodes: { x: number; y: number; name: string; size: number }[] = [];
     const newLinks: { source: string; target: string }[] = [];
 
-    //노드 생성 함수
-    const createNode = (dstPodKey: string) => {
-      const padding = 100; 
+    //노드 생성 함수 (타원형으로 노드 배열)
+    const createNode = (dstPodKey: string, index: number, totalNodes: number) => {
+      const horizontalRadius = 1000; // 타원의 긴 반지름(가로) - data.json 파일 크기에 맞춰 조정 필요
+      const verticalRadius = 300;   // 타원의 짧은 반지름(세로)
+      const angle = (index / totalNodes) * 2 * Math.PI;
+      const centerX = graphWidth / 2;
+      const centerY = graphHeight / 2;
+      const x = centerX + horizontalRadius * Math.cos(angle);
+      const y = centerY + verticalRadius * Math.sin(angle);
+  
       const position = {
-        x: Math.random() * (graphWidth + padding) * 3,
-        y: Math.random() * (graphHeight + padding),
+        x,
+        y,
       };
     
       groupedNodes[dstPodKey] = 1;
@@ -102,22 +110,27 @@ const Operation: React.FC = () => {
         x: position.x,
         y: position.y,
         name: dstPodKey,
-        size: 100,
+        size: 25,
       };
     };
-
-    podData?.forEach((pod) => {
+    
+    podData?.forEach((pod, index) => {
       const srcNodeKey = `${pod.src_ip}:${pod.src_port}`;
       const targetNodeKey = `${pod.dst_ip}:${pod.dst_port}`;
+      const totalNodes = podData.length;
     
       //src 노드가 존재하지 않으면 생성
       if (!groupedNodes[srcNodeKey]) {
-        newNodes.push(createNode(srcNodeKey));
+        newNodes.push(createNode(srcNodeKey, index, totalNodes));
+      }else{
+        groupedNodes[srcNodeKey]++; ///!!!
       }
     
       //dst 노드가 존재하지 않으면 생성
       if (!groupedNodes[targetNodeKey]) {
-        newNodes.push(createNode(targetNodeKey));
+        newNodes.push(createNode(targetNodeKey, index, totalNodes));
+      }else{
+        groupedNodes[targetNodeKey]++;  ///!!!
       }
     
       newLinks.push({ source: srcNodeKey, target: targetNodeKey });
@@ -146,7 +159,7 @@ const Operation: React.FC = () => {
           data={[node]}
           fill={nodeColors[node.name]}
           stroke="none"
-          sizeRange={[0, (groupedNodes[node.name] || 1) * 100]}
+          sizeRange={[0, (groupedNodes[node.name] || 1) * 25]}
           onValueClick={() => handlePodClick(node)}
         />
      ));
@@ -161,7 +174,7 @@ const Operation: React.FC = () => {
             nodes.find((n) => n.name === link.source)!,
             nodes.find((n) => n.name === link.target)!,
           ]}
-          style={{stroke: 'black', strokeWidth: 5 }} 
+          style={{stroke: 'lightgray', strokeWidth: 3 }} 
           onSeriesClick={() => handleEdgeClick(link)} 
         /> 
     ));
