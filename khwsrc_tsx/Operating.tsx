@@ -93,8 +93,13 @@ const Operation: React.FC = () => {
       const y = centerY + verticalRadius * Math.sin(angle);
   
       const position = {
+<<<<<<< HEAD
         x,
         y,
+=======
+        x: Math.random() * graphWidth * 3 + padding,
+        y: Math.random() * graphHeight + padding,
+>>>>>>> 5363bbaf727e852b3483250bcea2062725a60d4b
       };
     
       groupedNodes[dstPodKey] = 1;
