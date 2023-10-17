@@ -18,6 +18,7 @@ interface Data {
   dst_port: number;
   data_len: number;
   protocol: string;
+  timestamp: number;
 }
 
 interface JsonData {
@@ -128,23 +129,22 @@ const Operation: React.FC = () => {
       newLinks.push({ source: srcNodeKey, target: targetNodeKey });
     });
 
-    podData?.forEach((pod, index) => {
+    podData?.forEach((pod) => {
       const srcNodeKey = `${pod.src_ip}:${pod.src_port}`;
       const targetNodeKey = `${pod.dst_ip}:${pod.dst_port}`;
-      const totalNodes = podData.length;
-
+    
       //src 노드가 존재하지 않으면 생성
-     if (!groupedNodes[srcNodeKey]) {
-        newNodes.push(createNode(srcNodeKey, index, totalNodes));
+      if (!groupedNodes[srcNodeKey]) {
+        newNodes.push(createNode(srcNodeKey));
       }else{
-        groupedNodes[srcNodeKey]++; 
+        groupedNodes[srcNodeKey]++
       }
     
       //dst 노드가 존재하지 않으면 생성
       if (!groupedNodes[targetNodeKey]) {
-        newNodes.push(createNode(targetNodeKey, index, totalNodes));
+        newNodes.push(createNode(targetNodeKey));
       }else{
-        groupedNodes[targetNodeKey]++; 
+        groupedNodes[targetNodeKey]++
       }
     
       newLinks.push({ source: srcNodeKey, target: targetNodeKey });
@@ -175,7 +175,7 @@ const Operation: React.FC = () => {
         `${pod.src_ip}:${pod.src_port}` === sourcePod &&
         `${pod.dst_ip}:${pod.dst_port}` === destPod
     );
-    return edgeData || { dst_ip: '', dst_port: '', data_len: '', protocol: '' };
+    return edgeData || { dst_ip: '', dst_port: '', data_len: '', protocol: '', timestamp: '' };
   };
 
   // 노드 렌더링
@@ -252,7 +252,8 @@ const Operation: React.FC = () => {
           <VscCircleSmall /> Dst IP: {edgeData.dst_ip} <br />
           <VscCircleSmall /> Dst Port: {edgeData.dst_port} <br />
           <VscCircleSmall /> Data length: {edgeData.data_len} <br />
-          <VscCircleSmall /> Protocol: {edgeData.protocol}{' '}
+          <VscCircleSmall /> Protocol: {edgeData.protocol} <br />
+          <VscCircleSmall /> Timestamp: {edgeData.timestamp}{' '}
         </p>
       </div>
     );
