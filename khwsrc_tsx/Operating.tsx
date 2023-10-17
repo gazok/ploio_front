@@ -85,8 +85,8 @@ const Operation: React.FC = () => {
     const createNode = (dstPodKey: string) => {
       const padding = 100; 
       const position = {
-        x: Math.random() * (graphWidth + padding) * 3,
-        y: Math.random() * (graphHeight + padding),
+        x: Math.random() * graphWidth * 3 + padding,
+        y: Math.random() * graphHeight + padding,
       };
     
       groupedNodes[dstPodKey] = 1;
@@ -102,7 +102,7 @@ const Operation: React.FC = () => {
         x: position.x,
         y: position.y,
         name: dstPodKey,
-        size: 100,
+        size: 25,
       };
     };
 
@@ -146,7 +146,7 @@ const Operation: React.FC = () => {
           data={[node]}
           fill={nodeColors[node.name]}
           stroke="none"
-          sizeRange={[0, (groupedNodes[node.name] || 1) * 100]}
+          sizeRange={[0, (groupedNodes[node.name] || 1) * 25]}
           onValueClick={() => handlePodClick(node)}
         />
      ));
@@ -161,7 +161,7 @@ const Operation: React.FC = () => {
             nodes.find((n) => n.name === link.source)!,
             nodes.find((n) => n.name === link.target)!,
           ]}
-          style={{stroke: 'black', strokeWidth: 5 }} 
+          style={{stroke: 'lightgray', strokeWidth: 3 }} 
           onSeriesClick={() => handleEdgeClick(link)} 
         /> 
     ));
