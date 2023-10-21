@@ -3,8 +3,8 @@
 
 
 import React, {useState} from 'react';
-import "./App.css";
-import "./Notice.css";
+import "../css/App.css";
+import "../css/Notice.css";
 import { Link, Outlet } from "react-router-dom";
 import { VscSync, VscShield, VscSearch } from "react-icons/vsc"; //icon
 

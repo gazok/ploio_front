@@ -1,7 +1,7 @@
 import React from 'react';
 import * as ReactDOM from 'react-dom';
-import './index.css';
-import Router from './Router'
+import './css/index.css';
+import Router from './tsx/Router'
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 
 ReactDOM.render(

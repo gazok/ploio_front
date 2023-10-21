@@ -2,8 +2,8 @@
 //Visualization
 
 import React, { useEffect, useRef, useState } from "react";
-import "./App.css";
-import "./Summary.css";
+import "../css/App.css";
+import "../css/Summary.css";
 import { Link, Outlet } from "react-router-dom";
 import { VscSync, VscShield, VscSearch, VscZoomOut } from "react-icons/vsc";
 

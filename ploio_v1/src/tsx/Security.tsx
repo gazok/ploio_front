@@ -5,9 +5,9 @@
 
 import React, { useState } from 'react';
 import { XYPlot, MarkSeries, LineSeries } from 'react-vis';
-import data from './data.json';
-import './App.css';
-import './Summary.css';
+import data from '../public/data.json';
+import "../css/App.css";
+import '../css/Summary.css';
 import { VscExport } from 'react-icons/vsc';
 
 interface Data {
