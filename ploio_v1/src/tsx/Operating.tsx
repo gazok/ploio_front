@@ -3,10 +3,9 @@
 //수정 중 
 
 import React, { useState, useEffect } from 'react';
-import { XYPlot, MarkSeries, LineSeries  } from 'react-vis';
-import data from './data.json';
-import './App.css';
-import './Summary.css';
+import { XYPlot, MarkSeries, LineSeries, LabelSeries  } from 'react-vis';
+import "../css/App.css";
+import '../css/Summary.css';
 import { VscExport, VscCircleSmall } from 'react-icons/vsc';
 import { Logic } from './summary';
 
@@ -78,10 +77,12 @@ const Operation: React.FC = () => {
       return color;
     };
 
-    //노드 및 간선 생성 변수
-     const groupedNodes: { [key: string]: number } = {};
+    //노드 및 간선 및 텍스트 생성 변수
+    const groupedNodes: { [key: string]: number } = {};
     const newNodes: { x: number; y: number; name: string; size: number }[] = [];
+    const textNodes: { text: string; }[] = [];
     const newLinks: { source: string; target: string }[] = [];
+    const textLinks: { text: string; }[] = [];
 
     //노드 생성 함수
     const createNode = (dstPodKey: string) => {
@@ -151,9 +152,9 @@ const Operation: React.FC = () => {
     });
 
     //노드의 원형 배열
-    const angleStep = (2 * Math.PI) / newNodes.length;
-    const horizontalRadius = 1000; // 타원의 긴 반지름(가로) - data.json 파일 크기에 맞춰 조정 필요
-    const verticalRadius = 300;   // 타원의 짧은 반지름(세로)
+    const angleStep = (2 * Math.PI) / newNodes.length ;
+    const horizontalRadius = 1200; 
+    const verticalRadius = 300;   // 이 부분 수정했어요!
     const centerX = graphWidth / 2;
     const centerY = graphHeight / 2;
 
@@ -167,6 +168,15 @@ const Operation: React.FC = () => {
     setNodes(circleNodes);
     setLinks(newLinks);
   }, [tdata, nodePositions, nodeColors]); //end of useEffect
+
+  // 노드 데이터 검색
+  const findNodeData = (PodKey: string) => {
+    const NodeData = nodes.find(
+      (node) =>
+        node.name === PodKey
+    );
+    return NodeData || { x: 0, y: 0, name: '', size: 0 };
+  };
 
   // 엣지 데이터 검색
   const findEdgeData = (sourcePod: string, destPod: string) => {
@@ -184,28 +194,62 @@ const Operation: React.FC = () => {
         <MarkSeries
           key={node.name}
           data={[node]}
+          className="node"
           fill={nodeColors[node.name]}
           stroke="none"
           sizeRange={[0, (groupedNodes[node.name] || 1) * 25]}
           onValueClick={() => handlePodClick(node)}
-        />
+          />
      ));
    };
 
   // 엣지 렌더링
   const renderLineSeries = () => {
     return links.map((link, index) => (
-        <LineSeries
-          key={index}
-          data={[
-            nodes.find((n) => n.name === link.source)!,
-            nodes.find((n) => n.name === link.target)!,
-          ]}
-          style={{stroke: 'lightgray', strokeWidth: 3 }} 
-          onSeriesClick={() => handleEdgeClick(link)} 
-        /> 
+      <LineSeries
+        key={index}
+        data={[
+          nodes.find((n) => n.name === link.source)!,
+          nodes.find((n) => n.name === link.target)!,
+        ]}
+        style={{stroke: 'lightgray', strokeWidth: 3 }} 
+        onSeriesClick={() => handleEdgeClick(link)} 
+      /> 
     ));
   };
+  
+  // ip:port 라벨 렌더링
+  const renderNodeLabelSeries = () => {
+    return nodes.map((node) => {
+      const x = node.x;
+      const y = node.y;
+      const label = node.name;
+      const l = { x: node.x, y: node.y, label: label, xOffset: 0, yOffset: 15 };
+
+      return (
+        <LabelSeries
+          data={[l]}
+        />
+      );
+    });
+  }
+
+  // datalen 라벨 렌더링
+  const renderLinkLabelSeries = () => {
+    return links.map((link, index) => {
+      const edgeData = findEdgeData(link.source, link.target);
+      const label = String(edgeData.data_len);
+      const node1 = findNodeData(link.source);
+      const node2 = findNodeData(link.target);
+      const l = { x: (node1.x && node2.x && (node1.x + node2.x) / 2), y: (node1.y && node2.y && (node1.y + node2.y) / 2), label: label, xOffset: 0, yOffset: 0 };
+
+      return (
+        <LabelSeries
+          data={[l]}
+        />
+      );
+    });
+  }
   
   // 뷰포트 상태 업데이트
   const [viewport, setViewport] = useState({
@@ -272,6 +316,8 @@ const Operation: React.FC = () => {
       >
         {renderMarkSeries()}
         {renderLineSeries()}
+        {renderNodeLabelSeries()}
+        {renderLinkLabelSeries()}
       </XYPlot>
       {showInfo && (
         <div className='info-box'>
