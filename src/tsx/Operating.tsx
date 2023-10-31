@@ -71,24 +71,24 @@ const Operation: React.FC = () => {
     const textLinks: { text: string; }[] = [];
 
     //노드 생성 함수
-    const createNode = (dstPodKey: string) => {
+    const createNode = (PodKey: string) => {
       const padding = 100; 
       const position = {
         x: Math.random() * graphWidth * 3 + padding,
         y: Math.random() * graphHeight + padding,
       };
     
-      groupedNodes[dstPodKey] = 1;
+      groupedNodes[PodKey] = 1;
     
-      if (!nodePositions[dstPodKey]) {
-        setNodePositions((nodePositions) => ({ ...nodePositions, [dstPodKey]: position }));
-        setGroupedNodes((groupedNodes) => ({ ...groupedNodes, [dstPodKey]: groupedNodes[dstPodKey] + 1 }));
+      if (!nodePositions[PodKey]) {
+        setNodePositions((nodePositions) => ({ ...nodePositions, [PodKey]: position }));
+        setGroupedNodes((groupedNodes) => ({ ...groupedNodes, [PodKey]: groupedNodes[PodKey] + 1 }));
       }
     
       return {
         x: position.x,
         y: position.y,
-        name: dstPodKey,
+        name: PodKey,
         size: 25,
       };
     };
