@@ -117,7 +117,7 @@ const Operation: React.FC = () => {
     //노드의 원형 배열
     const angleStep = (2 * Math.PI) / newNodes.length ;
     const horizontalRadius = 1200; 
-    const verticalRadius = 300;   // 이 부분 수정했어요!
+    const verticalRadius = 300;   
     const centerX = graphWidth / 2;
     const centerY = graphHeight / 2;
 
