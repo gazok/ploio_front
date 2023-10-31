@@ -281,8 +281,8 @@ const Operation: React.FC = () => {
         xDomain={[viewport.x, viewport.x + 3000]}
         yDomain={[viewport.y, viewport.y + 610]}
       >
-        {renderMarkSeries()}
         {renderLineSeries()}
+        {renderMarkSeries()}
         {renderNodeLabelSeries()}
         {renderLinkLabelSeries()}
       </XYPlot>
