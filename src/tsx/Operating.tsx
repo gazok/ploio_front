@@ -3,22 +3,17 @@
 //수정 중 
 
 import React, { useState, useEffect } from 'react';
-import { XYPlot, MarkSeries, LineSeries  } from 'react-vis';
-import data from './data.json';
-import './App.css';
-import './Summary.css';
+import { XYPlot, MarkSeries, LineSeries, LabelSeries  } from 'react-vis';
+import "../css/App.css";
+import '../css/Summary.css';
 import { VscExport, VscCircleSmall } from 'react-icons/vsc';
 import { Logic } from './summary';
 
 // 데이터 인터페이스 정의
 interface Data {
-  src_ip: string;
-  src_port: number;
-  dst_ip: string;
-  dst_port: number;
+  src: string;
+  dst: string;
   data_len: number;
-  protocol: string;
-  timestamp: number;
 }
 
 interface JsonData {
@@ -33,7 +28,7 @@ const Operation: React.FC = () => {
 
   // 노드 위치, 색상 및 데이터 관리를 위한 상태
   const [nodePositions, setNodePositions] = useState<{ [key: string]: { x: number; y: number } }>({});
-  const [nodeColors, setNodeColors] = useState<{ [key: string]: string }>({});
+  // const [nodeColors, setNodeColors] = useState<{ [key: string]: string }>({});
   const [nodes, setNodes] = useState<{ x: number; y: number; name: string; size: number }[]>([]);
   const [links, setLinks] = useState<{ source: string; target: string }[]>([]);
   const [groupedNodes, setGroupedNodes] = useState<{ [key: string]: number }>({});
@@ -67,21 +62,13 @@ const Operation: React.FC = () => {
     else{
       return;
     }
-    
-    // 노드 색 랜덤 지정
-    const getRandomColor = () => {
-      const letters = '0123456789ABCDEF';
-      let color = '#';
-      for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-      }
-      return color;
-    };
 
-    //노드 및 간선 생성 변수
-     const groupedNodes: { [key: string]: number } = {};
+    //노드 및 간선 및 텍스트 생성 변수
+    const groupedNodes: { [key: string]: number } = {};
     const newNodes: { x: number; y: number; name: string; size: number }[] = [];
+    const textNodes: { text: string; }[] = [];
     const newLinks: { source: string; target: string }[] = [];
+    const textLinks: { text: string; }[] = [];
 
     //노드 생성 함수
     const createNode = (dstPodKey: string) => {
@@ -94,9 +81,7 @@ const Operation: React.FC = () => {
       groupedNodes[dstPodKey] = 1;
     
       if (!nodePositions[dstPodKey]) {
-        const color = getRandomColor();
         setNodePositions((nodePositions) => ({ ...nodePositions, [dstPodKey]: position }));
-        setNodeColors((nodeColors) => ({ ...nodeColors, [dstPodKey]: color }));
         setGroupedNodes((groupedNodes) => ({ ...groupedNodes, [dstPodKey]: groupedNodes[dstPodKey] + 1 }));
       }
     
@@ -109,29 +94,8 @@ const Operation: React.FC = () => {
     };
 
     podData?.forEach((pod) => {
-      const srcNodeKey = `${pod.src_ip}:${pod.src_port}`;
-      const targetNodeKey = `${pod.dst_ip}:${pod.dst_port}`;
-    
-      //src 노드가 존재하지 않으면 생성
-      if (!groupedNodes[srcNodeKey]) {
-        newNodes.push(createNode(srcNodeKey));
-      }else{
-        groupedNodes[srcNodeKey]++
-      }
-    
-      //dst 노드가 존재하지 않으면 생성
-      if (!groupedNodes[targetNodeKey]) {
-        newNodes.push(createNode(targetNodeKey));
-      }else{
-        groupedNodes[targetNodeKey]++
-      }
-    
-      newLinks.push({ source: srcNodeKey, target: targetNodeKey });
-    });
-
-    podData?.forEach((pod) => {
-      const srcNodeKey = `${pod.src_ip}:${pod.src_port}`;
-      const targetNodeKey = `${pod.dst_ip}:${pod.dst_port}`;
+      const srcNodeKey = `${pod.src}`;
+      const targetNodeKey = `${pod.dst}`;
     
       //src 노드가 존재하지 않으면 생성
       if (!groupedNodes[srcNodeKey]) {
@@ -151,9 +115,9 @@ const Operation: React.FC = () => {
     });
 
     //노드의 원형 배열
-    const angleStep = (2 * Math.PI) / newNodes.length;
-    const horizontalRadius = 1000; // 타원의 긴 반지름(가로) - data.json 파일 크기에 맞춰 조정 필요
-    const verticalRadius = 300;   // 타원의 짧은 반지름(세로)
+    const angleStep = (2 * Math.PI) / newNodes.length ;
+    const horizontalRadius = 1200; 
+    const verticalRadius = 300;   // 이 부분 수정했어요!
     const centerX = graphWidth / 2;
     const centerY = graphHeight / 2;
 
@@ -166,17 +130,28 @@ const Operation: React.FC = () => {
 
     setNodes(circleNodes);
     setLinks(newLinks);
-  }, [tdata, nodePositions, nodeColors]); //end of useEffect
+  }, [tdata, nodePositions]); //end of useEffect
+
+  // 노드 데이터 검색
+  const findNodeData = (PodKey: string) => {
+    const NodeData = nodes.find(
+      (node) =>
+        node.name === PodKey
+    );
+    return NodeData || { x: 0, y: 0, name: '', size: 0 };
+  };
 
   // 엣지 데이터 검색
   const findEdgeData = (sourcePod: string, destPod: string) => {
     const edgeData = podData?.find(
       (pod) =>
-        `${pod.src_ip}:${pod.src_port}` === sourcePod &&
-        `${pod.dst_ip}:${pod.dst_port}` === destPod
+        `${pod.src}` === sourcePod &&
+        `${pod.dst}` === destPod
     );
-    return edgeData || { dst_ip: '', dst_port: '', data_len: '', protocol: '', timestamp: '' };
+    return edgeData || { dst: '', data_len: '' };
+        // return edgeData || { dst_ip: '', dst_port: '', data_len: '', protocol: '', timestamp: '' };
   };
+
 
   // 노드 렌더링
   const renderMarkSeries = () => {
@@ -184,28 +159,63 @@ const Operation: React.FC = () => {
         <MarkSeries
           key={node.name}
           data={[node]}
-          fill={nodeColors[node.name]}
-          stroke="none"
+          className="node"
+          fill="white"
+          stroke="green" //우선 초록색으로 해놨습니다
+          strokeWidth={5}
           sizeRange={[0, (groupedNodes[node.name] || 1) * 25]}
           onValueClick={() => handlePodClick(node)}
-        />
+          />
      ));
    };
 
   // 엣지 렌더링
   const renderLineSeries = () => {
     return links.map((link, index) => (
-        <LineSeries
-          key={index}
-          data={[
-            nodes.find((n) => n.name === link.source)!,
-            nodes.find((n) => n.name === link.target)!,
-          ]}
-          style={{stroke: 'lightgray', strokeWidth: 3 }} 
-          onSeriesClick={() => handleEdgeClick(link)} 
-        /> 
+      <LineSeries
+        key={index}
+        data={[
+          nodes.find((n) => n.name === link.source)!,
+          nodes.find((n) => n.name === link.target)!,
+        ]}
+        style={{stroke: 'lightgray', strokeWidth: 3 }} 
+        onSeriesClick={() => handleEdgeClick(link)} 
+      /> 
     ));
   };
+  
+  // ip:port 라벨 렌더링
+  const renderNodeLabelSeries = () => {
+    return nodes.map((node) => {
+      const x = node.x;
+      const y = node.y;
+      const label = node.name;
+      const l = { x: node.x, y: node.y, label: label, xOffset: 0, yOffset: 15 };
+
+      return (
+        <LabelSeries
+          data={[l]}
+        />
+      );
+    });
+  }
+
+  // datalen 라벨 렌더링
+  const renderLinkLabelSeries = () => {
+    return links.map((link, index) => {
+      const edgeData = findEdgeData(link.source, link.target);
+      const label = String(edgeData.data_len);
+      const node1 = findNodeData(link.source);
+      const node2 = findNodeData(link.target);
+      const l = { x: (node1.x && node2.x && (node1.x + node2.x) / 2), y: (node1.y && node2.y && (node1.y + node2.y) / 2), label: label, xOffset: 0, yOffset: 0 };
+
+      return (
+        <LabelSeries
+          data={[l]}
+        />
+      );
+    });
+  }
   
   // 뷰포트 상태 업데이트
   const [viewport, setViewport] = useState({
@@ -232,8 +242,8 @@ const Operation: React.FC = () => {
       <div>
         <h3>Pod Information</h3>
         <p>
-          <VscCircleSmall /> IP: {pod.name.split(':')[0]} <br />
-          <VscCircleSmall /> Port: {pod.name.split(':')[1]}{' '}
+          <VscCircleSmall /> name: {pod.name.split(':')[0]} <br />
+          {/* <VscCircleSmall /> Port: {pod.name.split(':')[1]}{' '} */}
         </p>
       </div>
     );
@@ -249,11 +259,12 @@ const Operation: React.FC = () => {
         <h3>Communication Information</h3>
         <p>
           <VscCircleSmall /> Communication {edge.source} to {edge.target} <br />
-          <VscCircleSmall /> Dst IP: {edgeData.dst_ip} <br />
-          <VscCircleSmall /> Dst Port: {edgeData.dst_port} <br />
+          <VscCircleSmall /> DstPod Name: {edgeData.dst} <br />
+          {/* <VscCircleSmall /> Dst IP: {edgeData.dst_ip} <br />
+          <VscCircleSmall /> Dst Port: {edgeData.dst_port} <br /> */}
           <VscCircleSmall /> Data length: {edgeData.data_len} <br />
-          <VscCircleSmall /> Protocol: {edgeData.protocol} <br />
-          <VscCircleSmall /> Timestamp: {edgeData.timestamp}{' '}
+          {/* <VscCircleSmall /> Protocol: {edgeData.protocol} <br />
+          <VscCircleSmall /> Timestamp: {edgeData.timestamp}{' '} */}
         </p>
       </div>
     );
@@ -272,6 +283,8 @@ const Operation: React.FC = () => {
       >
         {renderMarkSeries()}
         {renderLineSeries()}
+        {renderNodeLabelSeries()}
+        {renderLinkLabelSeries()}
       </XYPlot>
       {showInfo && (
         <div className='info-box'>
