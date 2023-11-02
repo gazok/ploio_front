@@ -30,7 +30,6 @@
     background-color: #f0f0f0;
     padding: 10px;
     color: black;
-    margin-top: 50px;
     border-top-left-radius: 15px;
   }
   
@@ -60,6 +59,10 @@
   
   circle.fill-white {
     fill: white;
+  }
+
+  .node {
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
   }
   
   /*arrow*/
