@@ -3,19 +3,20 @@
 
 import React from "react";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
-import Login from "./Login";
-import Signup from "./Signup";
-import Summary from "./Summary";
+import Login from "./login";
+import { Signup } from "./signup";
+import Summary from "./summary";
 import Notice from "./Notice";
 import NOps from "./NOps";
 import NSec from "./NSec";
 import Profile from "./Profile";
 import Setting from "./Setting";
-import Security from "./Security";
-import Operation from "./Operation";
-import { Top, Menubar, Content } from "./App";
+//import Security from "./Security";
+import {Operation, MBar } from "./summary/Operation";
+import { Top, Menubar, Content } from "./background";
 import "./App.css";
 
+//            <Route path="Security" element={<Security />} />
 function AppRoutes() {
   return (
     <div className="app">
@@ -25,9 +26,9 @@ function AppRoutes() {
           <Route path="/Login" element={<div><Top /><Login /></div>} />
           <Route path="/Signup" element={<div><Top /><Signup /></div>} />
           <Route path="/Summary" element={<Summary />}>
-            <Route index element={<Operation />} />
-            <Route path="Operation" element={<Operation />} />
-            <Route path="Security" element={<Security />} />
+            <Route index element={<div><MBar /><Operation /></div>} />
+            <Route path="Operation" element={<div><MBar /><Operation /></div>} />
+
           </Route>
           <Route path="/Notice" element={<Notice />}>
             <Route index element={<NOps />} />
