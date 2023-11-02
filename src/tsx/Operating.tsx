@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { XYPlot, MarkSeries, LineSeries, LabelSeries  } from 'react-vis';
 import "../css/App.css";
 import '../css/Summary.css';
-import { VscExport, VscCircleSmall } from 'react-icons/vsc';
+import { VscExport, VscCircleSmall, VscSearch, VscZoomOut } from 'react-icons/vsc';
 import { Logic } from './summary';
 
 // 데이터 인터페이스 정의
@@ -18,6 +18,23 @@ interface Data {
 
 interface JsonData {
   data: Data[];
+}
+
+function MBar() {
+  return (
+    <div className="summary-menu">
+      <div className="search">
+        <input type="text" placeholder="Search..." />
+        <button>
+          <VscSearch style={{ fontSize: '15px', strokeWidth: 2, marginTop: '3px' }} />
+        </button>
+        <button style={{ marginLeft: '10px' }}>
+          <VscZoomOut />
+          Min
+        </button>
+      </div>
+    </div>
+  );
 }
 
 const Operation: React.FC = () => {
@@ -302,4 +319,6 @@ const Operation: React.FC = () => {
   );
 };
 
-export default Operation;
+
+
+export { Operation, MBar };
