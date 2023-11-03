@@ -1,184 +1,29 @@
 {
     "data": [
         {
-            "src_ip": "192.168.1.1",
-            "src_port": 5678,
-            "dst_ip": "10.0.0.1",
-            "dst_port": 80,
-            "data_len": 1024,
-            "protocol": "TCP",
-            "timestamp": 1697191200
+            "src": "A1",
+            "dst": "B1",
+            "data_len": 1024
         },
         {
-            "src_ip": "172.16.0.2",
-            "src_port": 8080,
-            "dst_ip": "8.8.8.8",
-            "dst_port": 53,
-            "data_len": 512,
-            "protocol": "UDP",
-            "timestamp": 1697191200
+            "src": "C1",
+            "dst": "D",
+            "data_len": 512
         },
         {
-            "src_ip": "192.168.0.100",
-            "src_port": 12345,
-            "dst_ip": "192.168.0.1",
-            "dst_port": 22,
-            "data_len": 2048,
-            "protocol": "SSH",
-            "timestamp": 1697191200
+            "src": "A2",
+            "dst": "A3",
+            "data_len": 2048
         },
         {
-            "src_ip": "10.1.1.1",
-            "src_port": 443,
-            "dst_ip": "192.168.2.2",
-            "dst_port": 1234,
-            "data_len": 4096,
-            "protocol": "HTTP",
-            "timestamp": 1697191200
+            "src": "B2",
+            "dst": "A4",
+            "data_len": 4096
         },
         {
-            "src_ip": "172.31.0.1",
-            "src_port": 3389,
-            "dst_ip": "192.168.10.10",
-            "dst_port": 3389,
-            "data_len": 8192,
-            "protocol": "RDP",
-            "timestamp": 1697191200
-        },
-        {
-            "src_ip": "192.168.1.1",
-            "src_port": 5678,
-            "dst_ip": "10.0.0.1",
-            "dst_port": 80,
-            "data_len": 1024,
-            "protocol": "TCP",
-            "timestamp": 1697191200
-        },
-        {
-            "src_ip": "172.16.0.2",
-            "src_port": 8080,
-            "dst_ip": "8.8.8.8",
-            "dst_port": 53,
-            "data_len": 512,
-            "protocol": "UDP",
-            "timestamp": 1697191200
-        },
-        {
-            "src_ip": "192.168.0.100",
-            "src_port": 12345,
-            "dst_ip": "192.168.0.1",
-            "dst_port": 22,
-            "data_len": 2048,
-            "protocol": "SSH",
-            "timestamp": 1697191200
-        },
-        {
-            "src_ip": "10.1.1.1",
-            "src_port": 443,
-            "dst_ip": "192.168.2.2",
-            "dst_port": 1234,
-            "data_len": 4096,
-            "protocol": "HTTP",
-            "timestamp": 1697191200
-        },
-        {
-            "src_ip": "172.31.0.1",
-            "src_port": 3389,
-            "dst_ip": "192.168.10.10",
-            "dst_port": 3389,
-            "data_len": 8192,
-            "protocol": "RDP",
-            "timestamp": 1697191200
-        },
-        {
-            "src_ip": "192.168.1.1",
-            "src_port": 5678,
-            "dst_ip": "10.0.0.1",
-            "dst_port": 80,
-            "data_len": 1024,
-            "protocol": "TCP",
-            "timestamp": 1697191200
-        },
-        {
-            "src_ip": "172.16.0.2",
-            "src_port": 8080,
-            "dst_ip": "8.8.8.8",
-            "dst_port": 53,
-            "data_len": 512,
-            "protocol": "UDP",
-            "timestamp": 1697191200
-        },
-        {
-            "src_ip": "192.168.0.100",
-            "src_port": 12345,
-            "dst_ip": "192.168.0.1",
-            "dst_port": 22,
-            "data_len": 2048,
-            "protocol": "SSH",
-            "timestamp": 1697191200
-        },
-        {
-            "src_ip": "10.1.1.1",
-            "src_port": 443,
-            "dst_ip": "192.168.2.2",
-            "dst_port": 1234,
-            "data_len": 4096,
-            "protocol": "HTTP",
-            "timestamp": 1697191200
-        },
-        {
-            "src_ip": "172.31.0.1",
-            "src_port": 3389,
-            "dst_ip": "192.168.10.10",
-            "dst_port": 3389,
-            "data_len": 8192,
-            "protocol": "RDP",
-            "timestamp": 1697191200
-        },
-        {
-            "src_ip": "192.168.1.1",
-            "src_port": 5678,
-            "dst_ip": "10.0.0.1",
-            "dst_port": 80,
-            "data_len": 1024,
-            "protocol": "TCP",
-            "timestamp": 1697191200
-        },
-        {
-            "src_ip": "172.16.0.2",
-            "src_port": 8080,
-            "dst_ip": "8.8.8.8",
-            "dst_port": 53,
-            "data_len": 512,
-            "protocol": "UDP",
-            "timestamp": 1697191200
-        },
-        {
-            "src_ip": "192.168.0.100",
-            "src_port": 12345,
-            "dst_ip": "192.168.0.1",
-            "dst_port": 22,
-            "data_len": 2048,
-            "protocol": "SSH",
-            "timestamp": 1697191200
-        },
-        {
-            "src_ip": "10.1.1.1",
-            "src_port": 443,
-            "dst_ip": "192.168.2.2",
-            "dst_port": 1234,
-            "data_len": 4096,
-            "protocol": "HTTP",
-            "timestamp": 1697191200
-        },
-        {
-            "src_ip": "172.31.0.1",
-            "src_port": 3389,
-            "dst_ip": "192.168.10.10",
-            "dst_port": 3389,
-            "data_len": 8192,
-            "protocol": "RDP",
-            "timestamp": 1697191200
+            "src": "C2",
+            "dst": "A5",
+            "data_len": 8192
         }
     ]
 }

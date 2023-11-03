@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { XYPlot, MarkSeries, LineSeries } from 'react-vis';
-import data from '../public/data.json';
+import data from '../public/data copy.json';
 import "../css/App.css";
 import '../css/Summary.css';
 import { VscExport } from 'react-icons/vsc';

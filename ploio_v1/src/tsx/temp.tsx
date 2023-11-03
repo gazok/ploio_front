@@ -30,4 +30,13 @@ fetch('http://127.0.0.1:8000/summary/tmp', {
             alert("응답 실패함");
         }
     });
+interface Data {
+  src_ip: string;
+  src_port: number;
+  dst_ip: string;
+  dst_port: number;
+  data_len: number;
+  protocol: string;
+  timestamp: number;
+}
 */

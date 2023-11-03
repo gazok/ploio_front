@@ -1,14 +1,15 @@
 import React from 'react';
 import * as ReactDOM from 'react-dom';
 import './css/index.css';
-import Router from './tsx/Router'
+//import Router from './tsx/Router'
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
+import AppRoutes from './tsx/AppRoutes';
 
 ReactDOM.render(
   <React.StrictMode>
     <FluentProvider theme={webLightTheme}>
       <div className="app">
-        <Router />
+        <AppRoutes />
       </div>
     </FluentProvider>
   </React.StrictMode>,

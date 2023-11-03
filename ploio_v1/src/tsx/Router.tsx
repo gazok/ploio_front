@@ -1,3 +1,4 @@
+/*
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./login";
 import { Signup, SignupPage1, SignupPage2, SignupPage3, SignupPage4 } from "./signup";
@@ -46,3 +47,4 @@ const Router: React.FC = () => {
 }
 
 export default Router;
+*/

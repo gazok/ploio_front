@@ -12,9 +12,9 @@ import NSec from "./NSec";
 import Profile from "./Profile";
 import Setting from "./Setting";
 //import Security from "./Security";
-import Operation from "./Operating";
+import { Operation } from "./Operating";
 import { Top, Menubar, Content } from "./background";
-import "./App.css";
+import "../css/App.css";
 
 //            <Route path="Security" element={<Security />} />
 function AppRoutes() {
@@ -26,8 +26,8 @@ function AppRoutes() {
           <Route path="/Login" element={<div><Top /><Login /></div>} />
           <Route path="/Signup" element={<div><Top /><Signup /></div>} />
           <Route path="/Summary" element={<Summary />}>
-            <Route index element={<Operation />} />
-            <Route path="Operation" element={<Operation />} />
+            <Route index element={<div><Operation /></div>} />
+            <Route path="Operation" element={<div><Operation /></div>} />
 
           </Route>
           <Route path="/Notice" element={<Notice />}>
