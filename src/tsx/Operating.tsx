@@ -57,19 +57,37 @@ const Operation: React.FC = () => {
       return;
     }
 
-      //namespace단위로 출력하는 거 수정 필요해서 일단 빼고 올립니다
+    if (!cyRef.current) {
+      const elements: cytoscape.ElementDefinition[] = [];
+      const namespaces: { [key: string]: string[] } = {};
   
-      if (!cyRef.current) {
-        const elements: cytoscape.ElementDefinition[] = [];
-    
-        data.forEach((item: any) => {
-          const source = item.src;
-          const target = item.dst;
-    
-          elements.push({ data: { id: source, label: source } });
-          elements.push({ data: { id: target, label: target } });
-          elements.push({ data: { id: `${source}${target}`, source: source, target: target, label: String(item.data_len) } });
-        });
+      data.forEach((item: any) => {
+        const source = item.src;
+        const target = item.dst;
+  
+        //네임스페이스를 기준으로 묶기기
+        const [sourceNamespace, sourceName] = source.split(':');
+        const [targetNamespace, targetName] = target.split(':');
+  
+        namespaces[sourceNamespace] = namespaces[sourceNamespace] || [];
+        if (!namespaces[sourceNamespace].includes(sourceName)) {
+          namespaces[sourceNamespace].push(sourceName);
+        }
+  
+        namespaces[targetNamespace] = namespaces[targetNamespace] || [];
+        if (!namespaces[targetNamespace].includes(targetName)) {
+          namespaces[targetNamespace].push(targetName);
+        }
+  
+        elements.push({ data: { id: source, label: source, parent: sourceNamespace } });
+        elements.push({ data: { id: target, label: target, parent: targetNamespace } });
+        elements.push({ data: { id: `${source}${target}`, source: source, target: target, label: String(item.data_len) } });
+      });
+  
+      // Add namespace nodes
+      Object.keys(namespaces).forEach((namespace) => {
+        elements.push({ data: { id: namespace, label: namespace, isNamespace: true } });
+      });
 
       //노드, 간선 랜더링
       cyRef.current = cytoscape({
@@ -86,6 +104,13 @@ const Operation: React.FC = () => {
             },
           },
           {
+            selector: 'node[?isNamespace]', //namespace
+            style: {
+              'label': '', 
+              'border-color': 'white', 
+            },
+          },
+          {
             selector: 'edge',
             style: {
               'width': 8,
@@ -94,8 +119,8 @@ const Operation: React.FC = () => {
               'target-arrow-shape': 'triangle',
               // 'curve-style': 'bezier',
               'curve-style': 'unbundled-bezier', // 2차 베지어 커브 적용
-              'control-point-distances': 100, // 2차 베지어 커브의 제어점 거리 설정
-              'control-point-weights': 0.5, // 2차 베지어 커브의 제어점 가중치 설정
+              'control-point-distances': 100, 
+              'control-point-weights': 0.5, 
               'label': 'data(label)',
               // 'opacity': 0.3
             },
@@ -122,26 +147,28 @@ const Operation: React.FC = () => {
           });
         
           //핸들러
-          cyRef.current.on('tap', 'node', function(evt: EventObject){
-            const node = evt.target;
-            handlePodClick({ x: node.position().x, y: node.position().y, name: node.id() });
-          });
-    
-          cyRef.current.on('tap', 'edge', function(evt: EventObject){
-            const edge = evt.target;
-            handleEdgeClick({ source: edge.source().id(), target: edge.target().id() });
-          });
-
-          cyRef.current.nodes().forEach((node: cytoscape.NodeSingular) => { //트래픽에 비례하여 노드 크기 조정 
-            const degree = node.indegree(false); 
-            const nodeSize = Math.max(degree * 10, 10); // 노드 크기는 간선 수에 비례하지만, 최소 크기는 10px
-            node.style({
-              'width': `${nodeSize}px`,
-              'height': `${nodeSize}px`
-            });
-          });
+      cyRef.current.on('tap', 'node', function(evt: EventObject){
+        const node = evt.target;
+        if (node.data('isNamespace')) {
+          return;
         }
-      }, []);
+        handlePodClick({ x: node.position().x, y: node.position().y, name: node.id() });
+      });
+     cyRef.current.on('tap', 'edge', function(evt: EventObject){
+        const edge = evt.target;
+        handleEdgeClick({ source: edge.source().id(), target: edge.target().id() });
+      });
+
+        cyRef.current.nodes().forEach((node: cytoscape.NodeSingular) => { //트래픽에 비례하여 노드 크기 조정 
+          const degree = node.indegree(false); 
+          const nodeSize = Math.max(degree * 10, 10); // 노드 크기는 간선 수에 비례하지만, 최소 크기는 10px
+          node.style({
+            'width': `${nodeSize}px`,
+            'height': `${nodeSize}px`
+          });
+        });
+      }
+    }, []);
 
       //menu-bar
       const MBar = () => {
