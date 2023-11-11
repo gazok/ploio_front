@@ -2,29 +2,33 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import cytoscape, {EventObject } from 'cytoscape';
-import '../App.css';
-import './Summary.css';
-import Arrow from './Arrow';
+import "../css/App.css";
+import '../css/Summary.css';
 import { VscExport, VscCircleSmall, VscSearch, VscZoomOut, VscZoomIn } from 'react-icons/vsc';
-import data from '../data.json';
+import { Logic } from './summary';
+import { Data, JsonData } from './types';
+import data from'../public/data.json';
+import { relative } from 'path';
 
-interface Data {
-  src: string;
-  dst: string;
-  data_len: number;
-}
+// 데이터 정의
+let a = data;
 
 const Operation: React.FC = () => {
+  // UI 요소 관리를 위한 상태
   const [showInfo, setShowInfo] = useState(false);
   const [selectedPod, setSelectedPod] = useState<JSX.Element | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<JSX.Element | null>(null);
+  const cyRef = useRef<any>(null);
+
+  // 노드 위치, 색상 및 데이터 관리를 위한 상태
   const [nodePositions, setNodePositions] = useState<{ [key: string]: { x: number; y: number } }>({});
   const [nodes, setNodes] = useState<{ x: number; y: number; name: string; size: number }[]>([]);
   const [links, setLinks] = useState<{ source: string; target: string }[]>([]);
   const [groupedNodes, setGroupedNodes] = useState<{ [key: string]: number }>({});
-  const cyRef = useRef<any>(null);
 
-  const podData: Data[] = data;
+  // data.json 데이터 로드
+  const [tdata, setTdata] = useState<JsonData | null>(null); //json 받는 컨테이너
+  const [podData, setPodData] = useState<Data[] | null>(null);
 
   const graphWidth = 1300;
   const graphHeight = 600;
@@ -32,21 +36,42 @@ const Operation: React.FC = () => {
   const [viewport, setViewport] = useState({x: 0, y: 0});
 
   useEffect(() => {
+    Logic(res => setTdata(res));
+    //console.log(tdata);
+    let timer = setInterval(() => {
+      Logic(res => setTdata(res));
+      //console.log(tdata);
+    }, 5000);
 
-    //namespace단위로 출력하는 거 수정 필요해서 일단 빼고 올립니다
+    // 타이머 클리어 (for setInterval)
+    return () => {clearTimeout(timer)};
+  }, []);
 
-    if (!cyRef.current) {
-      const elements: cytoscape.ElementDefinition[] = [];
+  useEffect(() => {
+
+    console.log(tdata);
+    if(tdata){
+      setPodData(tdata.data); // 받아온 데이터 리스트 집어넣기.
+    }
+    else{
+      return;
+    }
+
+      //namespace단위로 출력하는 거 수정 필요해서 일단 빼고 올립니다
   
-      data.forEach((item: any) => {
-        const source = item.src;
-        const target = item.dst;
-  
-        elements.push({ data: { id: source, label: source } });
-        elements.push({ data: { id: target, label: target } });
-        elements.push({ data: { id: `${source}${target}`, source: source, target: target, label: String(item.data_len) } });
-      });
+      if (!cyRef.current) {
+        const elements: cytoscape.ElementDefinition[] = [];
+    
+        data.forEach((item: any) => {
+          const source = item.src;
+          const target = item.dst;
+    
+          elements.push({ data: { id: source, label: source } });
+          elements.push({ data: { id: target, label: target } });
+          elements.push({ data: { id: `${source}${target}`, source: source, target: target, label: String(item.data_len) } });
+        });
 
+      //노드, 간선 랜더링
       cyRef.current = cytoscape({
         container: document.getElementById('cy'),
         elements,
@@ -57,27 +82,27 @@ const Operation: React.FC = () => {
               'background-color': 'white',
               'label': 'data(label)',
               'border-color': 'green', 
-              'border-width': '3px'  
+              'border-width': '3px',
             },
           },
           {
             selector: 'edge',
             style: {
-              'width': 3,
+              'width': 8,
               'line-color': '#ccc',
               'target-arrow-color': '#ccc',
               'target-arrow-shape': 'triangle',
               // 'curve-style': 'bezier',
               'curve-style': 'unbundled-bezier', // 2차 베지어 커브 적용
-              'control-point-distances': 100, 
-              'control-point-weights': 0.5,
+              'control-point-distances': 100, // 2차 베지어 커브의 제어점 거리 설정
+              'control-point-weights': 0.5, // 2차 베지어 커브의 제어점 가중치 설정
               'label': 'data(label)',
               // 'opacity': 0.3
             },
           },
         ],
             layout: {
-              name: 'cose',
+              name: 'cose', //cytoscape-cose layout 사용
               idealEdgeLength: (edge) => 1,
               nodeOverlap: -20,
               refresh: 20,
@@ -95,7 +120,8 @@ const Operation: React.FC = () => {
               minTemp: 1.0
             },
           });
-
+        
+          //핸들러
           cyRef.current.on('tap', 'node', function(evt: EventObject){
             const node = evt.target;
             handlePodClick({ x: node.position().x, y: node.position().y, name: node.id() });
@@ -106,7 +132,7 @@ const Operation: React.FC = () => {
             handleEdgeClick({ source: edge.source().id(), target: edge.target().id() });
           });
 
-          cyRef.current.nodes().forEach((node: cytoscape.NodeSingular) => { //트래픽에 비례하여 노드 크기 조정
+          cyRef.current.nodes().forEach((node: cytoscape.NodeSingular) => { //트래픽에 비례하여 노드 크기 조정 
             const degree = node.indegree(false); 
             const nodeSize = Math.max(degree * 10, 10); // 노드 크기는 간선 수에 비례하지만, 최소 크기는 10px
             node.style({
@@ -117,6 +143,7 @@ const Operation: React.FC = () => {
         }
       }, []);
 
+      //menu-bar
       const MBar = () => {
         return (
           <div className="summary-menu">
@@ -176,7 +203,7 @@ const Operation: React.FC = () => {
     const dr = 0.2; 
     setRatio((prevRatio) => {
       const newRatio = prevRatio + dr <= 3.6 ? prevRatio + dr : 3.6;
-      cyRef.current.zoom(newRatio); // 수동으로 줌 레벨 업데이트
+      cyRef.current.zoom(newRatio); 
       return newRatio;
     });
   };
@@ -185,7 +212,7 @@ const Operation: React.FC = () => {
     const dr = -0.2; 
     setRatio((prevRatio) => {
       const newRatio = prevRatio + dr >= 0.2 ? prevRatio + dr : 0.2;
-      cyRef.current.zoom(newRatio); // 수동으로 줌 레벨 업데이트
+      cyRef.current.zoom(newRatio); 
       return newRatio;
     });
   };
