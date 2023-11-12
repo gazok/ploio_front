@@ -168,7 +168,7 @@ const Operation: React.FC = () => {
           });
         });
       }
-    }, []);
+    }, [tdata]);
 
       //menu-bar
       const MBar = () => {
