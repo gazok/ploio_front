@@ -61,11 +61,11 @@ const Operation: React.FC = () => {
       const elements: cytoscape.ElementDefinition[] = [];
       const namespaces: { [key: string]: string[] } = {};
   
-      data.forEach((item: any) => {
+      tdata.forEach((item: any) => {
         const source = item.src;
         const target = item.dst;
   
-        //네임스페이스를 기준으로 묶기기
+        //네임스페이스를 기준으로 묶기
         const [sourceNamespace, sourceName] = source.split(':');
         const [targetNamespace, targetName] = target.split(':');
   
