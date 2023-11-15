@@ -1,0 +1,8 @@
+{
+    "pod": {
+        "name": "A1",
+        "label": "1_of_A",
+        "ip": "10.0.0.1",
+        "danger_degree": 1
+    }
+}

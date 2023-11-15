@@ -1,0 +1,34 @@
+{
+    "data": [
+        {
+            "src_pod": "default:A1",
+            "dst_pod": "default:B1",
+            "data_len": 1024,
+            "timestamp": 12341234
+        },
+        {
+            "src_pod": "kube-sys:C1",
+            "dst_pod": "kube-sys:D",
+            "data_len": 512,
+            "timestamp": 12341235
+        },
+        {
+            "src_pod": "default:A2",
+            "dst_pod": "default:A3",
+            "data_len": 2048,
+            "timestamp": 12341236
+        },
+        {
+            "src_pod": "default:B2",
+            "dst_pod": "default:A4",
+            "data_len": 4096,
+            "timestamp": 12341237
+        },
+        {
+            "src_pod": "kube-sys:C2",
+            "dst_pod": "default:A5",
+            "data_len": 8192,
+            "timestamp": 12341238
+        }
+    ]
+}
