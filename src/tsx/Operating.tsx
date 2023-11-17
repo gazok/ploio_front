@@ -190,38 +190,41 @@ const Operation: React.FC = () => {
 
   }, [tdata]);
 
+  // ---------------------------이 부분만 수정하시면 됩니다---------------------------------//
   const updateNodeData = (item: any) => {
-    const target = item.dst;
+    const target = item.dst_pod;
     const targetNode = cyRef.current.nodes().getElementById(target);
     if (targetNode) {
       // 노드의 데이터를 업데이트
-      const firstUpdateTime = targetNode.data('firstUpdateTime') || item.time;
-      const lastUpdateTime = targetNode.data('lastUpdateTime') || item.time;
+      const firstUpdateTime = targetNode.data('firstUpdateTime') || item.timestamp;
+      const lastUpdateTime = targetNode.data('lastUpdateTime') || item.timestamp;
       const totalDataLen = (targetNode.data('totalDataLen') || 0) + item.data_len;
-  
+
       // 초당 데이터 속도를 계산. (마지막 업데이트 시간 - 처음 업데이트 시간)으로 나눔
       const dataPerSecond = totalDataLen / ((lastUpdateTime - firstUpdateTime) || 1);
-  
+
       targetNode.data({
         totalDataLen,
         dataPerSecond,
-        firstUpdateTime: Math.min(firstUpdateTime, item.time),
-        lastUpdateTime: Math.max(lastUpdateTime, item.time),
+        firstUpdateTime: Math.min(firstUpdateTime, item.timestamp),
+        lastUpdateTime: Math.max(lastUpdateTime, item.timestamp),
       });
     }
   };
-  
-  // 새로운 함수: 노드의 크기를 업데이트하는 함수
+
+  // 노드의 크기를 업데이트하는 함수
   const updateNodeSizes = () => {
     cyRef.current.nodes().forEach((node: cytoscape.NodeSingular) => { 
       const totalDataLen = node.data('totalDataLen') || 0;
-      const nodeSize = Math.max(totalDataLen*0.05, 10); 
+      const nodeSize = Math.max(totalDataLen * 0.002, 20); 
       node.style({
         'width': `${nodeSize}px`,
         'height': `${nodeSize}px`
       }); 
     });
   };
+
+// -----------------------------------------------------------------------------------//
 
   const MBar = () => {
     return (
