@@ -5,13 +5,18 @@ import cytoscape, { EdgeSingular, EventObject } from 'cytoscape';
 import "../css/App.css";
 import '../css/Summary.css';
 import { VscExport, VscCircleSmall, VscSearch, VscZoomOut, VscZoomIn, VscRefresh } from 'react-icons/vsc';
-import { Logic } from './summary';
+import { Logic, LogicPod } from './summary';
 import { Data, JsonData, PodData } from './types';
 import data from'../public/data.json';
 import { relative } from 'path';
+import { wait } from '@testing-library/user-event/dist/utils';
 
 // 데이터 정의
 let a = data;
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 const Operation: React.FC = () => {
   // UI 요소 관리를 위한 상태
@@ -36,44 +41,81 @@ const Operation: React.FC = () => {
   // data.json 데이터 로드
   const [tdata, setTdata] = useState<JsonData | null>(null); //json 받는 컨테이너
   const [linkData, setLinkData] = useState<Data[] | null>(null); // src, dst, data_len
-  let nodeData: PodData[] = []; // 포드들의 실제 데이터 모임
+  const [podData, setPodData] = useState(new Map()); // 포드들의 실제 데이터 모임
+  const [pleaseData, setPleaseData] = useState<PodData[] | null>(null); // 포드들의 실제 데이터 모임2
+
+  const [isSearch, setIsSearch] = useState(false);
+  
 
   const graphWidth = 1300;
   const graphHeight = 600;
 
   useEffect(() => {
-    Logic(res => setTdata(res));
+    Logic(res => setTdata(res), podData, plz => setPodData(plz)); // (ns_podname, pod_data) => podData.set(ns_podname, pod_data)
     //console.log(tdata);
     let timer = setInterval(() => {
-      Logic(res => setTdata(res));
+      Logic(res => setTdata(res), podData, plz => setPodData(plz));
+    }, 6000);
+
+    /*
+    let timer2 = setInterval(() => {
+      console.log(tdata);
+
+      // 업데이트된 tdata에 따라 포드 정보 변경.
+      if(tdata) {
+        tdata.data.forEach(element => {
+          LogicPod(element.src_pod, (ns_podname, pod_data) => podData.set(ns_podname, pod_data));
+          LogicPod(element.dst_pod, (ns_podname, pod_data) => podData.set(ns_podname, pod_data));
+        });
+      }
       //console.log(tdata);
-    }, 10000);
+    }, 10000, (1));
+    */
 
     // 타이머 클리어 (for setInterval)
-    return () => {clearTimeout(timer)};
+    return () => {clearTimeout(timer)}; // clearTimeout(timer2);
   }, []);
 
   useEffect(() => {
-    /*
-    console.log(tdata);
-    if(tdata){
-      setLinkData(tdata.data); // 받아온 데이터 리스트 집어넣기.
-    }
-    else{
-      return;
-    }
-    console.log(linkData);
-*/
+    //console.log(tdata);
+    console.log(podData);
+    //console.log(pleaseData);
+
     setTimeout(() => {
+      if(cyRef.current){
         cyRef.current.fit();
+      }
+    }, 100);
+    /*
+    if(!isSearch){
+      setTimeout(() => {
+        if(cyRef.current){
+          cyRef.current.fit();
+        }
       }, 100);
+    } else {
+      setTimeout(() => {
+        if(cyRef.current){
+          cyRef.current.fit();
+        }
+      }, 10000);
+      setIsSearch(false);
+    }
+    */
+    
+    
+    /*
+    if(podData.size != 0){
+      console.log(podData);
+    }
+    */
 
     if(tdata !== null){
       const elements: cytoscape.ElementDefinition[] = [];
       const namespaces: { [key: string]: string[] } = {};
 
       tdata.data.forEach((item: Data) => {
-        const source = item.src_pod;
+        const source = item.src_pod; //default:A1
         const target = item.dst_pod;
 
         // Extract namespaces and group nodes
@@ -90,8 +132,23 @@ const Operation: React.FC = () => {
           namespaces[targetNamespace].push(targetName);
         }
 
-        elements.push({ data: { id: source, parent: sourceNamespace } });
-        elements.push({ data: { id: target, parent: targetNamespace } });
+        if(podData.size==0) return;
+        //console.log(podData);
+
+        //console.log(podData.get(source));
+        //console.log(target);
+        //console.log(podData.get(target));
+        if(podData.get(source)) {
+          elements.push({ data: { id: source, parent: sourceNamespace, danger_degree: podData.get(source).danger_degree} });
+        } else {
+          elements.push({ data: { id: source, parent: sourceNamespace, danger_degree: 'noInfo'} }); // no pod Information
+        }
+        
+        if(podData.get(target)) {
+          elements.push({ data: { id: target, parent: targetNamespace, danger_degree: podData.get(target).danger_degree} });
+        } else {
+          elements.push({ data: { id: target, parent: targetNamespace, danger_degree: 'noInfo'} }); // no pod Information
+        }
         elements.push({ data: { id: `${source}${target}`, source: source, target: target, label: String(item.data_len) } });
       });
 
@@ -114,12 +171,17 @@ const Operation: React.FC = () => {
             style: {
               'background-color': 'white',
               'label': 'data(id)',
-              'border-color': 'green', 
-              'border-width': '7px',
+              'border-color': function(ele){
+                  let a = 'green';
+                  //if(ele.data('danger_degree')==2){a = 'yellow';}
+                  if(ele.data('danger_degree')=='malicous'){a = 'red';}
+                  if(ele.data('danger_degree')=='noInfo'){a = 'black';}
+                  return a;},
+              'border-width': '3px',
             },
           },
           {
-            selector: 'node[?isNamespace]',
+            selector: 'node[?isNamespace]', // 이게 뭐죠?
             style: {
               'border-color': 'white', // make border the same color as background
               'events': 'no'
@@ -160,11 +222,7 @@ const Operation: React.FC = () => {
           minTemp: 1.0
         },
       });
-/*
-      setTimeout(() => {
-        cyRef.current.fit();
-      }, 100);
-        */
+      
           //핸들러
           cyRef.current.on('tap', 'node', function(evt: EventObject){
             const node = evt.target;
@@ -212,44 +270,50 @@ const Operation: React.FC = () => {
           });
           */
 
-          data.data.forEach(updateNodeData);
+          tdata.data.forEach(updateNodeData);
+          //console.log(cyRef.current.nodes());
           updateNodeSizes();
         }
-    
-      }, [tdata]);
+  }, [tdata]);
 
-      const updateNodeData = (item: any) => {
-        const target = item.dst;
-        const targetNode = cyRef.current.nodes().getElementById(target);
-        if (targetNode) {
-          // 노드의 데이터를 업데이트
-          const firstUpdateTime = targetNode.data('firstUpdateTime') || item.time;
-          const lastUpdateTime = targetNode.data('lastUpdateTime') || item.time;
-          const totalDataLen = (targetNode.data('totalDataLen') || 0) + item.data_len;
+  const updateNodeData = (item: any) => {
+    const target = item.dst_pod;
+    const targetNode = cyRef.current.nodes().getElementById(target);
+    //console.log(cyRef.current.nodes());
+    //console.log(targetNode);
+    //console.log(target);
+    console.log(targetNode.size());
+    if (targetNode) {
+      // 노드의 데이터를 업데이트
+      const firstUpdateTime = targetNode.data('firstUpdateTime') || item.timestamp;
+      const lastUpdateTime = targetNode.data('lastUpdateTime') || item.timestamp;
+      const totalDataLen = (targetNode.data('totalDataLen') || 0) + item.data_len;
+
+      // 초당 데이터 속도를 계산. (마지막 업데이트 시간 - 처음 업데이트 시간)으로 나눔
+      const dataPerSecond = totalDataLen / ((lastUpdateTime - firstUpdateTime) || 1);
+      //console.log(totalDataLen);
+      targetNode.data({
+        totalDataLen: totalDataLen,
+        dataPerSecond: dataPerSecond,
+        firstUpdateTime: Math.min(firstUpdateTime, item.timestamp),
+        lastUpdateTime: Math.max(lastUpdateTime, item.timestamp),
+      });
+    }
+    //console.log(targetNode);
+  };
       
-          // 초당 데이터 속도를 계산. (마지막 업데이트 시간 - 처음 업데이트 시간)으로 나눔
-          const dataPerSecond = totalDataLen / ((lastUpdateTime - firstUpdateTime) || 1);
-      
-          targetNode.data({
-            totalDataLen,
-            dataPerSecond,
-            firstUpdateTime: Math.min(firstUpdateTime, item.time),
-            lastUpdateTime: Math.max(lastUpdateTime, item.time),
-          });
-        }
-      };
-      
-      // 새로운 함수: 노드의 크기를 업데이트하는 함수
-      const updateNodeSizes = () => {
-        cyRef.current.nodes().forEach((node: cytoscape.NodeSingular) => { 
-          const totalDataLen = node.data('totalDataLen') || 0;
-          const nodeSize = Math.max(totalDataLen*0.05, 10); 
-          node.style({
-            'width': `${nodeSize}px`,
-            'height': `${nodeSize}px`
-          }); 
-        });
-      };
+  // 노드의 크기를 업데이트하는 함수
+  const updateNodeSizes = () => {
+    cyRef.current.nodes().forEach((node: cytoscape.NodeSingular) => { 
+      const totalDataLen = node.data('totalDataLen') || 0;
+      //console.log(totalDataLen);
+      const nodeSize = Math.max(totalDataLen * 0.002, 20); 
+      node.style({
+        'width': `${nodeSize}px`,
+        'height': `${nodeSize}px`
+      }); 
+    });
+  };
 
       //menu-bar
       const MBar = () => {
@@ -316,12 +380,14 @@ const Operation: React.FC = () => {
         edge.connectedNodes().style({ 'visibility': 'visible'});  
       });
       cyRef.current.fit(searchedNodes2.union(connectedEdges2));
-    }     
+    }
+    setIsSearch(true);
 }
 
 // 검색창에 입력하는 값을 state에 저장
 const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   setInputValue(e.target.value);
+  //wait(10000);
 };
 
 useEffect(() => {

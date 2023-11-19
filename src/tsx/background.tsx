@@ -17,9 +17,8 @@ export function Menubar() {
   };
   return (
     <div className="menu-bar">
-      <img alt="App Logo" height="30" src="./logo.png" width="30" />
       <h1 className="text-lg font-medium" style={{ textAlign: "center" }}>
-        Ploio
+        πλοίο
       </h1>
       <Link to="/" className={` ${activeButton === 'home' ? 'active-menu' : ''}`} onClick={() => handleButtonClick('home')}>
         <VscHome style={iconStyle} />

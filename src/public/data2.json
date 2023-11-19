@@ -1,8 +1,62 @@
 {
-    "pod": {
+    "default:A1": {
         "name": "A1",
-        "label": "1_of_A",
-        "ip": "10.0.0.1",
-        "danger_degree": 1
+        "name_space": "1_of_A",
+        "ip": "10.0.1.1",
+        "danger_degree": "secure"
+    },
+    "default:A2": {
+        "name": "A2",
+        "name_space": "2_of_A",
+        "ip": "10.0.1.2",
+        "danger_degree": "secure"
+    },
+    "default:A3": {
+        "name": "A3",
+        "name_space": "3_of_A",
+        "ip": "10.0.1.3",
+        "danger_degree": "malicious"
+    },
+    "default:A4": {
+        "name": "A4",
+        "name_space": "4_of_A",
+        "ip": "10.0.1.4",
+        "danger_degree": "secure"
+    },
+    "default:A5": {
+        "name": "A5",
+        "name_space": "5_of_A",
+        "ip": "10.0.1.5",
+        "danger_degree": "secure"
+    },
+    "default:B1": {
+        "name": "B1",
+        "name_space": "1_of_B",
+        "ip": "10.0.2.1",
+        "danger_degree": "secure"
+    },
+    "default:B2": {
+        "name": "B2",
+        "name_space": "2_of_B",
+        "ip": "10.0.2.2",
+        "danger_degree": "malicious"
+    },
+    "default:C1": {
+        "name": "C1",
+        "name_space": "1_of_C",
+        "ip": "10.0.3.1",
+        "danger_degree": "secure"
+    },
+    "default:C2": {
+        "name": "C2",
+        "name_space": "2_of_C",
+        "ip": "10.0.3.2",
+        "danger_degree": "secure"
+    },
+    "default:D": {
+        "name": "D",
+        "name_space": "1_of_D",
+        "ip": "10.0.4.1",
+        "danger_degree": "secure"
     }
 }
