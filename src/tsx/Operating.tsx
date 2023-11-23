@@ -1,64 +1,105 @@
-//Operation.tsx using cytoscape.js
+//Operation.tsx using cytoscape.js, fluent
 
 import React, { useState, useEffect, useRef } from 'react';
-import cytoscape, {EventObject, EdgeSingular } from 'cytoscape';
+import cytoscape, { EdgeSingular, EventObject } from 'cytoscape';
 import "../css/App.css";
 import '../css/Summary.css';
+import '../css/modal.css'; //추가
 import { VscExport, VscCircleSmall, VscSearch, VscZoomOut, VscZoomIn, VscRefresh } from 'react-icons/vsc';
-import { Logic } from './summary';
-import { Data, JsonData } from './types';
-import data from'../public/data.json';
-import { relative } from 'path';
+import { Modal, Text, IconButton, Icon, initializeIcons  } from '@fluentui/react'; //추가
+import { Logic, LogicPod } from './summary.tsx';
+import { Data, JsonData, PodData, PodJsonData, SecurityData, SecurityJsonData } from './types.tsx';
+import data from'../public/data.json'; 
+import { relative } from 'path'; 
+import { wait } from '@testing-library/user-event/dist/utils'; 
+
+initializeIcons(); //추가
 
 // 데이터 정의
-let a = data;
+  let a = data;
+
+function sleep(ms: number) { 
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 const Operation: React.FC = () => {
+  // UI 요소 관리를 위한 상태
   const [showInfo, setShowInfo] = useState(false);
   const [selectedPod, setSelectedPod] = useState<JSX.Element | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<JSX.Element | null>(null);
-  const [nodePositions, setNodePositions] = useState<{ [key: string]: { x: number; y: number } }>({});
-  const [nodes, setNodes] = useState<{ x: number; y: number; name: string; size: number }[]>([]);
-  const [links, setLinks] = useState<{ source: string; target: string }[]>([]);
-  const [groupedNodes, setGroupedNodes] = useState<{ [key: string]: number }>({});
+
+  // Graph
   const cyRef = useRef<any>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [zoom, setZoom] = useState();
   const [viewport, setViewport] = useState({x: 0, y: 0});
-  
+
+  // 노드 위치, 색상 및 데이터 관리를 위한 상태
+  const [nodePositions, setNodePositions] = useState<{ [key: string]: { x: number; y: number } }>({});
+  const [nodes, setNodes] = useState<{ x: number; y: number; name: string; size: number }[]>([]);
+  const [links, setLinks] = useState<{ source: string; target: string }[]>([]);
+  const [groupedNodes, setGroupedNodes] = useState<{ [key: string]: number }>({});
+
+  //추가, 알림창 
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [modalContent, setModalContent] = useState("");
+  const [modalStatus, setModalStatus] = useState("");
+  const [notifications, setNotifications] = useState<{ header: string; src_pod: string; dst_pod: string; message: string; status: string; }[]>([]);
+  const [activeModals, setActiveModals] = useState<Record<number, boolean>>({});
+
   // data.json 데이터 로드
   const [tdata, setTdata] = useState<JsonData | null>(null); //json 받는 컨테이너
-  const [podData, setPodData] = useState<Data[] | null>(null);
-  //const podData: Data[] = data.data;
+  const [linkData, setLinkData] = useState<Data[] | null>(null); // src, dst, data_len
+  const [podData, setPodData] = useState(new Map()); // 포드들의 실제 데이터 모임
+  const [pleaseData, setPleaseData] = useState<PodData[] | null>(null); // 포드들의 실제 데이터 모임2
+
+  const [isSearch, setIsSearch] = useState(false);
   
+
   const graphWidth = 1300;
   const graphHeight = 600;
 
   useEffect(() => {
-    Logic(res => setTdata(res));
-    let timer = setInterval(() => {
-      Logic(res => setTdata(res));
-    }, 5000);
-
+    const updateData = async () => {
+      const updatedPodData = await Logic(res => setTdata(res), podData, plz => setPodData(plz));
+  
+      //추가, danger_degree 정보 가지고 옴
+      for (let pod of updatedPodData.values()) {
+        if (['critical', 'warning', 'fail'].includes(pod.danger_degree)) {
+          const header = `${pod.pod_name} is in ${pod.danger_degree} status!`;
+          const src_pod = pod.src_pod;
+          const dst_pod = pod.dst_pod;
+          const message = pod.message;
+          addNotification(header, src_pod, dst_pod, message, pod.danger_degree);
+          setIsModalOpen(true);
+        }
+      }
+    };
+  
+    updateData();
+  
+    const timer = setInterval(updateData, 6000);
+  
     // 타이머 클리어 (for setInterval)
-    return () => {clearTimeout(timer)};
+    return () => {clearInterval(timer)}; 
   }, []);
 
   useEffect(() => {
-    
     setTimeout(() => {
-      cyRef.current.fit();
+      if(cyRef.current){
+        cyRef.current.fit();
+      }
     }, 100);
-    
-    if(tdata !== null){
+
+    if(tdata && tdata.data){ //tdata 
       const elements: cytoscape.ElementDefinition[] = [];
       const namespaces: { [key: string]: string[] } = {};
 
-      tdata.data.forEach((item: any) => {
-        const source = item.src;
-        const target = item.dst;
+      tdata.data.forEach((item: Data) => {
+        const source = item.src_pod; //default:A1
+        const target = item.dst_pod;
 
         // Extract namespaces and group nodes
         const [sourceNamespace, sourceName] = source.split(':');
@@ -74,8 +115,19 @@ const Operation: React.FC = () => {
           namespaces[targetNamespace].push(targetName);
         }
 
-        elements.push({ data: { id: source, label: source, parent: sourceNamespace } });
-        elements.push({ data: { id: target, label: target, parent: targetNamespace } });
+        if(podData.size==0) return;
+
+        if(podData.get(source)) {
+          elements.push({ data: { id: source, parent: sourceNamespace, danger_degree: podData.get(source).danger_degree} });
+        } else {
+          elements.push({ data: { id: source, parent: sourceNamespace, danger_degree: 'noInfo'} }); // no pod Information
+        }
+        
+        if(podData.get(target)) {
+          elements.push({ data: { id: target, parent: targetNamespace, danger_degree: podData.get(target).danger_degree} });
+        } else {
+          elements.push({ data: { id: target, parent: targetNamespace, danger_degree: 'noInfo'} }); // no pod Information
+        }
         elements.push({ data: { id: `${source}${target}`, source: source, target: target, label: String(item.data_len) } });
       });
 
@@ -86,19 +138,26 @@ const Operation: React.FC = () => {
   
       cyRef.current = cytoscape({
         container: document.getElementById('cy'),
-        elements,
+
+        wheelSensitivity: 0.5,
+        minZoom: 0.2,
+        maxZoom: 2.0,
+
+        elements: elements,
         style: [
           {
             selector: 'node',
             style: {
               'background-color': 'white',
-              'label': 'data(label)',
-              'border-color': 'green', 
-              'border-width': '7px',
+              'label': 'data(id)',
+              'border-color': function(ele){ //추가
+                return getNodeColor(ele.data('danger_degree')); 
+              },
+              'border-width': '3px',
             },
           },
           {
-            selector: 'node[?isNamespace]',
+            selector: 'node[?isNamespace]', // 이게 뭐죠?
             style: {
               'border-color': 'white', // make border the same color as background
               'events': 'no'
@@ -112,11 +171,7 @@ const Operation: React.FC = () => {
               'target-arrow-color': '#ccc',
               'target-arrow-shape': 'triangle',
               'curve-style': 'bezier',
-              // 'curve-style': 'unbundled-bezier', // 2차 베지어 커브 적용
-              // 'control-point-distances': 100, // 2차 베지어 커브의 제어점 거리 설정
-              // 'control-point-weights': 0.5, // 2차 베지어 커브의 제어점 가중치 설정
               'label': 'data(label)',
-              // 'opacity': 0.3
             },
           },
         ],
@@ -140,60 +195,56 @@ const Operation: React.FC = () => {
         },
       });
       
+      //핸들러
       cyRef.current.on('tap', 'node', function(evt: EventObject){
         const node = evt.target;
         if (node.data('isNamespace')) {
           return;
         }
-      
-        //노드 클릭 시 하이라이팅 구현
-        cyRef.current.elements().removeStyle('line-color target-arrow-color border-width');
-        cyRef.current.elements('node[^isNamespace], edge').style({ 'opacity': 0.3 });
-
-        node.style({ 'border-width': '8px', 'opacity': 1 });
-      
-        //관련 노드 찾기
-        const connectedEdges = node.connectedEdges(function(edge: EdgeSingular) {
-          return edge.source().id() === node.id() || edge.target().id() === node.id();
-        });
+          
+      //노드 클릭 시 하이라이팅 구현
+      cyRef.current.elements().removeStyle('line-color target-arrow-color border-width');
+      cyRef.current.elements('node[^isNamespace], edge').style({ 'opacity': 0.3 });
     
-        connectedEdges.forEach(function(edge: EdgeSingular) {
-          edge.style({ 'line-color': 'black', 'target-arrow-color': 'black', 'opacity': 1 });
-          edge.connectedNodes().style({ 'border-width': '10px', 'opacity': 1 });
-        });
-      
-        handlePodClick({ x: node.position().x, y: node.position().y, name: node.id() });
-    });
-      
+      node.style({ 'border-width': '8px', 'opacity': 1 });
+          
+     //관련 노드 찾기
+      const connectedEdges = node.connectedEdges(function(edge: EdgeSingular) {
+        return edge.source().id() === node.id() || edge.target().id() === node.id();
+      });
+        
+      connectedEdges.forEach(function(edge: EdgeSingular) {
+       edge.style({ 'line-color': 'black', 'target-arrow-color': 'black', 'opacity': 1 });
+       edge.connectedNodes().style({ 'border-width': '10px', 'opacity': 1 });
+      });
+          
+       handlePodClick({ x: node.position().x, y: node.position().y, name: node.id() });
+      });
+          
       //엣지 클릭 시 하이라이팅 구현
       cyRef.current.on('tap', 'edge', function(evt: EventObject){
         const edge = evt.target;
         const connectedNodes = edge.connectedNodes();
-
+    
         cyRef.current.elements().removeStyle('line-color target-arrow-color border-width');
         cyRef.current.elements('node[^isNamespace], edge').style({ 'opacity': 0.3 });
-
+    
         edge.style({ 'line-color': 'black', 'target-arrow-color': 'black', 'opacity': 1 });
         connectedNodes.style({ 'border-width': '10px', 'opacity': 1 });
-
+    
         handleEdgeClick({ source: edge.source().id(), target: edge.target().id() });
       });
-
-      //zoom in, out
-      cyRef.current.on('zoom', () => {
-        setZoom(cyRef.current.zoom());
-      });
-      
-      data.forEach(updateNodeData);
+        
+      tdata.data.forEach(updateNodeData);
       updateNodeSizes();
     }
+ }, [tdata]);
 
-  }, [tdata]);
-
-  // ---------------------------이 부분만 수정하시면 됩니다---------------------------------//
   const updateNodeData = (item: any) => {
     const target = item.dst_pod;
     const targetNode = cyRef.current.nodes().getElementById(target);
+
+    console.log(targetNode.size());
     if (targetNode) {
       // 노드의 데이터를 업데이트
       const firstUpdateTime = targetNode.data('firstUpdateTime') || item.timestamp;
@@ -204,14 +255,14 @@ const Operation: React.FC = () => {
       const dataPerSecond = totalDataLen / ((lastUpdateTime - firstUpdateTime) || 1);
 
       targetNode.data({
-        totalDataLen,
-        dataPerSecond,
+        totalDataLen: totalDataLen,
+        dataPerSecond: dataPerSecond,
         firstUpdateTime: Math.min(firstUpdateTime, item.timestamp),
         lastUpdateTime: Math.max(lastUpdateTime, item.timestamp),
       });
     }
   };
-
+      
   // 노드의 크기를 업데이트하는 함수
   const updateNodeSizes = () => {
     cyRef.current.nodes().forEach((node: cytoscape.NodeSingular) => { 
@@ -224,8 +275,21 @@ const Operation: React.FC = () => {
     });
   };
 
-// -----------------------------------------------------------------------------------//
+  //추가, 노드 색 결정
+  const getNodeColor = (danger_degree: string) => {
+    switch (danger_degree) {
+      case 'warning':
+        return 'rgb(255, 200, 0)';
+      case 'critical':
+        return 'red';
+      case 'fail':
+        return 'black';
+      default:
+        return 'green';
+    }
+  };
 
+  //menu-bar
   const MBar = () => {
     return (
       <div className="summary-menu">
@@ -290,7 +354,8 @@ const Operation: React.FC = () => {
         edge.connectedNodes().style({ 'visibility': 'visible'});  
       });
       cyRef.current.fit(searchedNodes2.union(connectedEdges2));
-    }     
+    }
+    setIsSearch(true);
 }
 
 // 검색창에 입력하는 값을 state에 저장
@@ -313,56 +378,63 @@ useEffect(() => {
   };
 
   const findEdgeData = (sourcePod: string, destPod: string) => {
-    const edgeData = podData?.find(
+    const edgeData = linkData?.find(
       (pod) =>
-        `${pod.src}` === sourcePod &&
-        `${pod.dst}` === destPod
+        `${pod.src_pod}` === sourcePod &&
+        `${pod.dst_pod}` === destPod
     );
-    return edgeData || { dst: '', data_len: '' };
+    return edgeData || { dst_pod: '', data_len: '' };
   };
 
 
-const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-  if (e.key === 'Enter') {
-    handleSearch();
-  }
-};
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
-const handleMouseMove = (e: React.MouseEvent) => {
-  if (e.buttons === 1) {
-    const dx = e.movementX;
-    const dy = e.movementY;
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (e.buttons === 1) {
+      const dx = e.movementX;
+      const dy = e.movementY;
 
-    setViewport((prevViewport) => ({
-      x: prevViewport.x - dx,
-      y: prevViewport.y + dy,
-    }));
-  }
-};
+      setViewport((prevViewport) => ({
+        x: prevViewport.x - dx,
+        y: prevViewport.y + dy,
+      }));
+    }
+  };
 
   const handleWheelMove = (e: React.WheelEvent) => {
     const dr = e.deltaY * 0.001; 
     const newZoom = cyRef.current.zoom() + dr;
-    if (newZoom >= 0.1 && newZoom <= 3.6) {
-      cyRef.current.zoom(newZoom);
+    if (newZoom >= 0.5 && newZoom <= 2.0) {
+      cyRef.current.zoom({ level: newZoom, renderedPosition: { x: 650, y: 300 } });
     }
+    console.log(newZoom);
   };
 
   const handleZoomIn = () => {
-    cyRef.current.zoom(Math.min(cyRef.current.zoom() + 0.1, 3.6));
+    cyRef.current.zoom({ level: (cyRef.current.zoom() + 0.2), renderedPosition: { x: 650, y: 300 } });
+    console.log(cyRef.current.zoom());
   };
   
   const handleZoomOut = () => {
-    cyRef.current.zoom(Math.max(cyRef.current.zoom() - 0.1, 0.2));
+    cyRef.current.zoom({ level: (cyRef.current.zoom() - 0.2), renderedPosition: { x: 650, y: 300 } });
+    console.log(cyRef.current.zoom());
   };
   
   const handlePodClick = (pod: { x: number; y: number; name: string }) => {
+    const podInfo = podData[pod.name];
     setSelectedPod(
       <div>
         <h3>Pod Information</h3>
         <p>
           <VscCircleSmall /> namespace: {pod.name.split(':')[0]} <br />
           <VscCircleSmall /> name: {pod.name.split(':')[1]} <br />
+          <VscCircleSmall /> ip: {podInfo.ip} <br /> {/*추가 */}
+          <VscCircleSmall /> danger_degree: {podInfo.danger_degree} <br /> {/*추가 */}
+          <VscCircleSmall /> description: {podInfo.message} <br /> {/*추가 */}
         </p>
       </div>
     );
@@ -377,7 +449,7 @@ const handleMouseMove = (e: React.MouseEvent) => {
         <h3>Communication Information</h3>
         <p>
           <VscCircleSmall /> Communication {edge.source} to {edge.target} <br />
-          <VscCircleSmall /> DstPod Name: {edgeData.dst} <br />
+          <VscCircleSmall /> DstPod Name: {edgeData.dst_pod} <br />
           <VscCircleSmall /> Data length: {edgeData.data_len} <br />
         </p>
       </div>
@@ -396,7 +468,29 @@ const handleMouseMove = (e: React.MouseEvent) => {
     setShowInfo(false);
     setInputValue('');
   };
+
+  //추가, 알림창
+  const addNotification = (header: string, src_pod: string, dst_pod: string, status: string, message: string) => {
+    setNotifications((prevNotifications) => {
+      const newNotification = { header, src_pod, dst_pod, status, message };
+      const newIndex = prevNotifications.length;
+      setActiveModals((prevModals) => ({ ...prevModals, [newIndex]: true }));
+      return [...prevNotifications, newNotification];
+    });
+  };
   
+  const removeNotification = (index: number) => {
+    setActiveModals((prevModals) => ({ ...prevModals, [index]: false }));
+  };
+
+  const ModalHeader = ({ status }: { status: string }) => (
+      <div style={{ backgroundColor: getNodeColor(status), height: '10px' }} />
+  );
+    
+  const closeModal = () => {
+      setIsModalOpen(false);
+  };
+
   return (
     <div>
       <MBar />
@@ -409,6 +503,26 @@ const handleMouseMove = (e: React.MouseEvent) => {
                   <VscExport />
                   <b>Details</b>
                 </button>
+                {/*추가*/}
+                {notifications.map(({ header, src_pod, dst_pod, message, status }, index) => (
+                  <Modal key={index} isOpen={activeModals[index]} onDismiss={() => removeNotification(index)} isBlocking={false} isModeless={true} className="modal-slide-up">  
+                    <ModalHeader status={status} />                
+                    <div>
+                      <IconButton
+                        iconProps={{ iconName: 'ChromeClose' }}
+                        title="Close"
+                        ariaLabel="Close"
+                        onClick={() => removeNotification(index)}
+                        style={{ position: 'absolute', right: '5px', top: '10px' }}
+                        styles={{ icon: { fontSize: 13,  color: 'black'} }}
+                      />
+                      <h3 style={{textAlign: 'center'}}>{header}</h3>
+                      <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '50px' }} styles={{ root: {fontSize: 7}}}/> src: {src_pod}</p>
+                      <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '50px' }} styles={{ root: {fontSize: 7}}}/> dst: {dst_pod}</p>
+                      <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '50px' }} styles={{ root: {fontSize: 7}}}/> problem: {message}</p>
+                    </div>
+                </Modal>
+                ))}
                 <p className='metadata'>{selectedPod}</p>
                 {selectedEdge && <p className='metadata'>{selectedEdge}</p>}
               </div>
@@ -420,4 +534,3 @@ const handleMouseMove = (e: React.MouseEvent) => {
 }
 
 export default Operation;
-
