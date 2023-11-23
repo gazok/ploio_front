@@ -3,22 +3,35 @@
 
 import React from "react";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
-import Login from "./login";
-import { Signup } from "./signup";
-import Summary from "./summary";
-import Notice from "./Notice";
-import NOps from "./NOps";
-import NSec from "./NSec";
-import Profile from "./Profile";
-import Setting from "./Setting";
+import Login from "./login.tsx";
+import { Signup } from "./signup.tsx";
+import Summary from "./summary.tsx";
+import Notice from "./Notice.tsx";
+import NOps from "./NOps.tsx";
+import NSec from "./NSec.tsx";
+import Profile from "./Profile.tsx";
+import Setting from "./Setting.tsx";
 //import Security from "./Security";
-import {Operation, MBar } from "./summary/Operation";
-import { Top, Menubar, Content } from "./background";
-import "./App.css";
+import Operation from "./Operating.tsx";
+import { Top, Menubar, Content } from "./background.tsx";
+import "../css/App.css";
+import { createTheme, ThemeProvider } from '@fluentui/react';
+
+const myTheme = createTheme({ //폰트 설정
+  defaultFontStyle: { fontFamily: 'Comfortaa', fontWeight: 'regular' },
+  fonts: {
+    medium: {
+      fontFamily: 'Comfortaa',
+      fontWeight: 'regular',
+      fontSize: '15px',
+    },
+  },
+});
 
 //            <Route path="Security" element={<Security />} />
 function AppRoutes() {
   return (
+    <ThemeProvider theme={myTheme}>
     <div className="app">
       <BrowserRouter>
         <Menubar />
@@ -26,8 +39,8 @@ function AppRoutes() {
           <Route path="/Login" element={<div><Top /><Login /></div>} />
           <Route path="/Signup" element={<div><Top /><Signup /></div>} />
           <Route path="/Summary" element={<Summary />}>
-            <Route index element={<div><MBar /><Operation /></div>} />
-            <Route path="Operation" element={<div><MBar /><Operation /></div>} />
+            <Route index element={<div><Operation /></div>} />
+            <Route path="Operation" element={<div><Operation /></div>} />
 
           </Route>
           <Route path="/Notice" element={<Notice />}>
@@ -41,6 +54,7 @@ function AppRoutes() {
         </Routes>
       </BrowserRouter>
     </div>
+    </ThemeProvider>
   );
 }
 
