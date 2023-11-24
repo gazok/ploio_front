@@ -68,7 +68,7 @@ const Operation: React.FC = () => {
       //추가, danger_degree 정보 가지고 옴
       for (let pod of updatedPodData.values()) {
         if (['critical', 'warning', 'fail'].includes(pod.danger_degree)) {
-          const header = `${pod.pod_name} is in ${pod.danger_degree} status!`;
+          const header = `${pod.danger_degree} pod detected! `;
           const src_pod = pod.src_pod;
           const dst_pod = pod.dst_pod;
           const message = pod.message;
