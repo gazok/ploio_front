@@ -52,39 +52,44 @@ const Operation: React.FC = () => {
   // data.json 데이터 로드
   const [tdata, setTdata] = useState<JsonData | null>(null); //json 받는 컨테이너
   const [linkData, setLinkData] = useState<Data[] | null>(null); // src, dst, data_len
-  const [podData, setPodData] = useState(new Map()); // 포드들의 실제 데이터 모임
+  const [podData, setPodData] = useState(new Map<string, PodData>());
   const [pleaseData, setPleaseData] = useState<PodData[] | null>(null); // 포드들의 실제 데이터 모임2
-
+  // const [podData, setPodData] = useState<PodData>({});
+  const [securityData, setSecurityData] = useState(new Map<string, SecurityData>());
+  const [curPodData, setCurPodData] = useState<Map<string, PodData>>(new Map());
+ 
   const [isSearch, setIsSearch] = useState(false);
-  
 
   const graphWidth = 1300;
   const graphHeight = 600;
 
   useEffect(() => {
-    const updateData = async () => {
-      const updatedPodData = await Logic(res => setTdata(res), podData, plz => setPodData(plz));
-  
-      //추가, danger_degree 정보 가지고 옴
-      for (let pod of updatedPodData.values()) {
-        if (['critical', 'warning', 'fail'].includes(pod.danger_degree)) {
-          const header = `${pod.danger_degree} pod detected! `;
-          const src_pod = pod.src_pod;
-          const dst_pod = pod.dst_pod;
-          const message = pod.message;
-          addNotification(header, src_pod, dst_pod, message, pod.danger_degree);
-          setIsModalOpen(true);
-        }
-      }
-    };
-  
-    updateData();
-  
-    const timer = setInterval(updateData, 6000);
-  
-    // 타이머 클리어 (for setInterval)
-    return () => {clearInterval(timer)}; 
+    const fetchAndSetData = async () => {
+        const { curPodData, curSecurityData } = await Logic(setTdata);
+        setPodData(curPodData);
+        setSecurityData(curSecurityData);
+    }
+    fetchAndSetData();
+
+    let timer = setInterval(fetchAndSetData, 6000);
+
+    return () => {
+        clearInterval(timer);
+    }
   }, []);
+
+  useEffect(() => {
+    for (let pod of securityData.values()) {
+      if (['critical', 'warning', 'fail'].includes(pod.danger_degree)) {
+        const header = `${pod.src_pod} to ${pod.dst_pod} is in ${pod.danger_degree} status!`;
+        const src_pod = pod.src_pod;
+        const dst_pod = pod.dst_pod;
+        const message = pod.message;
+        addNotification(header, src_pod, dst_pod, message, pod.danger_degree);
+        setIsModalOpen(true);
+      }
+    }
+  }, [securityData]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -100,6 +105,8 @@ const Operation: React.FC = () => {
       tdata.data.forEach((item: Data) => {
         const source = item.src_pod; //default:A1
         const target = item.dst_pod;
+        const podSourceData = podData.get(source);
+        const podTargetData = podData.get(target);
 
         // Extract namespaces and group nodes
         const [sourceNamespace, sourceName] = source.split(':');
@@ -117,16 +124,15 @@ const Operation: React.FC = () => {
 
         if(podData.size==0) return;
 
-        if(podData.get(source)) {
-          elements.push({ data: { id: source, parent: sourceNamespace, danger_degree: podData.get(source).danger_degree} });
+        if (podSourceData) {
+          elements.push({ data: { id: source, parent: sourceNamespace, danger_degree: podSourceData.danger_degree } });
         } else {
-          elements.push({ data: { id: source, parent: sourceNamespace, danger_degree: 'noInfo'} }); // no pod Information
+          elements.push({ data: { id: source, parent: sourceNamespace, danger_degree: 'noInfo' } });
         }
-        
-        if(podData.get(target)) {
-          elements.push({ data: { id: target, parent: targetNamespace, danger_degree: podData.get(target).danger_degree} });
+        if (podTargetData) {
+          elements.push({ data: { id: source, parent: sourceNamespace, danger_degree: podTargetData.danger_degree } });
         } else {
-          elements.push({ data: { id: target, parent: targetNamespace, danger_degree: 'noInfo'} }); // no pod Information
+          elements.push({ data: { id: source, parent: sourceNamespace, danger_degree: 'noInfo' } });
         }
         elements.push({ data: { id: `${source}${target}`, source: source, target: target, label: String(item.data_len) } });
       });
@@ -459,13 +465,13 @@ useEffect(() => {
   };
 
   //reset
-  const handleReset = () => {
+  const handleReset = () => { //수정
     cyRef.current.fit(); //화면 크기에 맞추어 전체 view 보여줌
-    cyRef.current.elements().removeStyle('line-color target-arrow-color border-width opacity visibility'); //클릭을 통해 바꾼 style 리셋
+    cyRef.current.elements().removeStyle('line-color target-arrow-color border-width opacity visibility curve-style control-point-distances control-point-weights');
   
     setSelectedPod(null);
     setSelectedEdge(null);
-    setShowInfo(false);
+    setShowInfo(false); 
     setInputValue('');
   };
 
@@ -517,9 +523,9 @@ useEffect(() => {
                         styles={{ icon: { fontSize: 13,  color: 'black'} }}
                       />
                       <h3 style={{textAlign: 'center'}}>{header}</h3>
-                      <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '50px' }} styles={{ root: {fontSize: 7}}}/> src: {src_pod}</p>
-                      <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '50px' }} styles={{ root: {fontSize: 7}}}/> dst: {dst_pod}</p>
-                      <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '50px' }} styles={{ root: {fontSize: 7}}}/> problem: {message}</p>
+                      <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> src: {src_pod}</p> {/*///수정*/}
+                      <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> dst: {dst_pod}</p>
+                      <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> problem: {message}</p>
                     </div>
                 </Modal>
                 ))}
