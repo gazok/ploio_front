@@ -2,18 +2,20 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import cytoscape, { EdgeSingular, EventObject } from 'cytoscape';
+import fcose from 'cytoscape-fcose';
 import "../css/App.css";
 import '../css/Summary.css';
-import '../css/modal.css'; //추가
+import '../css/modal.css'; //수정
 import { VscExport, VscCircleSmall, VscSearch, VscZoomOut, VscZoomIn, VscRefresh } from 'react-icons/vsc';
-import { Modal, Text, IconButton, Icon, initializeIcons  } from '@fluentui/react'; //추가
+import { Modal, Text, IconButton, Icon, initializeIcons  } from '@fluentui/react'; 
 import { Logic, LogicPod } from './summary.tsx';
 import { Data, JsonData, PodData, PodJsonData, SecurityData, SecurityJsonData } from './types.tsx';
 import data from'../public/data.json'; 
 import { relative } from 'path'; 
 import { wait } from '@testing-library/user-event/dist/utils'; 
 
-initializeIcons(); //추가
+initializeIcons(); 
+cytoscape.use(fcose); //수정
 
 // 데이터 정의
   let a = data;
@@ -42,7 +44,6 @@ const Operation: React.FC = () => {
   const [links, setLinks] = useState<{ source: string; target: string }[]>([]);
   const [groupedNodes, setGroupedNodes] = useState<{ [key: string]: number }>({});
 
-  //추가, 알림창 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [modalContent, setModalContent] = useState("");
   const [modalStatus, setModalStatus] = useState("");
@@ -156,7 +157,7 @@ const Operation: React.FC = () => {
             style: {
               'background-color': 'white',
               'label': 'data(id)',
-              'border-color': function(ele){ //추가
+              'border-color': function(ele){ 
                 return getNodeColor(ele.data('danger_degree')); 
               },
               'border-width': '3px',
@@ -181,19 +182,20 @@ const Operation: React.FC = () => {
             },
           },
         ],
-        layout: {
-          name: 'cose',
-          idealEdgeLength: (edge) => 1,
-          nodeOverlap: 20,
+        layout: { //수정
+          name: 'fcose' as any,
+          idealEdgeLength: (edge: cytoscape.EdgeSingular) => 30,
+          nodeOverlap: 10,
           refresh: 20,
           fit: true,
-          padding: 30,
+          padding: 10,
           randomize: true,
-          componentSpacing: 100,
-          nodeRepulsion: (node) => 100000000,
-          edgeElasticity: (edge) => 5,
-          nestingFactor: 10,    
-          gravity: 10,     
+          componentSpacing: 300,
+          nodeRepulsion: (node: cytoscape.NodeSingular) => 100000000,
+          edgeElasticity: (edge: cytoscape.EdgeSingular) => 100,
+          nestingFactor: 10,
+          animate: false,    
+          gravity: 100,     
           numIter: 1000,
           initialTemp: 200,
           coolingFactor: 0.95,
@@ -281,7 +283,7 @@ const Operation: React.FC = () => {
     });
   };
 
-  //추가, 노드 색 결정
+  //노드 색 결정
   const getNodeColor = (danger_degree: string) => {
     switch (danger_degree) {
       case 'warning':
@@ -438,9 +440,9 @@ useEffect(() => {
         <p>
           <VscCircleSmall /> namespace: {pod.name.split(':')[0]} <br />
           <VscCircleSmall /> name: {pod.name.split(':')[1]} <br />
-          <VscCircleSmall /> ip: {podInfo.ip} <br /> {/*추가 */}
-          <VscCircleSmall /> danger_degree: {podInfo.danger_degree} <br /> {/*추가 */}
-          <VscCircleSmall /> description: {podInfo.message} <br /> {/*추가 */}
+          <VscCircleSmall /> ip: {podInfo.ip} <br />
+          <VscCircleSmall /> danger_degree: {podInfo.danger_degree} <br /> 
+          <VscCircleSmall /> description: {podInfo.message} <br /> 
         </p>
       </div>
     );
@@ -465,7 +467,7 @@ useEffect(() => {
   };
 
   //reset
-  const handleReset = () => { //수정
+  const handleReset = () => { 
     cyRef.current.fit(); //화면 크기에 맞추어 전체 view 보여줌
     cyRef.current.elements().removeStyle('line-color target-arrow-color border-width opacity visibility curve-style control-point-distances control-point-weights');
   
@@ -475,7 +477,7 @@ useEffect(() => {
     setInputValue('');
   };
 
-  //추가, 알림창
+  //알림창
   const addNotification = (header: string, src_pod: string, dst_pod: string, status: string, message: string) => {
     setNotifications((prevNotifications) => {
       const newNotification = { header, src_pod, dst_pod, status, message };
@@ -497,6 +499,7 @@ useEffect(() => {
       setIsModalOpen(false);
   };
 
+  //수정
   return (
     <div>
       <MBar />
@@ -510,30 +513,30 @@ useEffect(() => {
                   <b>Details</b>
                 </button>
                 {/*추가*/}
-                {notifications.map(({ header, src_pod, dst_pod, message, status }, index) => (
-                  <Modal key={index} isOpen={activeModals[index]} onDismiss={() => removeNotification(index)} isBlocking={false} isModeless={true} className="modal-slide-up">  
-                    <ModalHeader status={status} />                
-                    <div>
-                      <IconButton
-                        iconProps={{ iconName: 'ChromeClose' }}
-                        title="Close"
-                        ariaLabel="Close"
-                        onClick={() => removeNotification(index)}
-                        style={{ position: 'absolute', right: '5px', top: '10px' }}
-                        styles={{ icon: { fontSize: 13,  color: 'black'} }}
-                      />
-                      <h3 style={{textAlign: 'center'}}>{header}</h3>
-                      <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> src: {src_pod}</p> {/*///수정*/}
-                      <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> dst: {dst_pod}</p>
-                      <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> problem: {message}</p>
-                    </div>
-                </Modal>
-                ))}
                 <p className='metadata'>{selectedPod}</p>
                 {selectedEdge && <p className='metadata'>{selectedEdge}</p>}
               </div>
             </div>
           )}
+          {notifications.map(({ header, src_pod, dst_pod, message, status }, index) => (
+            <Modal key={index} isOpen={activeModals[index]} onDismiss={() => removeNotification(index)} isBlocking={false} isModeless={true} className="modal-slide-up">  
+                <ModalHeader status={status} />                
+                <div>
+                <IconButton
+                  iconProps={{ iconName: 'ChromeClose' }}
+                  title="Close"
+                  ariaLabel="Close"
+                  onClick={() => removeNotification(index)}
+                  style={{ position: 'absolute', right: '5px', top: '10px' }}
+                  styles={{ icon: { fontSize: 13,  color: 'black'} }}
+                />
+                  <h3 style={{textAlign: 'center'}}>{header}</h3>
+                  <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> src: {src_pod}</p> {/*///수정*/}
+                  <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> dst: {dst_pod}</p>
+                  <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> problem: {message}</p>
+                </div>
+            </Modal>
+        ))}
     </div>
   </div>
 );
