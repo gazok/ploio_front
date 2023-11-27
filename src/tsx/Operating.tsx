@@ -4,12 +4,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import cytoscape, { EdgeSingular, EventObject } from 'cytoscape';
 import "../css/App.css";
 import '../css/Summary.css';
+import '../css/modal.css';
 import { VscExport, VscCircleSmall, VscSearch, VscZoomOut, VscZoomIn, VscRefresh } from 'react-icons/vsc';
-import { Logic, LogicPod } from './summary';
-import { Data, JsonData, PodData } from './types';
+import { Modal, Text, IconButton, Icon, initializeIcons  } from '@fluentui/react';
+import { Logic, LogicPod } from './summary.tsx';
+import { Data, JsonData, PodData, PodJsonData, SecurityData, SecurityJsonData } from './types.tsx';
 import data from'../public/data.json';
 import { relative } from 'path';
 import { wait } from '@testing-library/user-event/dist/utils';
+import { Button, Tooltip } from '@fluentui/react-components';
+import { Search32Regular, ZoomIn24Regular, ZoomOut24Regular, ArrowClockwise28Regular } from '@fluentui/react-icons'
+
+initializeIcons();
 
 // 데이터 정의
 let a = data;
@@ -38,11 +44,21 @@ const Operation: React.FC = () => {
   const [links, setLinks] = useState<{ source: string; target: string }[]>([]);
   const [groupedNodes, setGroupedNodes] = useState<{ [key: string]: number }>({});
 
+  //추가, 알림창 
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [modalContent, setModalContent] = useState("");
+  const [modalStatus, setModalStatus] = useState("");
+  const [notifications, setNotifications] = useState<{ header: string; src_pod: string; dst_pod: string; message: string; status: string; }[]>([]);
+  const [activeModals, setActiveModals] = useState<Record<number, boolean>>({});
+
   // data.json 데이터 로드
   const [tdata, setTdata] = useState<JsonData | null>(null); //json 받는 컨테이너
   const [linkData, setLinkData] = useState<Data[] | null>(null); // src, dst, data_len
   const [podData, setPodData] = useState(new Map()); // 포드들의 실제 데이터 모임
   const [pleaseData, setPleaseData] = useState<PodData[] | null>(null); // 포드들의 실제 데이터 모임2
+  
+  const [securityData, setSecurityData] = useState(new Map<string, SecurityData>());
+  const [curPodData, setCurPodData] = useState<Map<string, PodData>>(new Map());
 
   const [isSearch, setIsSearch] = useState(false);
   
@@ -51,30 +67,31 @@ const Operation: React.FC = () => {
   const graphHeight = 600;
 
   useEffect(() => {
-    Logic(res => setTdata(res), podData, plz => setPodData(plz)); // (ns_podname, pod_data) => podData.set(ns_podname, pod_data)
-    //console.log(tdata);
+    Logic(setTdata, setPodData, setSecurityData);
+
     let timer = setInterval(() => {
-      Logic(res => setTdata(res), podData, plz => setPodData(plz));
+      Logic(setTdata, setPodData, setSecurityData);
     }, 6000);
 
-    /*
-    let timer2 = setInterval(() => {
-      console.log(tdata);
-
-      // 업데이트된 tdata에 따라 포드 정보 변경.
-      if(tdata) {
-        tdata.data.forEach(element => {
-          LogicPod(element.src_pod, (ns_podname, pod_data) => podData.set(ns_podname, pod_data));
-          LogicPod(element.dst_pod, (ns_podname, pod_data) => podData.set(ns_podname, pod_data));
-        });
-      }
-      //console.log(tdata);
-    }, 10000, (1));
-    */
-
-    // 타이머 클리어 (for setInterval)
-    return () => {clearTimeout(timer)}; // clearTimeout(timer2);
+    return () => {
+        clearInterval(timer);
+    }
   }, []);
+
+  useEffect(() => {
+    console.log(securityData);
+    for (let pod of securityData.values()) {
+      if (['critical', 'warning', 'fail'].includes(pod.danger_degree)) {
+        const header = `${pod.src_pod} to ${pod.dst_pod} is in ${pod.danger_degree} status!`;
+        const src_pod = pod.src_pod;
+        const dst_pod = pod.dst_pod;
+        const message = pod.message;
+        addNotification(header, src_pod, dst_pod, message, pod.danger_degree);
+        setIsModalOpen(true);
+        console.log(pod);
+      }
+    }
+  }, [securityData]);
 
   useEffect(() => {
     //console.log(tdata);
@@ -110,13 +127,15 @@ const Operation: React.FC = () => {
     }
     */
 
-    if(tdata !== null){
+    if(tdata != null){
       const elements: cytoscape.ElementDefinition[] = [];
       const namespaces: { [key: string]: string[] } = {};
 
       tdata.data.forEach((item: Data) => {
         const source = item.src_pod; //default:A1
         const target = item.dst_pod;
+        const podSourceData = podData.get(source);
+        const podTargetData = podData.get(target);
 
         // Extract namespaces and group nodes
         const [sourceNamespace, sourceName] = source.split(':');
@@ -138,14 +157,14 @@ const Operation: React.FC = () => {
         //console.log(podData.get(source));
         //console.log(target);
         //console.log(podData.get(target));
-        if(podData.get(source)) {
-          elements.push({ data: { id: source, parent: sourceNamespace, danger_degree: podData.get(source).danger_degree} });
+        if(podSourceData) {
+          elements.push({ data: { id: source, parent: sourceNamespace, danger_degree: podSourceData.danger_degree} });
         } else {
           elements.push({ data: { id: source, parent: sourceNamespace, danger_degree: 'noInfo'} }); // no pod Information
         }
         
-        if(podData.get(target)) {
-          elements.push({ data: { id: target, parent: targetNamespace, danger_degree: podData.get(target).danger_degree} });
+        if(podTargetData) {
+          elements.push({ data: { id: target, parent: targetNamespace, danger_degree: podTargetData.danger_degree} });
         } else {
           elements.push({ data: { id: target, parent: targetNamespace, danger_degree: 'noInfo'} }); // no pod Information
         }
@@ -172,11 +191,8 @@ const Operation: React.FC = () => {
               'background-color': 'white',
               'label': 'data(id)',
               'border-color': function(ele){
-                  let a = 'green';
-                  //if(ele.data('danger_degree')==2){a = 'yellow';}
-                  if(ele.data('danger_degree')=='malicous'){a = 'red';}
-                  if(ele.data('danger_degree')=='noInfo'){a = 'black';}
-                  return a;},
+                return getNodeColor(ele.data('danger_degree')); 
+              },
               'border-width': '3px',
             },
           },
@@ -315,32 +331,46 @@ const Operation: React.FC = () => {
     });
   };
 
-      //menu-bar
-      const MBar = () => {
-        return (
-          <div className="summary-menu">
-            <div className="search">
-              <input ref={inputRef} type="text" placeholder="Search..." value={inputValue} onChange={handleInputChange} onKeyPress={handleKeyPress} />
-              <button onClick={handleSearch}>
-                <VscSearch style={{ fontSize: '12px', strokeWidth: 2, paddingTop: '3px', marginRight: '5px' }} />
-              </button>
-              <div style={{border: '1px solid black', display: 'inline-block', marginLeft: '10px'}}>
-                <button style={{ paddingTop: '3px', border:'none', borderRight:'1px solid black' }} onClick={handleZoomIn}>
-                  Zoom
-                  <VscZoomIn style={{ marginLeft: '5px' }} />
-                </button>
-                <button style={{ marginLeft: '5px', paddingTop: '3px', border:'none' }} onClick={handleZoomOut}>
-                  <VscZoomOut style={{ marginRight: '5px' }} />
-                </button>
-              </div>
-              <button style={{ marginLeft: '10px', paddingTop: '3px' }} onClick={handleReset}>
-                Reset
-                <VscRefresh style={{ marginLeft: '5px' }} />
-              </button>
-            </div>
-          </div>
-        );
-      };
+  //추가, 노드 색 결정
+  const getNodeColor = (danger_degree: string) => {
+    switch (danger_degree) {
+      case 'warning':
+        return 'rgb(255, 200, 0)';
+      case 'critical':
+        return 'red';
+      case 'fail':
+        return 'black';
+      default:
+        return 'green';
+    }
+  };
+
+  //menu-bar
+  const MBar = () => {
+    return (
+      <div className="summary-menu">
+        <div className="search">
+          <input ref={inputRef} type="text" placeholder="Search..." value={inputValue} onChange={handleInputChange} onKeyPress={handleKeyPress} />
+          <Tooltip content="Search" relationship='label'>
+            <Button onClick={handleSearch} icon={<Search32Regular/>}/>
+          </Tooltip>
+        </div>
+        <div style={{marginLeft: '15px'}}>
+          <Tooltip content="Zoom In" relationship='label'>
+            <Button onClick={handleZoomIn} icon={<ZoomIn24Regular/>} />
+          </Tooltip>
+          <Tooltip content="Zoom Out" relationship='label'>
+            <Button onClick={handleZoomOut} icon={<ZoomOut24Regular/>} />
+          </Tooltip>
+        </div>
+        <div style={{marginLeft: '15px'}}>
+          <Tooltip content="Reset" relationship='label'>
+            <Button onClick={handleReset} icon={<ArrowClockwise28Regular/>}/>
+          </Tooltip>
+        </div>
+      </div>
+    );
+  };
 
   //검색
   const handleSearch = () => {
@@ -452,12 +482,16 @@ const handleMouseMove = (e: React.MouseEvent) => {
   };
   
   const handlePodClick = (pod: { x: number; y: number; name: string }) => {
+    const podInfo = podData.get(pod.name);
     setSelectedPod(
       <div>
         <h3>Pod Information</h3>
         <p>
           <VscCircleSmall /> namespace: {pod.name.split(':')[0]} <br />
           <VscCircleSmall /> name: {pod.name.split(':')[1]} <br />
+          <VscCircleSmall /> ip: {podInfo.ip} <br /> {/*추가 */}
+          <VscCircleSmall /> danger_degree: {podInfo.danger_degree} <br />
+          <VscCircleSmall /> description: {podInfo.message} <br />
         </p>
       </div>
     );
@@ -491,6 +525,28 @@ const handleMouseMove = (e: React.MouseEvent) => {
     setShowInfo(false);
     setInputValue('');
   };
+
+  //추가, 알림창
+  const addNotification = (header: string, src_pod: string, dst_pod: string, status: string, message: string) => {
+    setNotifications((prevNotifications) => {
+      const newNotification = { header, src_pod, dst_pod, status, message };
+      const newIndex = prevNotifications.length;
+      setActiveModals((prevModals) => ({ ...prevModals, [newIndex]: true }));
+      return [...prevNotifications, newNotification];
+    });
+  };
+
+  const removeNotification = (index: number) => {
+    setActiveModals((prevModals) => ({ ...prevModals, [index]: false }));
+  };
+
+  const ModalHeader = ({ status }: { status: string }) => (
+      <div style={{ backgroundColor: getNodeColor(status), height: '10px' }} />
+  );
+    
+  const closeModal = () => {
+      setIsModalOpen(false);
+  };
   
   return (
     <div>
@@ -509,6 +565,25 @@ const handleMouseMove = (e: React.MouseEvent) => {
               </div>
             </div>
           )}
+          {notifications.map(({ header, src_pod, dst_pod, message, status }, index) => (
+            <Modal key={index} isOpen={activeModals[index]} onDismiss={() => removeNotification(index)} isBlocking={false} isModeless={true} className="modal-slide-up">  
+                <ModalHeader status={status} />                
+                <div>
+                <IconButton
+                  iconProps={{ iconName: 'ChromeClose' }}
+                  title="Close"
+                  ariaLabel="Close"
+                  onClick={() => removeNotification(index)}
+                  style={{ position: 'absolute', right: '5px', top: '10px' }}
+                  styles={{ icon: { fontSize: 13,  color: 'black'} }}
+                />
+                  <h3 style={{textAlign: 'center'}}>{header}</h3>
+                  <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> src: {src_pod}</p> {/*///수정*/}
+                  <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> dst: {dst_pod}</p>
+                  <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> problem: {message}</p>
+                </div>
+            </Modal>
+          ))}
     </div>
   </div>
 );

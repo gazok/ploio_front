@@ -1,0 +1,43 @@
+{ 
+    "sec_data": [{
+      "src_pod": "default:postgres3",
+      "dst_pod": "default:api-server",
+      "danger_degree": "fail",
+      "message": "Partial service was dead",
+      "packet_id": "1234",
+      "timestamp": "12341234"
+    },
+    {
+      "src_pod": "default:postgres2",
+      "dst_pod": "default:web-app",
+      "danger_degree": "warning",
+      "message": "Partial service may be dead",
+      "packet_id": "1235",
+      "timestamp": "12341234"
+    },
+    {
+      "src_pod": "ireonu:payment-gateway4",
+      "dst_pod": "ireonu:payment-gateway5",
+      "danger_degree": "critical",
+      "message": "Service was already dead",
+      "packet_id": "1236",
+      "timestamp": "2023231231"
+    },
+    {
+        "src_pod": "ireonu:payment-gateway4",
+        "dst_pod": "kube-system:dashboard5",
+        "danger_degree": "critical",
+        "message": "Service was already dead",
+        "packet_id": "1237",
+        "timestamp": "2023231231"
+    },    
+    {
+        "src_pod": "ireonu:payment-gateway3",
+        "dst_pod": "ireonu:postgres4",
+        "danger_degree": "fail",
+        "message": "Partial service was dead",
+        "packet_id": "1238",
+        "timestamp": "12341234"
+    }]
+}
+ 

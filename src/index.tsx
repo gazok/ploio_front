@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import './css/index.css';
 //import Router from './tsx/Router'
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
-import AppRoutes from './tsx/AppRoutes';
+import AppRoutes from './tsx/AppRoutes.tsx';
 
 ReactDOM.render(
   <React.StrictMode>

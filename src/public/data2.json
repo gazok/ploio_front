@@ -1,62 +1,212 @@
 {
-    "default:A1": {
-        "name": "A1",
-        "name_space": "1_of_A",
-        "ip": "10.0.1.1",
+    "default:api-server": {
+      "name": "api-server",
+      "name_space": "default",
+      "ip": "32.108.12.42",
+      "danger_degree": "fail"
+    },
+    "default:front-end3": {
+        "name": "front-end3",
+        "name_space": "default",
+        "ip": "32.65.71.13",
         "danger_degree": "secure"
     },
-    "default:A2": {
-        "name": "A2",
-        "name_space": "2_of_A",
-        "ip": "10.0.1.2",
+    "default:postgres" : {
+      "name": "postgres",
+      "name_space": "default",
+      "ip": "32.65.71.35",
+      "danger_degree": "secure"
+    },
+    "default:postgres2" : {
+        "name": "postgres2",
+        "name_space": "default",
+        "ip": "32.65.71.2",
+        "danger_degree": "warning"
+    },
+    "default:postgres5" : {
+        "name": "postgres5",
+        "name_space": "default",
+        "ip": "32.65.71.3",
         "danger_degree": "secure"
     },
-    "default:A3": {
-        "name": "A3",
-        "name_space": "3_of_A",
-        "ip": "10.0.1.3",
-        "danger_degree": "malicious"
-    },
-    "default:A4": {
-        "name": "A4",
-        "name_space": "4_of_A",
-        "ip": "10.0.1.4",
+    "default:db": {
+        "name": "db",
+        "name_space": "default",
+        "ip": "32.65.71.135",
         "danger_degree": "secure"
     },
-    "default:A5": {
-        "name": "A5",
-        "name_space": "5_of_A",
-        "ip": "10.0.1.5",
+    "default:db4": {
+        "name": "db4",
+        "name_space": "default",
+        "ip": "32.65.71.131",
         "danger_degree": "secure"
     },
-    "default:B1": {
-        "name": "B1",
-        "name_space": "1_of_B",
-        "ip": "10.0.2.1",
+    "default:web-app" : {
+        "name": "web-app",
+        "name_space": "default",
+        "ip": "32.65.71.351",
+        "danger_degree": "warning"
+    },
+    "default:front-end": {
+        "name": "front-end",
+        "name_space": "default",
+        "ip": "32.65.71.13",
         "danger_degree": "secure"
     },
-    "default:B2": {
-        "name": "B2",
-        "name_space": "2_of_B",
-        "ip": "10.0.2.2",
-        "danger_degree": "malicious"
-    },
-    "default:C1": {
-        "name": "C1",
-        "name_space": "1_of_C",
-        "ip": "10.0.3.1",
+    "default:front-end2": {
+        "name": "front-end2",
+        "name_space": "default",
+        "ip": "31.65.71.13",
         "danger_degree": "secure"
     },
-    "default:C2": {
-        "name": "C2",
-        "name_space": "2_of_C",
-        "ip": "10.0.3.2",
+    "default:postgres3" : {
+        "name": "postgres3",
+        "name_space": "default",
+        "ip": "31.615.71.35",
+        "danger_degree": "fail"
+    },
+    "default:back-end": {
+        "name": "back-end",
+        "name_space": "default",
+        "ip": "31.65.721.13",
         "danger_degree": "secure"
     },
-    "default:D": {
-        "name": "D",
-        "name_space": "1_of_D",
-        "ip": "10.0.4.1",
+    "ireonu:nginx" : {
+        "name": "nginx",
+        "name_space": "ireonu",
+        "ip": "31.65.71.36",
         "danger_degree": "secure"
+    },
+    "ireonu:nginx3" : {
+        "name": "nginx3",
+        "name_space": "ireonu",
+        "ip": "31.65.71.6",
+        "danger_degree": "secure"
+    },
+    "ireonu:nginx4" : {
+        "name": "nginx4",
+        "name_space": "ireonu",
+        "ip": "31.65.71.362",
+        "danger_degree": "secure"
+    },
+    "ireonu:payment-gateway2" : {
+        "name": "payment-gateway2",
+        "name_space": "ireonu",
+        "ip": "31.65.71.37",
+        "danger_degree": "secure"
+    },
+    "ireonu:payment-gateway4" : {
+        "name": "payment-gateway4",
+        "name_space": "ireonu",
+        "ip": "31.65.71.127",
+        "danger_degree": "critical"
+    },
+    "ireonu:payment-gateway5" : {
+        "name": "payment-gateway5",
+        "name_space": "ireonu",
+        "ip": "31.65.72.37",
+        "danger_degree": "critical"
+    },
+    "ireonu:web-app" : {
+        "name": "web-app",
+        "name_space": "ireonu",
+        "ip": "31.65.71.38",
+        "danger_degree": "secure"
+    },
+    "ireonu:payment-gateway3" : {
+        "name": "payment-gateway3",
+        "name_space": "ireonu",
+        "ip": "31.65.71.39",
+        "danger_degree": "fail"
+    },
+    "ireonu:api-server2" : {
+        "name": "api-server2",
+        "name_space": "ireonu",
+        "ip": "31.65.71.40",
+        "danger_degree": "secure"
+    },
+    "ireonu:payment-gateway" : {
+        "name": "payment-gateway",
+        "name_space": "ireonu",
+        "ip": "31.65.71.39",
+        "danger_degree": "secure"
+    },
+    "ireonu:db" : {
+        "name": "db",
+        "name_space": "ireonu",
+        "ip": "31.65.71.41",
+        "danger_degree": "secure"
+    },
+    "ireonu:postgres" : {
+        "name": "postgres",
+        "name_space": "ireonu",
+        "ip": "31.65.71.42",
+        "danger_degree": "secure"
+    },
+    "ireonu:postgres2" : {
+        "name": "postgres2",
+        "name_space": "ireonu",
+        "ip": "31.65.71.32",
+        "danger_degree": "secure"
+    },
+    "ireonu:postgres4" : {
+        "name": "postgres4",
+        "name_space": "ireonu",
+        "ip": "31.65.71.552",
+        "danger_degree": "fail"
+    },
+    "kube-system:metrics-server" : {
+        "name": "metrics-server",
+        "name_space": "kube-system",
+        "ip": "31.65.71.43",
+        "danger_degree": "secure"
+    },
+    "kube-system:dashboard3" : {
+        "name": "dashboard3",
+        "name_space": "kube-system",
+        "ip": "31.65.71.45",
+        "danger_degree": "secure"
+    },
+    "kube-system:coredns" : {
+        "name": "coredns",
+        "name_space": "kube-system",
+        "ip": "31.65.71.44",
+        "danger_degree": "secure"
+    },
+    "kube-system:coredns3" : {
+        "name": "coredns3",
+        "name_space": "kube-system",
+        "ip": "31.65.71.14",
+        "danger_degree": "secure"
+    },
+    "kube-system:coredns5" : {
+        "name": "coredns5",
+        "name_space": "kube-system",
+        "ip": "31.65.71.54",
+        "danger_degree": "secure"
+    },
+    "kube-system:dashboard" : {
+        "name": "dashboard",
+        "name_space": "kube-system",
+        "ip": "31.65.71.46",
+        "danger_degree": "secure"
+    },
+    "kube-system:dashboard2" : {
+        "name": "dashboard2",
+        "name_space": "kube-system",
+        "ip": "31.65.71.462",
+        "danger_degree": "secure"
+    },
+    "kube-system:dashboard4" : {
+        "name": "dashboard4",
+        "name_space": "kube-system",
+        "ip": "31.65.71.416",
+        "danger_degree": "secure"
+    },
+    "kube-system:dashboard5" : {
+        "name": "dashboard5",
+        "name_space": "kube-system",
+        "ip": "31.65.71.463",
+        "danger_degree": "critical"
     }
 }
