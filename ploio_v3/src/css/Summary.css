@@ -1,0 +1,103 @@
+/*Summary.css*/
+
+/*top bar*/
+.summary-top {
+    color: black;
+    display: flex;
+    position: absolute;
+    margin-left: 15px;
+    top: 0;
+  }
+  
+  /*When clicking on the top bar menu*/
+  .summary-top a {
+    padding: 9px 10px;
+    color: black;
+    text-decoration: none;
+    margin-right: 10px;
+  }
+
+  .summary-top a:hover, .active-summary {
+    border-bottom: 4px solid rgb(24, 108, 243);
+    color: rgb(24, 108, 243);
+  }
+
+  .summary-menu {
+    position: absolute;
+    display: flex;
+    width: 1280px; /* 너비 설정 */
+    align-items: center; /* 내용을 세로 중앙 정렬 */
+    background-color: #f0f0f0;
+    padding: 10px;
+    color: black;
+    margin-top: 0px;
+    border-top-left-radius: 15px;
+  }
+  
+/* Searching filed */
+.search {
+  left: 10px; 
+  display: flex;
+}
+
+/*
+.search input[type="text"] {
+  width: 200px;
+  flex: 1; 
+  padding: 3px;
+  border: none;
+  border: 1px solid #ccc;
+  border-bottom: 3px solid rgb(82, 82, 82);
+  border-radius: 3px;
+}*/
+
+circle.fill-lightblue, rect.fill-lightblue {
+  fill: lightblue;
+}
+ 
+circle.fill-lightcoral, rect.fill-lightcoral {
+  fill: lightcoral;
+}
+  
+  circle.fill-white {
+    fill: white;
+  }
+
+  .node {
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+  }
+  
+  /*arrow*/
+  line {
+    stroke: gray;
+    stroke-width: 10;
+  }
+  
+  /*extra windows*/
+  .info-box {
+    position: fixed;
+    right: 0px;
+    top: 50px;
+    width: 500px;
+    height: 670px;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid rgb(190, 190, 190);
+  }
+
+  .info-top {
+        border: none;
+        background: none;
+        padding: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+    
+
+  .info-content {
+    padding: 15px;
+  }
+  
+  

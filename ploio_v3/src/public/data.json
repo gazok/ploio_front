@@ -1,0 +1,601 @@
+{
+    "data": [{
+      "src_pod": "default:front-end3",
+      "dst_pod": "default:api-server",
+      "timestamp": "12341234",
+      "data_len": 1024
+    },
+    {
+      "src_pod": "default:postgres",
+      "dst_pod": "ireonu:nginx",
+      "timestamp": "12341234",
+      "data_len": 1024
+    },
+    {
+      "src_pod": "default:api-server",
+      "dst_pod": "default:db",
+      "timestamp": "12341234",
+      "data_len": 512
+    },
+    {
+      "src_pod": "default:web-app",
+      "dst_pod": "kube-system:metrics-server",
+      "timestamp": "12341234",
+      "data_len": 2048
+    },
+    {
+      "src_pod": "kube-system:coredns",
+      "dst_pod": "default:api-server",
+      "timestamp": "12341234",
+      "data_len": 1024
+    },
+    {
+      "src_pod": "kube-system:dashboard3",
+      "dst_pod": "ireonu:nginx",
+      "timestamp": "12341234",
+      "data_len": 512
+    },
+    {
+      "src_pod": "ireonu:payment-gateway4",
+      "dst_pod": "ireonu:payment-gateway5",
+      "timestamp": "12341234",
+      "data_len": 2048
+    },
+    {
+      "src_pod": "default:front-end",
+      "dst_pod": "ireonu:nginx",
+      "timestamp": "12341234",
+      "data_len": 1024
+    },
+    {
+      "src_pod": "ireonu:nginx3",
+      "dst_pod": "default:api-server",
+      "timestamp": "12341234",
+      "data_len": 1024
+    },
+    {
+      "src_pod": "default:db",
+      "dst_pod": "ireonu:nginx",
+      "timestamp": "12341234",
+      "data_len": 512
+    },
+    {
+      "src_pod": "default:api-server",
+      "dst_pod": "ireonu:nginx",
+      "timestamp": "12341234",
+      "data_len": 2048
+    },
+    {
+      "src_pod": "kube-system:metrics-server",
+      "dst_pod": "default:api-server",
+      "timestamp": "12341234",
+      "data_len": 1024
+    },
+    {
+      "src_pod": "default:web-app",
+      "dst_pod": "ireonu:nginx",
+      "timestamp": "12341234",
+      "data_len": 512
+    },
+    {
+      "src_pod": "ireonu:nginx",
+      "dst_pod": "kube-system:metrics-server",
+      "timestamp": "12341234",
+      "data_len": 2048
+    },
+    {
+      "src_pod": "ireonu:web-app",
+      "dst_pod": "default:api-server",
+      "timestamp": "12341234",
+      "data_len": 1024
+    },
+    {
+      "src_pod": "kube-system:dashboard",
+      "dst_pod": "ireonu:nginx",
+      "timestamp": "12341234",
+      "data_len": 512
+    },
+    {
+      "src_pod": "default:api-server",
+      "dst_pod": "kube-system:metrics-server",
+      "timestamp": "12341234",
+      "data_len": 2048
+    },
+    {
+      "src_pod": "default:db",
+      "dst_pod": "kube-system:metrics-server",
+      "timestamp": "12341234",
+      "data_len": 1024
+    },
+    {
+      "src_pod": "kube-system:metrics-server",
+      "dst_pod": "default:api-server",
+      "timestamp": "12341234",
+      "data_len": 512
+    },
+    {
+      "src_pod": "ireonu:payment-gateway3",
+      "dst_pod": "kube-system:metrics-server",
+      "timestamp": "12341234",
+      "data_len": 2048
+    }, 
+    {
+      "src_pod": "default:front-end2",
+      "dst_pod": "kube-system:metrics-server",
+      "timestamp": "12341234",
+      "data_len": 1024
+    },
+    {
+        "src_pod": "kube-system:dashboard3",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "ireonu:nginx3",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "ireonu:api-server2",
+        "dst_pod": "ireonu:payment-gateway2",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:postgres3",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "kube-system:coredns",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "default:db",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:web-app",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "ireonu:payment-gateway",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "kube-system:metrics-server",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:api-server",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "default:front-end3",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "kube-system:coredns",
+        "dst_pod": "default:web-app",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:db",
+        "dst_pod": "ireonu:payment-gateway",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "default:postgres3",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "ireonu:nginx",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "kube-system:dashboard",
+        "dst_pod": "default:front-end",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "default:web-app",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "ireonu:payment-gateway2",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:postgres2",
+        "dst_pod": "default:web-app",
+        "timestamp": "12341234",
+        "data_len": 512
+      },    {
+        "src_pod": "kube-system:metrics-server",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "default:front-end",
+        "dst_pod": "default:db",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:web-app",
+        "dst_pod": "kube-system:coredns5",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "ireonu:db",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "default:db",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "kube-system:coredns5",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "kube-system:coredns5",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "default:api-server",
+        "dst_pod": "default:front-end",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "kube-system:dashboard2",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "ireonu:nginx",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "default:web-app",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:db",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "default:postgres",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "kube-system:dashboard",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:api-server",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "default:web-app",
+        "dst_pod": "ireonu:postgres",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "ireonu:payment-gateway",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "ireonu:postgres",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "ireonu:postgres",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "ireonu:postgres", 
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "kube-system:dashboard",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:api-server",
+        "dst_pod": "default:back-end",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "default:web-app",
+        "dst_pod": "default:back-end",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "ireonu:payment-gateway",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "ireonu:postgres",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "ireonu:postgres",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "ireonu:postgres",
+        "dst_pod": "default:back-end",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "ireonu:nginx4",
+        "dst_pod": "default:back-end",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:postgres",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "kube-system:coredns",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "default:api-server",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "kube-system:dashboard5",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "ireonu:nginx",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "default:web-app",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:db",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "default:postgres",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "kube-system:dashboard",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:api-server",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "ireonu:payment-gateway4",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "ireonu:payment-gateway5",
+        "dst_pod": "kube-system:dashboard5",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "ireonu:postgres2",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "ireonu:postgres",
+        "dst_pod": "ireonu:payment-gateway5",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "ireonu:payment-gateway3",
+        "dst_pod": "ireonu:postgres4",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "kube-system:dashboard4",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:api-server",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "default:db4",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "ireonu:payment-gateway",
+        "dst_pod": "kube-system:metrics-server3",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "ireonu:postgres",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "ireonu:postgres4",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "default:db4",
+        "dst_pod": "ireonu:web-app",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:db4",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:postgres5",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "default:postgres5",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "default:api-server",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "kube-system:dashboard4",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "ireonu:nginx",
+        "dst_pod": "default:api-server",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "ireonu:nginx4",
+        "dst_pod": "kube-system:metrics-server",
+        "timestamp": "12341234",
+        "data_len": 1024
+      },
+      {
+        "src_pod": "default:db",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 512
+      },
+      {
+        "src_pod": "default:api-server",
+        "dst_pod": "kube-system:coredns3",
+        "timestamp": "12341234",
+        "data_len": 2048
+      },
+      {
+        "src_pod": "kube-system:dashboard5",
+        "dst_pod": "ireonu:nginx",
+        "timestamp": "12341234",
+        "data_len": 1024
+      }]
+}

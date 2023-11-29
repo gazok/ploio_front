@@ -1,0 +1,128 @@
+/* App.css */
+
+/*window*/
+body {
+  background-color: #F3F3F3;
+  margin: 0;
+  padding: 0;
+}
+
+/*Output screen*/
+.app {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  background-color: #F3F3F3;
+}
+
+/*top bar*/
+.top-bar {
+  color: black;
+  display: flex;
+  position: absolute;
+  margin-left: 15px;
+}
+
+/*When clicking on the top bar menu*/
+.top-bar a {
+  margin-bottom: 0px;
+  padding: 0px 0px;
+  margin-right: 10px;
+  color: black;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/*
+.top-bar a:hover, .active-top {
+  border-bottom: 4px solid rgb(24, 108, 243);
+  color: rgb(24, 108, 243);
+}
+*/
+
+/*top of menu bar*/
+.menu-bar {
+  width: 200px;
+  color: black;
+}
+
+/*bottom of menu bar*/
+.menu-bar .bottom-items {
+  margin-top: auto;
+  margin-top: 320px;
+}
+
+/*When clicking on menu*/
+.menu-bar a {
+  display: block;
+  width: 100px;
+  margin-bottom: 10px;
+  padding: 0px 0px;
+  color: black;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.menu-bar .menu-summary a {
+  display: block;
+  width: 122px;
+  margin-bottom: 10px;
+  padding: 0px 0px;
+  color: black;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.menu-bar .menu-management a {
+  display: block;
+  width: 150px;
+  margin-bottom: 10px;
+  padding: 0px 0px;
+  color: black;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.menu-bar .menu-setting a {
+  display: block;
+  width: 106px;
+  margin-bottom: 10px;
+  padding: 0px 0px;
+  color: black;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/*
+.menu-bar a:hover, .active-menu {
+  border-left: 4px solid rgb(24, 108, 243);
+  color: rgb(24, 108, 243);
+}/*
+
+
+/*contents
+.content {
+  flex-grow: 1;
+  background-color: rgb(255, 255, 255);
+  padding: 20px;
+  color: black;
+  border-radius: 10px;
+  margin-left: 30px;
+  margin-top: 50px;
+  position: relative;
+}*/
+
+/*contents*/
+.content {
+  display: flex;
+  flex-direction: row;
+  background-color: rgb(255, 255, 255);
+  height: 648px;
+  width: 1300px;
+  padding-top: 10px;
+  color: black;
+  margin-top: 55px;
+  box-shadow: -4px 4px 24px -1px rgba(0, 0, 0, 0.25);
+  border-top-left-radius: 15px;
+  overflow: hidden;
+}

@@ -1,0 +1,27 @@
+.modal-slide-up {
+    position: fixed;
+    /* top: auto;
+    left: auto; */
+    right: 40px;
+    bottom: 0.01px;
+    transform: none;
+    animation: slide-up 0.5s ease-out;
+    width: 200px;  /* Adjust as needed */
+    height: 200px;  /* Adjust as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: none;
+    stroke: black;
+    stroke-width: 10px;
+    border-radius: 10px;
+}
+  
+  @keyframes slide-up {
+    0% {
+      transform: translateY(100%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
