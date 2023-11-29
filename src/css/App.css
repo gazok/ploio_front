@@ -65,7 +65,6 @@ body {
   color: rgb(24, 108, 243);
 }
 
-/*contents*/
 .content {
   display: flex;
   flex-direction: row;
@@ -74,7 +73,8 @@ body {
   width: 1300px;
   padding-top: 10px;
   color: black;
-  margin-top: 50px;
+  margin-top: 45px;
   box-shadow: -4px 4px 24px -1px rgba(0, 0, 0, 0.25);
   border-top-left-radius: 15px;
+  overflow: hidden;
 }
