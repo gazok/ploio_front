@@ -12,11 +12,11 @@ import NSec from "./NSec.tsx";
 import Profile from "./Profile.tsx";
 import Setting from "./Setting.tsx";
 //import Security from "./Security";
-import { Operation } from "./Operating.tsx";
+import { Operation, OperationM } from "./Operating.tsx";
 import { Top, Menubar, Content } from "./background.tsx";
 import "../css/App.css";
 import { createTheme, ThemeProvider } from '@fluentui/react';
-import Management from "./Management.tsx";
+import { Management, ManagementM } from "./Management.tsx";
 
 const myTheme = createTheme({ //폰트 설정
   defaultFontStyle: { fontFamily: 'Comfortaa', fontWeight: 'regular' },
@@ -40,8 +40,8 @@ function AppRoutes() {
           <Route path="/Signin" element={<div><Top /><Login /></div>} />
           <Route path="/Signup" element={<div><Top /><Signup /></div>} />
           <Route path="/Summary" element={<Summary />}>
-            <Route index element={<div><Operation /></div>} />
-            <Route path="Operation" element={<div><Operation /></div>} />
+            <Route index element={<div><OperationM /></div>} />
+            <Route path="Operation" element={<div><OperationM /></div>} />
 
           </Route>
           <Route path="/Notice" element={<Notice />}>
@@ -49,7 +49,7 @@ function AppRoutes() {
             <Route path="NOps" element={<NOps />} />
             <Route path="NSec" element={<NSec />} />
           </Route>
-          <Route path="/Management" element={<Management />} />
+          <Route path="/Management" element={<div><ManagementM /></div>} />
 
           <Route path="/Profile" element={<div><Top /><Profile /></div>} />
           <Route path="/Setting" element={<div><Top /><Setting /></div>} />

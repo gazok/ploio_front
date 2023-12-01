@@ -1,3 +1,4 @@
+/*
 import { Button, Caption1, Card, CardHeader, Checkbox, Divider, Input, Label, Text, Tooltip, makeStyles, shorthands, tokens, useId } from '@fluentui/react-components';
 import { MoreHorizontal20Regular, Search32Regular, Add24Regular, Delete24Regular, ArrowClockwise28Regular } from '@fluentui/react-icons'
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
@@ -203,11 +204,13 @@ const ManagementM: React.FC = () => {
     let moduleSD: ModuleData[] = [];
 
     if(moduleData) {
-      moduleData.modules.forEach((item: ModuleData) => {
-        if(item.Name.includes(inputValue)) {
-          moduleSD.push(item);
-        }
-      });
+      if(inputValue!=''){
+        moduleData.modules.forEach((item: ModuleData) => {
+          if(item.Name.includes(inputValue)) {
+            moduleSD.push(item);
+          }
+        });
+      }
 
       console.log(moduleSD);
       setModuleSearchData(moduleSD);
@@ -221,16 +224,10 @@ const ManagementM: React.FC = () => {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key == 'Enter') {
-      handleSearch();
+    if (e.key === 'Enter') {
+      //handleSearch();
     }
   };
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [inputValue]);
 
   const commandBarItems: ICommandBarItemProps[] = [
     {
@@ -282,7 +279,7 @@ const ManagementM: React.FC = () => {
     return (
       <div className="manage-menu">
         <div style={{marginLeft: '15px'}}>
-          <Input ref={inputRef} type="text" placeholder="Search..." value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyPress} />
+          <Input ref={inputRef} type="text" placeholder="Search..." value={inputValue} onChange={handleInputChange} onKeyPress={handleKeyPress} />
         </div>
         <CommandBar items={commandBarItems} />
 
@@ -304,3 +301,5 @@ const ManagementM: React.FC = () => {
 }
 
 export { Management, ManagementM };
+
+*/

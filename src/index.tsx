@@ -8,7 +8,7 @@ import AppRoutes from './tsx/AppRoutes.tsx';
 ReactDOM.render(
   <React.StrictMode>
     <FluentProvider theme={webLightTheme}>
-      <div className="app">
+      <div>
         <AppRoutes />
       </div>
     </FluentProvider>

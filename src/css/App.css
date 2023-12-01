@@ -117,12 +117,12 @@ body {
   display: flex;
   flex-direction: row;
   background-color: rgb(255, 255, 255);
-  height: 648px;
+  height: 631px;
   width: 1300px;
   padding-top: 10px;
   color: black;
   margin-top: 55px;
   box-shadow: -4px 4px 24px -1px rgba(0, 0, 0, 0.25);
   border-top-left-radius: 15px;
-  overflow: hidden;
+  overflow: scroll;
 }

@@ -20,7 +20,14 @@ export interface SecurityData { //추가
     packet_id: string;
     timestamp: string;
 }
-  
+
+export interface ModuleData {
+    GUID: string;
+	Name: string;
+	Description: string;
+	status: string;
+}
+
 export interface JsonData {
     data: Data[];
 }
@@ -31,4 +38,8 @@ export interface PodJsonData {
 
 export interface SecurityJsonData { //추가
     data: SecurityData[];
+}
+
+export interface ModuleJsonData {
+    modules: ModuleData[];
 }

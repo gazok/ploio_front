@@ -27,36 +27,39 @@
     display: flex;
     width: 1280px; /* 너비 설정 */
     align-items: center; /* 내용을 세로 중앙 정렬 */
-    background-color: #f0f0f0;
-    padding: 10px;
+    background-color: #ffffff;
+    padding: 0px;
     color: black;
     margin-top: 0px;
+    border: 2px solid #f2f2f2;
     border-top-left-radius: 15px;
+    z-index: 2;
   }
   
 /* Searching filed */
 .search {
-    left: 10px; 
-    display: flex;
-  }
-  
-  .search input[type="text"] {
-    width: 200px;
-    flex: 1; 
-    padding: 3px;
-    border: none;
-    border: 1px solid #ccc;
-    border-bottom: 3px solid rgb(82, 82, 82);
-    border-radius: 3px;
-  }
+  left: 10px; 
+  display: flex;
+}
 
-  circle.fill-lightblue, rect.fill-lightblue {
-    fill: lightblue;
-  }
-  
-  circle.fill-lightcoral, rect.fill-lightcoral {
-    fill: lightcoral;
-  }
+/*
+.search input[type="text"] {
+  width: 200px;
+  flex: 1; 
+  padding: 3px;
+  border: none;
+  border: 1px solid #ccc;
+  border-bottom: 3px solid rgb(82, 82, 82);
+  border-radius: 3px;
+}*/
+
+circle.fill-lightblue, rect.fill-lightblue {
+  fill: lightblue;
+}
+ 
+circle.fill-lightcoral, rect.fill-lightcoral {
+  fill: lightcoral;
+}
   
   circle.fill-white {
     fill: white;
@@ -82,6 +85,7 @@
     background: white;
     border-radius: 10px;
     border: 1px solid rgb(190, 190, 190);
+    z-index: 2;
   }
 
   .info-top {

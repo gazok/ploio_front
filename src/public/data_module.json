@@ -1,0 +1,20 @@
+{
+    "modules":[{
+	    "GUID": "A1-2-3-4",
+	    "Name": "module1.so",
+	    "Description": "desc A",
+		"status": "active"
+	},
+	{
+	    "GUID": "B1-2-3-4",
+	    "Name": "module2.so",
+	    "Description": "desc B",
+	    "status": "active"
+	},
+	{
+	    "GUID": "C1-2-3-4",
+	    "Name": "module3.so",
+	    "Description": "desc C",
+		"status": "inactive"
+	}]
+}
