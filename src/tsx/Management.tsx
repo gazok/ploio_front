@@ -1,5 +1,5 @@
 import { Button, Caption1, Card, CardHeader, Checkbox, Divider, Input, Label, Text, Tooltip, makeStyles, shorthands, tokens, useId } from '@fluentui/react-components';
-import { MoreHorizontal20Regular, Search32Regular, Add24Regular, Delete24Regular, ArrowClockwise28Regular } from '@fluentui/react-icons'
+import { MoreHorizontal20Regular, Search32Regular, Add24Regular, Delete24Regular, ArrowClockwise28Regular, SettingsCogMultiple24Regular } from '@fluentui/react-icons'
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import '../css/Management.css';
 import { ModuleData, ModuleJsonData } from './types';
@@ -67,9 +67,11 @@ const CreateCard = (props) => {
   return (
     <Card className='card'>
       <CardHeader 
-        image={<img className={styles.logo} src={"shipicon.png"} alt="App logo" />}
+        image={<SettingsCogMultiple24Regular />} //<img className={styles.logo} src={"shipicon.png"} alt="App logo" />
         header={<Text weight="semibold">{props.item.Name} </Text>}
-        description={<Caption1 >{props.item.status}</Caption1>}
+        description={<div>
+          <Caption1 >{props.item.status}</Caption1>
+          </div>}
         action={
           <div>
             <Checkbox 
@@ -192,10 +194,32 @@ const ManagementM: React.FC = () => {
   const addItemPost = () => {
     //json fetch(POST)
     console.log(checkedItems);
+    /*
+    const res: JsonData = await fetch('http://123.108.168.190:8000/summary/tmp/~', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'}
+        body: JSON.stringify({
+          'email': 'sunghae',
+          'password': '1234'
+        })
+    }).then(response => response.json());
+    callback(res);
+    */
   }
 
   const removeItemPost = () => {
     console.log(checkedItems);
+    /*
+    const res: JsonData = await fetch('http://123.108.168.190:8000/summary/tmp/~', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'}
+        body: JSON.stringify({
+          'email': 'sunghae',
+          'password': '1234'
+        })
+    }).then(response => response.json());
+    callback(res);
+    */
   }
 
   const handleSearch = () => {
@@ -211,6 +235,12 @@ const ManagementM: React.FC = () => {
 
       console.log(moduleSD);
       setModuleSearchData(moduleSD);
+    }
+  }
+
+  const handleReset = () => {
+    if(moduleData) {
+      setModuleSearchData(moduleData.modules);
     }
   }
 
@@ -251,7 +281,7 @@ const ManagementM: React.FC = () => {
       key: 'reset',
       text: 'Reset',
       iconProps: { iconName: 'Refresh' },
-      onClick: () => console.log(moduleData),
+      onClick: () => handleReset(),
     },
     {
       key: 'div1-3',

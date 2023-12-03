@@ -502,24 +502,31 @@ const OperationM: React.FC = () => {
 
       searchedNodes1.style({ 'visibility': 'visible'});
       connectedEdges1.style({ 'visibility': 'visible', 'curve-style': 'unbundled-bezier', 'control-point-distances': 100, 'control-point-weights': 0.5 });
-      
+      //console.log(searchedNodes1.style());
       cyRef.current.fit(searchedNodes1.union(connectedEdges1)); //화면에 맞게 출력
     }else { //namespace:pod 검색
       const searchedNode = inputValue;
-      const searchedNodes2 = nodes.filter((node: cytoscape.NodeSingular) => node.id() === searchedNode);  
-      searchedNodes2.style({ 'visibility': 'visible' });
-          
+      const searchedNodes2 = nodes.filter((node: cytoscape.NodeSingular) => node.id() === searchedNode);
+      const searchedNamespace2 = nodes.filter((node: cytoscape.NodeSingular) => node.id() === inputValue.split(':')[0]);
+
+      searchedNodes2.style({ 'visibility': 'visible'});
+      searchedNamespace2.style({ 'visibility': 'visible'});
+      
       //관련 노드 찾기
-      const connectedEdges2 = searchedNodes2.connectedEdges(function(edge: EdgeSingular) {
-        return edge.source().id() === searchedNodes2.id() || edge.target().id() === searchedNodes2.id();
-      });
-  
+      const connectedEdges2 = searchedNodes2.connectedEdges();
+
       connectedEdges2.forEach(function(edge: EdgeSingular) {
         edge.style({ 'visibility': 'visible', 'curve-style': 'unbundled-bezier', 'control-point-distances': 100, 'control-point-weights': 0.5});
-        edge.connectedNodes().style({ 'visibility': 'visible'});  
+        edge.connectedNodes().style({ 'visibility': 'visible'});
+        edge.connectedNodes().forEach((item) => {
+          const searchedNamespace3 = nodes.filter((node: cytoscape.NodeSingular) => node.id() === item.id().split(':')[0]);
+          searchedNamespace3.style({ 'visibility': 'visible'});
+        })
       });
+
       cyRef.current.fit(searchedNodes2.union(connectedEdges2));
     }
+    //nodes.style({ 'visibility': 'visible' });
     setIsSearch(true);
   }
 
@@ -559,13 +566,17 @@ const OperationM: React.FC = () => {
 
   const commandBarItems: ICommandBarItemProps[] = [
     {
+      key: 'div1-1',
+      onRender: () => <Divider vertical/>
+    },
+    {
       key: 'search',
       text: 'Search',
       iconProps: { iconName: 'Search' },
       onClick: () => handleSearch(),
     },
     {
-      key: 'div1-1',
+      key: 'div1-2',
       onRender: () => <Divider vertical/>
     },
     {
@@ -581,7 +592,7 @@ const OperationM: React.FC = () => {
       onClick: () => handleZoomOut(),
     },
     {
-      key: 'div1-2',
+      key: 'div1-3',
       onRender: () => <Divider vertical/>
     },
     {
@@ -589,7 +600,11 @@ const OperationM: React.FC = () => {
       text: 'Reset',
       iconProps: { iconName: 'Refresh' },
       onClick: () => handleReset(),
-    }
+    },
+    {
+      key: 'div1-4',
+      onRender: () => <Divider vertical/>
+    },
   ];
 
   /*

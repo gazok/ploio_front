@@ -23,3 +23,7 @@
     border-top-left-radius: 15px;
     z-index: 2;
   }
+
+.flex-horizontal {
+    display: flex;
+}
