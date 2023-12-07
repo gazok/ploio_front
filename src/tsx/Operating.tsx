@@ -1,4 +1,4 @@
-//Operation.tsx using cytoscape.js 병합
+//Operation.tsx using cytoscape.js 병합 - > 12/8 병합(resetx)
 
 import React, { useState, useEffect, useRef } from 'react';
 import cytoscape, { EdgeSingular, EventObject } from 'cytoscape';
@@ -6,8 +6,7 @@ import "../css/App.css";
 import '../css/Summary.css';
 import '../css/modal.css';
 import fcose from 'cytoscape-fcose'; //수정
-import { VscExport, VscCircleSmall, VscSearch, VscZoomOut, VscZoomIn, VscRefresh } from 'react-icons/vsc';
-import { Modal, Text, IconButton, Icon, initializeIcons, CommandBar, ICommandBarItemProps  } from '@fluentui/react';
+import { Modal, Text, IconButton, Icon, initializeIcons, ZIndexes, MessageBar, MessageBarType, CommandBar, ICommandBarItemProps  } from '@fluentui/react'; //수정
 import { Logic, LogicPod } from './summary.tsx';
 import { Data, JsonData, PodData, PodJsonData, SecurityData, SecurityJsonData } from './types.tsx';
 import data from'../public/data.json';
@@ -45,14 +44,17 @@ const Operation = (Props) => {
   const [nodes, setNodes] = useState<{ x: number; y: number; name: string; size: number }[]>([]);
   const [links, setLinks] = useState<{ source: string; target: string }[]>([]);
   const [groupedNodes, setGroupedNodes] = useState<{ [key: string]: number }>({});
+  const [isInitialRender, setIsInitialRender] = useState(true); //추가
+  const [prevNodes, setPrevNodes] = useState<Set<string>>(new Set()); //추가
+  const deletedEdges: any[] = []; //추가, 삭제된 간선 정보 저장
 
   //추가, 알림창 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [modalContent, setModalContent] = useState("");
   const [modalStatus, setModalStatus] = useState("");
-  const [notifications, setNotifications] = useState<{ header: string; src_pod: string; dst_pod: string; message: string; status: string; }[]>([]);
-  const [activeModals, setActiveModals] = useState<Record<number, boolean>>({});
-
+  const [notifications, setNotifications] = useState<{ header: string; src_pod: string; dst_pod: string; danger_degree: string; message: string; timestamp: string;}[]>([]);
+  const [activeModals, setActiveModals] = useState<Record<number, NodeJS.Timeout | null>>({}); 
+  
   // data.json 데이터 로드
   const [tdata, setTdata] = useState<JsonData | null>(null); //json 받는 컨테이너
   const [linkData, setLinkData] = useState<Data[] | null>(null); // src, dst, data_len
@@ -63,11 +65,32 @@ const Operation = (Props) => {
   
   //추가, 애니메이션
   const animationIds: any[] = [];
-  const animationRef = useRef<{[key: string]: number}>({});
-  const [isInitialRender, setIsInitialRender] = useState(true); 
+  const animationRef = Props.animationRef;
+
 
   const graphWidth = 1300;
   const graphHeight = 600;
+
+   //graph layout 설정
+  const layoutOptions = {
+    name: 'fcose' as any,
+    idealEdgeLength: (edge: cytoscape.EdgeSingular) => 50,
+    nodeOverlap: 100,
+    refresh: 20,
+    fit: true,
+    padding: 10,
+    randomize: isInitialRender,
+    componentSpacing: 300,
+    animate: false,
+    nodeRepulsion: (node: cytoscape.NodeSingular) => 1000000000,
+    edgeElasticity: (edge: cytoscape.EdgeSingular) => 100,
+    nestingFactor: 10,
+    gravity: 100,     
+    numIter: 1000,
+    initialTemp: 200,
+    coolingFactor: 0.95,
+    minTemp: 1.0
+  }
 
   useEffect(() => {
     Logic(setTdata, setPodData, setSecurityData);
@@ -77,6 +100,8 @@ const Operation = (Props) => {
       Logic(setTdata, setPodData, setSecurityData);
     }, 6000);
 
+    setTimeout(() => setIsInitialRender(false), 0); //추가
+
     return () => {
         clearInterval(timer);
     }
@@ -84,17 +109,18 @@ const Operation = (Props) => {
     //return;
   }, []);
 
+  //수정
   useEffect(() => {
-    //console.log(securityData);
     for (let pod of securityData.values()) {
       if (['critical', 'warning', 'fail'].includes(pod.danger_degree)) {
-        const header = `${pod.src_pod} to ${pod.dst_pod} is in ${pod.danger_degree} status!`;
+        const header = `${pod.danger_degree} Pod Occurs`;
         const src_pod = pod.src_pod;
         const dst_pod = pod.dst_pod;
+        const danger_degree = pod.danger_degree;
         const message = pod.message;
-        addNotification(header, src_pod, dst_pod, message, pod.danger_degree);
-        setIsModalOpen(true);
-        //console.log(pod);
+        const timestamp = pod.timestamp;
+        addNotification(header, src_pod, dst_pod, danger_degree, message, timestamp);
+        setIsModalOpen(true);     
       }
     }
   }, [securityData]);
@@ -114,13 +140,19 @@ const Operation = (Props) => {
     if(tdata != null){
       const elements: cytoscape.ElementDefinition[] = [];
       const namespaces: { [key: string]: string[] } = {};
+      const newEdges: Set<string> = new Set();
+      const newNodes: Set<string> = new Set();
 
       tdata.data.forEach((item: Data) => {
         const source = item.src_pod; 
         const target = item.dst_pod;
         const podSourceData = podData.get(source);
         const podTargetData = podData.get(target);
-
+        //노드 및 간선 변화 확인하기 위함
+        newEdges.add(`${source}${target}`); 
+        newNodes.add(source);
+        newNodes.add(target);
+        
         const [sourceNamespace, sourceName] = source.split(':');
         const [targetNamespace, targetName] = target.split(':');
 
@@ -159,6 +191,7 @@ const Operation = (Props) => {
         elements.push({ data: { id: namespace, isNamespace: true } });
       });
   
+      if(!cyRef.current){
       cyRef.current = cytoscape({
         container: document.getElementById('cy'),
 
@@ -201,26 +234,35 @@ const Operation = (Props) => {
             },
           },
         ],//수정
-        layout: {
-          name: 'fcose' as any,
-          idealEdgeLength: (edge: cytoscape.EdgeSingular) => 50,
-          nodeOverlap: 100,
-          refresh: 20,
-          fit: true,
-          padding: 10,
-          randomize: true,
-          componentSpacing: 300,
-          animate: false,
-          nodeRepulsion: (node: cytoscape.NodeSingular) => 1000000000,
-          edgeElasticity: (edge: cytoscape.EdgeSingular) => 100,
-          nestingFactor: 10,
-          gravity: 100,     
-          numIter: 1000,
-          initialTemp: 200,
-          coolingFactor: 0.95,
-          minTemp: 1.0
-        },
+        layout: layoutOptions
       });
+      setPrevNodes(newNodes);
+    }else {
+      cyRef.current.edges().forEach(edge => { //간선 삭제 시 아예 삭제하는 것이 아니라 투명도를 높힘
+        const edgeId = edge.data('id').split('_')[0];
+        if (newEdges.has(edgeId)) {
+          edge.style('opacity', 1);
+        } else {
+          edge.style('opacity', 0.2);
+          deletedEdges.push(edge.data()); //엣지 데이터 저장
+        }
+      });
+
+      cyRef.current.nodes().forEach(node => {
+        if (!newNodes.has(node.id())) {
+          cyRef.current.remove(`edge[source = "${node.id()}"], edge[target = "${node.id()}"]`);
+        }
+      });
+
+      //노드 변경사항 감지
+      if (nodeChange(newNodes, prevNodes)) {
+        setPrevNodes(newNodes);
+        cyRef.current.add(elements);
+        cyRef.current.layout(layoutOptions).run(); //변화 있으면 layout 재실행
+      }else{//엣지 변경사항 반영
+        cyRef.current.add(elements.filter(element => element.data.source));
+      }
+    }
 
       //마우스로 노드 움직이지 못하게 고정
       cyRef.current.on('grab', 'node', function (event) {
@@ -294,6 +336,14 @@ const Operation = (Props) => {
   }
 }, [tdata]);
 
+const nodeChange = (newNodes: Set<string>, prevNodes: Set<string>) => {
+  if (newNodes.size !== prevNodes.size) return true; // 노드의 개수가 다르면 true 반환
+  for (let item of newNodes) {
+    if (!prevNodes.has(item)) return true; // 새로운 노드가 있으면 true 반환
+  }
+  return false; // 노드의 변화가 없으면 false 반환
+};
+
 //수정, 초당 트래픽에 비례한 노드 크기
 const updateNodeData = (item: any) => {
   const src = item.src_pod;
@@ -307,7 +357,7 @@ const updateNodeData = (item: any) => {
       const lastUpdateTime = node.data('lastUpdateTime') || item.timestamp;
       const totalDataLen = (node.data('totalDataLen') || 0) + dataLen;
 
-      const dataPerSecond = totalDataLen / ((lastUpdateTime - firstUpdateTime) || 1);
+      const dataPerSecond = totalDataLen / ((lastUpdateTime - firstUpdateTime) + 1);
       node.data({
         totalDataLen: totalDataLen,
         dataPerSecond: dataPerSecond,
@@ -320,18 +370,29 @@ const updateNodeData = (item: any) => {
     updateNode(dstNode, item.data_len);  // 받는 데이터 양
   }
 };
-      
-  //수정, 노드의 크기를 업데이트하는 함수
-  const updateNodeSizes = () => {
-    cyRef.current.nodes().forEach((node: cytoscape.NodeSingular) => { 
-      const dataPerSecond = Math.abs(node.data('dataPerSecond') || 0);
-      const nodeSize = Math.max(dataPerSecond * 0.002, 15); 
-      node.style({
-        'width': `${nodeSize}px`,
-        'height': `${nodeSize}px`
-      });
-    });
-  };
+
+//수정
+const updateNodeSizes = () => {
+  cyRef.current.nodes().forEach((node: cytoscape.NodeSingular) => { 
+    const dataPerSecond = Math.abs(node.data('dataPerSecond') || 0);
+    const nodeSize = Math.max(dataPerSecond * 0.002, 15); 
+    if (!isInitialRender) {
+      node.animate({
+          style: {
+            'width': `${nodeSize}px`,
+            'height': `${nodeSize}px`
+          },
+          duration: 1000,
+          easing: 'linear',
+        });
+      }else{
+        node.style({
+          'width': `${nodeSize}px`,
+          'height': `${nodeSize}px`
+        })
+      }
+  });
+};
 
   //추가, datalen에 비례한 간선 두께 계산
   const calculateEdgeWidth = (edge: cytoscape.EdgeSingular) => {
@@ -347,16 +408,8 @@ const updateNodeData = (item: any) => {
       const edge = cyRef.current.edges().getElementById(edgeId);
   
       if (edge) {
-        const prevDataLen = edge.data('data_len') || 0;
         const newDataLen = item.data_len;
-  
-        // Save the current edge width before updating
-        const prevEdgeWidth = calculateEdgeWidth(edge);
-        edge.style({ 'width': `${prevEdgeWidth}px`, });
-  
         edge.data('data_len', newDataLen);
-        edge.data('prev_data_len', prevDataLen);
-        calculateEdgeWidth(edge);
   
       }
     });
@@ -420,7 +473,6 @@ const updateNodeData = (item: any) => {
     animationRef.current = {}; 
   };
 
-
   //추가, 노드 색 결정
   const getNodeColor = (danger_degree: string) => {
     switch (danger_degree) {
@@ -480,7 +532,6 @@ const updateNodeData = (item: any) => {
     console.log(newZoom);
   };
 
-  
   //아이콘 수정
   const handlePodClick = (pod: { x: number; y: number; name: string }) => {
     const podInfo = podData.get(pod.name);
@@ -518,27 +569,54 @@ const updateNodeData = (item: any) => {
     setShowInfo(true);
   };
 
-  //추가, 알림창
-  const addNotification = (header: string, src_pod: string, dst_pod: string, status: string, message: string) => {
-    setNotifications((prevNotifications) => {
-      const newNotification = { header, src_pod, dst_pod, status, message };
-      const newIndex = prevNotifications.length;
-      setActiveModals((prevModals) => ({ ...prevModals, [newIndex]: true }));
-      return [...prevNotifications, newNotification];
+ //추가, 알림창
+ const addNotification = (header: string, src_pod: string, dst_pod: string, danger_degree: string, message: string, timestamp: string) => {
+  setNotifications((prevNotifications) => {
+    const newNotification = { header, src_pod, dst_pod, danger_degree, message, timestamp };
+
+    // 알림 추가 시 타이머 설정
+    const timer = setTimeout(() => {
+      removeNotification(prevNotifications.length); // 10초 후에 현재 알림 제거
+    }, 10000);
+    setActiveModals((prevModals) => {
+      return { ...prevModals, [prevNotifications.length]: timer }; // 타이머 저장
     });
-  };
 
-  const removeNotification = (index: number) => {
-    setActiveModals((prevModals) => ({ ...prevModals, [index]: false }));
-  };
+    return [...prevNotifications, newNotification];
+  });
+};
 
-  const ModalHeader = ({ status }: { status: string }) => (
-      <div style={{ backgroundColor: getNodeColor(status), height: '10px' }} />
-  );
-    
-  const closeModal = () => {
-      setIsModalOpen(false);
-  };
+const removeNotification = (index: number) => {
+  setNotifications((prevNotifications) => {
+    return prevNotifications.filter((_, i) => i !== index);
+  });
+
+  // 알림 제거 시 해당 타이머 해제
+  clearTimeout(activeModals[index]!);
+  setActiveModals((prevModals) => {
+    const newModals = { ...prevModals };
+    delete newModals[index]; // 타이머 제거
+    return newModals;
+  });
+
+  if (notifications.length === 1) {
+    setIsModalOpen(false); // 알림이 모두 제거되었을 때 모달창 닫기
+  }
+};
+
+const getMessageBarType = (danger_degree: string) => {
+  switch (danger_degree) {
+    case 'warning':
+      return MessageBarType.warning;
+    case 'critical':
+      return MessageBarType.error;
+    case 'fail':
+      return MessageBarType.blocked;
+    default:
+      return MessageBarType.success;
+  }
+};
+
   
   return (
       <div className='content' onMouseMove={handleMouseMove} onWheel={handleWheelMove}>
@@ -547,7 +625,7 @@ const updateNodeData = (item: any) => {
             <div className='info-box'>
               <div className='info-content'>
                 <button onClick={() => setShowInfo(false)} className='info-top'>
-                  <VscExport />
+                  <ArrowExport20Regular  />
                   <b>Details</b>
                 </button>
                 <p className='metadata'>{selectedPod}</p>
@@ -555,27 +633,22 @@ const updateNodeData = (item: any) => {
               </div>
             </div>
           )}
-          {notifications.map(({ header, src_pod, dst_pod, message, status }, index) => (
-            <Modal key={index} isOpen={activeModals[index]} onDismiss={() => removeNotification(index)} isBlocking={false} isModeless={true} className="modal-slide-up" focusTrapZoneProps={{isClickableOutsideFocusTrap: true, forceFocusInsideTrap: false, autoFocus: false }}> {/*수정*/}                
-            <ModalHeader status={status} />                
-                <div>
-                <IconButton
-                  iconProps={{ iconName: 'ChromeClose' }}
-                  title="Close"
-                  ariaLabel="Close"
-                  onClick={() => removeNotification(index)}
-                  style={{ position: 'absolute', right: '5px', top: '10px' }}
-                  styles={{ icon: { fontSize: 13,  color: 'black'} }}
-                />
-                  <h3 style={{textAlign: 'center'}}>{header}</h3>
-                  <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> src: {src_pod}</p>
-                  <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> dst: {dst_pod}</p>
-                  <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> problem: {message}</p>
-                </div>
-            </Modal>
+          <Modal isOpen={isModalOpen} isBlocking={false} isModeless={true} className="modal-slide-up" focusTrapZoneProps={{isClickableOutsideFocusTrap: true, forceFocusInsideTrap: false, autoFocus: false }}   styles={{ main: { boxShadow: 'none' } }}>  
+            {notifications.map(({ header, src_pod, dst_pod, danger_degree, message, timestamp}, index) => (
+              <MessageBar
+              messageBarType={getMessageBarType(danger_degree)} // 수정된 부분
+              isMultiline={false}
+                onDismiss={() => removeNotification(index)}
+                dismissButtonAriaLabel="Close"
+                styles={{ root: { border: '1px solid #000', borderRadius: '5px', backgroundColor: danger_degree === 'fail' ? '#E2E2E2' : undefined, boxShadow: '0 3px 10px black' } }} 
+              >
+              <h3>{header}</h3>
+              <p>{timestamp}</p>
+              </MessageBar>
           ))}
+      </Modal>
     </div>
-);
+  );
 }
 
 const OperationM: React.FC = () => {
@@ -591,6 +664,7 @@ const OperationM: React.FC = () => {
 
   const [isSearch, setIsSearch] = useState(false);
 
+  //추가
   const animationIds: any[] = [];
   const animationRef = useRef<{[key: string]: number}>({});
 
@@ -790,15 +864,14 @@ const OperationM: React.FC = () => {
     );
   };
   
-  return (
+  return ( //수정
     <div>
       <MBar />
       <Operation showInfo={showInfo} setShowInfo={setShowInfo} selectedPod={selectedPod} setSelectedPod={setSelectedPod}
-        selectedEdge={selectedEdge} setSelectedEdge={setSelectedEdge} cyRef={cyRef} 
+        selectedEdge={selectedEdge} setSelectedEdge={setSelectedEdge} cyRef={cyRef} animationRef={animationRef}
         inputRef={inputRef} inputValue={inputValue} setInputValue={setInputValue}/>
     </div>
   );
 }
-
 
 export { Operation, OperationM };
