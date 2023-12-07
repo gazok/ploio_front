@@ -1,5 +1,3 @@
-//Operation.tsx using cytoscape.js 병합 - > 12/8 병합(resetx)
-
 import React, { useState, useEffect, useRef } from 'react';
 import cytoscape, { EdgeSingular, EventObject } from 'cytoscape';
 import "../css/App.css";
