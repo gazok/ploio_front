@@ -55,6 +55,6 @@ export interface ModuleJsonData {
     modules: ModuleData[];
 }
 
-export interface NoticeJsonData {
+export interface NoticeJsonData { //추가
     [timestamp: string]: NoticeData;
 }
