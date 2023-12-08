@@ -57,7 +57,7 @@ const Operation = (Props) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [modalContent, setModalContent] = useState("");
   const [modalStatus, setModalStatus] = useState("");
-  const [notifications, setNotifications] = useState<{ header: string; src_pod: string; dst_pod: string; danger_degree: string; message: string; timestamp: string;}[]>([]);
+  const [notifications, setNotifications] = useState<{ header: string; packet_id: string; src_pod: string; dst_pod: string; timestamp: string; data_len: Number; danger_degree: string; message: string;}[]>([]); //수정
   const [activeModals, setActiveModals] = useState<Record<number, NodeJS.Timeout | null>>({});
 
   // data.json 데이터 로드
@@ -619,22 +619,22 @@ const handleEdgeClick = (edge: { source: string; target: string }) => {
   setShowInfo(true);
 };
 
-  // 알림창
-  const addNotification = (header: string, src_pod: string, dst_pod: string, danger_degree: string, message: string, timestamp: string) => {
-    setNotifications((prevNotifications) => {
-      const newNotification = { header, src_pod, dst_pod, danger_degree, message, timestamp };
-  
-      // 알림 추가 시 타이머 설정
-      const timer = setTimeout(() => {
-        removeNotification(prevNotifications.length); // 10초 후에 현재 알림 제거
-      }, 10000);
-      setActiveModals((prevModals) => {
-        return { ...prevModals, [prevNotifications.length]: timer }; // 타이머 저장
-      });
-  
-      return [...prevNotifications, newNotification];
+  //수정, 알림창
+  const addNotification = (header: string, packet_id: string, src_pod: string, dst_pod: string, timestamp: string, data_len: number, danger_degree: string, message: string) => {
+  setNotifications((prevNotifications) => {
+    const newNotification = { header, packet_id, src_pod, dst_pod, timestamp, data_len, danger_degree, message };
+
+    // 알림 추가 시 타이머 설정
+    const timer = setTimeout(() => {
+      removeNotification(prevNotifications.length); // 10초 후에 현재 알림 제거
+    }, 10000);
+    setActiveModals((prevModals) => {
+      return { ...prevModals, [prevNotifications.length]: timer }; // 타이머 저장
     });
-  };
+
+    return [...prevNotifications, newNotification];
+  });
+};
 
   const removeNotification = (index: number) => {
     setNotifications((prevNotifications) => {
