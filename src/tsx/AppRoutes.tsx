@@ -17,6 +17,7 @@ import { Top, Menubar, Content } from "./background.tsx";
 import "../css/App.css";
 import { createTheme, ThemeProvider } from '@fluentui/react';
 import { Management, ManagementM } from "./Management.tsx";
+import { HomePage1 } from "./Home.tsx";
 
 const myTheme = createTheme({ //폰트 설정
   defaultFontStyle: { fontFamily: 'Comfortaa', fontWeight: 'regular' },
@@ -53,7 +54,7 @@ function AppRoutes() {
 
           <Route path="/Profile" element={<div><Top /><Profile /></div>} />
           <Route path="/Setting" element={<div><Top /><Setting /></div>} />
-          <Route path="/" element={<div><Top /><Content /></div>} />
+          <Route path="/" element={<div><Top /><HomePage1 /></div>} />
         </Routes>
       </BrowserRouter>
     </div>

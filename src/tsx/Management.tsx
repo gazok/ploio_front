@@ -1,5 +1,5 @@
-import { Button, Caption1, Card, CardHeader, Checkbox, Divider, Input, Label, Text, Tooltip, makeStyles, shorthands, tokens, useId } from '@fluentui/react-components';
-import { MoreHorizontal20Regular, Search32Regular, Add24Regular, Delete24Regular, ArrowClockwise28Regular, SettingsCogMultiple24Regular } from '@fluentui/react-icons'
+import { Button, Caption1, Card, CardHeader, Checkbox, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Divider, Input, Label, Text, Tooltip, makeStyles, shorthands, tokens, useId } from '@fluentui/react-components';
+import { MoreHorizontal20Regular, Search32Regular, AddSquareMultiple20Regular, SubtractSquareMultiple20Regular, ArrowClockwise28Regular, SettingsCogMultiple24Regular } from '@fluentui/react-icons'
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import '../css/Management.css';
 import { ModuleData, ModuleJsonData } from './types';
@@ -81,7 +81,6 @@ const CreateCard = (props) => {
                 props.checkHandler(props.item.GUID, chk);
                 //props.print();
               }}
-              disabled={props.item.status=='active' ? true : false}
             />
           </div>
         }
@@ -148,31 +147,6 @@ const Management = (Props) => {
 
             <Card className='card'>
               <p>Card3</p>
-            </Card>
-            <Card className='card'>
-              <p>Card3</p>
-            </Card>
-            <Card className='card'>
-              <p>Card3</p>
-            </Card>
-            <Card className='card'>
-              <p>Card3</p>
-            </Card>
-            <Card className='card'>
-              <p>Card3</p>
-            </Card>
-            <Card className='card'>
-              <p>Card3</p>
-            </Card>
-            <Card className='card'>
-              <p>Card3</p>
-            </Card>
-            <Card className='card'>
-              <p>Card10</p>
-            </Card>
-
-            <Card className='card'>
-              <p>Card11</p>
             </Card>
           </section>
         </div>
@@ -296,15 +270,53 @@ const ManagementM: React.FC = () => {
     },
     {
       key: 'add',
-      text: 'Add',
-      iconProps: { iconName: 'ExploreContent' },
-      onClick: () => addItemPost(),
+      onRender: () => 
+        <Dialog>
+          <DialogTrigger disableButtonEnhancement>
+            <Button icon={<AddSquareMultiple20Regular />}>Add</Button>
+          </DialogTrigger>
+          <DialogSurface>
+            <DialogBody>
+            <DialogTitle>Notice</DialogTitle>
+              <DialogContent>
+                Do you really want to <b>Add</b> these modules?
+              </DialogContent>
+              <DialogActions>
+                <DialogTrigger>
+                  <Button appearance="primary" onClick={addItemPost}>OK</Button>
+                </DialogTrigger>
+                <DialogTrigger disableButtonEnhancement>
+                  <Button appearance="secondary">Cancel</Button>
+                </DialogTrigger>
+              </DialogActions>
+            </DialogBody>
+          </DialogSurface>
+        </Dialog>
     },
     {
       key: 'remove',
-      text: 'Remove',
-      iconProps: { iconName: 'CollapseContent' },
-      onClick: () => removeItemPost(),
+      onRender: () =>
+        <Dialog>
+          <DialogTrigger disableButtonEnhancement>
+            <Button icon={<SubtractSquareMultiple20Regular />}>Remove</Button>
+          </DialogTrigger>
+          <DialogSurface>
+            <DialogBody>
+            <DialogTitle>Notice</DialogTitle>
+              <DialogContent>
+                Do you really want to <b>Remove</b> these modules?
+              </DialogContent>
+              <DialogActions>
+                <DialogTrigger>
+                  <Button appearance="primary" onClick={removeItemPost}>OK</Button>
+                </DialogTrigger>
+                <DialogTrigger disableButtonEnhancement>
+                  <Button appearance="secondary">Cancel</Button>
+                </DialogTrigger>
+              </DialogActions>
+            </DialogBody>
+          </DialogSurface>
+        </Dialog>
     }
   ];
 
