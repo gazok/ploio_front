@@ -689,9 +689,9 @@ const handleEdgeClick = (edge: { source: string; target: string }) => {
                 {selectedEdge && <p className='metadata'>{selectedEdge}</p>}
               </div>
             </div>
-          )}
-          <Modal isOpen={isModalOpen} isBlocking={false} isModeless={true} className="modal-slide-up" focusTrapZoneProps={{isClickableOutsideFocusTrap: true, forceFocusInsideTrap: false, autoFocus: false }}   styles={{ main: { boxShadow: 'none', backgroundColor: 'transparent' } }}> {/*수정*/} 
-            {notifications.map(({ header, src_pod, dst_pod, danger_degree, message, timestamp}, index) => (
+          )} {/*수정*/}
+          <Modal isOpen={isModalOpen} isBlocking={false} isModeless={true} className="modal-slide-up" focusTrapZoneProps={{isClickableOutsideFocusTrap: true, forceFocusInsideTrap: false, autoFocus: false }}   styles={{ main: { boxShadow: 'none', backgroundColor: 'transparent' } }}> 
+            {notifications.map(({ header, packet_id, src_pod, dst_pod, timestamp, data_len, danger_degree, message}, index) => (
               <MessageBar
               messageBarType={getMessageBarType(danger_degree)} 
               isMultiline={false}
@@ -702,11 +702,10 @@ const handleEdgeClick = (edge: { source: string; target: string }) => {
               <h3>{header}</h3>
               <p>{timestamp}</p>
               </MessageBar>
-              ))}
-          </Modal>
+          ))}
+        </Modal>
     </div>
-);
-}
+);}
 
 const OperationM: React.FC = () => {
   // UI 요소 관리를 위한 상태
