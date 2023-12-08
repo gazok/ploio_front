@@ -1,0 +1,652 @@
+.homepage {
+  justify-content: center;
+}
+  
+.homepage-button {
+  display: flex;
+  margin-top: 300px;
+  justify-content: space-between;
+}
+
+.homepage-button1 {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.homepage-card {
+  width: 700px;
+  height: 600px;
+}
+
+.homepage-cardfield {
+    margin-left: 10px;
+}
+
+/* Animation */
+.homepage-animation1 {
+    position: absolute;
+    width: 650px;
+    height: 300px;
+}
+
+.homepage-animation1-dummybox {
+    position: absolute;
+    
+    background-color: white;
+    width: 50px;
+    height: 50px;
+
+    left:0px;
+    top:0px;
+    z-index: 2;
+}
+
+.homepage-animation1-box1 {
+    position: absolute;
+    text-align: center;
+    line-height: 45px;
+    
+    background-color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 20%;
+    border: 2px solid green;
+
+    left:300px;
+    top:0px;
+    z-index: 2;
+}
+
+/* Server */
+@keyframes animation1-box2 {
+    0%   {
+        background-color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 20%;
+        border: 2px solid green;
+
+        left:500px;
+        top:250px;
+        z-index: 2;
+    }
+    50%   {
+        background-color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 20%;
+        border: 2px solid green;
+
+        left:500px;
+        top:250px;
+        z-index: 2;
+    }
+    70% {
+        background-color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 20%;
+        border: 2px solid red;
+
+        left:500px;
+        top:250px;
+        z-index: 2;
+    }
+    100%   {
+        background-color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 20%;
+        border: 2px solid green;
+
+        left:500px;
+        top:250px;
+        z-index: 2;
+    }
+}
+.homepage-animation1-box2 {
+    position: absolute;
+    text-align: center;
+    line-height: 45px;
+
+    animation-name: animation1-box2;
+    animation-delay: 3.4s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+}
+.homepage-animation1-box2-initial {
+    position: absolute;
+    text-align: center;
+    line-height: 45px;
+
+    background-color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 20%;
+    border: 2px solid green;
+
+    left:500px;
+    top:250px;
+    z-index: 1;
+}
+
+.homepage-animation1-box3 {
+    position: absolute;
+    text-align: center;
+    line-height: 45px;
+    
+    background-color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 20%;
+    border: 2px solid green;
+
+    left:100px;
+    top:250px;
+    z-index: 2;
+}
+
+/* Pod2 -> Server */
+@keyframes animation1-packet1 {
+    0%   {
+        background-color:white;
+        width: 20px;
+        height: 20px;
+
+        left:315px;
+        top:15px;
+    }
+    100% {
+        background-color:white;
+        width: 20px;
+        height: 20px;
+
+        left:515px;
+        top:265px;
+    }
+}
+.homepage-animation1-packet1-1 {
+    position: absolute;
+
+    border-radius: 50%;
+    border: 1px solid black;
+
+    animation-name: animation1-packet1;
+    animation-delay: 0s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation1-packet1-2 {
+    position: absolute;
+
+    border-radius: 50%;
+    border: 1px solid black;
+    
+    animation-name: animation1-packet1;
+    animation-delay: 0.5s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation1-packet1-3 {
+    position: absolute;
+    
+    border-radius: 50%;
+    border: 1px solid black;
+
+    animation-name: animation1-packet1;
+    animation-delay: 1s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation1-packet1-4 {
+    position: absolute;
+
+    border-radius: 50%;
+    border: 1px solid black;
+    
+    animation-name: animation1-packet1;
+    animation-delay: 1.5s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation1-packet1-5 {
+    position: absolute;
+    text-align: center;
+
+    border-radius: 50%;
+    border: 1px solid red;
+    
+    animation-name: animation1-packet1;
+    animation-delay: 2.0s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation1-packet1-6 {
+    position: absolute;
+    text-align: center;
+    
+    border-radius: 50%;
+    border: 1px solid red;
+
+    animation-name: animation1-packet1;
+    animation-delay: 2.5s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes animation1-packet2 {
+    0%   {
+        background-color:white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 1px solid black;
+
+        left:115px;
+        top:265px;
+    }
+    100% {
+        background-color:white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 1px solid black;
+
+        left:315px;
+        top:15px;
+    }
+}
+.homepage-animation1-packet2-1 {
+    position: absolute;
+
+    animation-name: animation1-packet2;
+    animation-delay: 0s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation1-packet2-2 {
+    position: absolute;
+    
+    animation-name: animation1-packet2;
+    animation-delay: 0.5s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation1-packet2-3 {
+    position: absolute;
+    
+    animation-name: animation1-packet2;
+    animation-delay: 1s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation1-packet2-4 {
+    position: absolute;
+    
+    animation-name: animation1-packet2;
+    animation-delay: 1.5s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation1-packet2-5 {
+    position: absolute;
+    
+    animation-name: animation1-packet2;
+    animation-delay: 2.0s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation1-packet2-6 {
+    position: absolute;
+    
+    animation-name: animation1-packet2;
+    animation-delay: 2.5s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes animation1-packet3 {
+    0%   {
+        background-color:white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 1px solid black;
+
+        left:515px;
+        top:265px;
+    }
+    100% {
+        background-color:white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 1px solid black;
+
+        left:115px;
+        top:265px;
+    }
+}
+.homepage-animation1-packet3-1 {
+    position: absolute;
+
+    animation-name: animation1-packet3;
+    animation-delay: 0s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation1-packet3-2 {
+    position: absolute;
+    
+    animation-name: animation1-packet3;
+    animation-delay: 0.5s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation1-packet3-3 {
+    position: absolute;
+    
+    animation-name: animation1-packet3;
+    animation-delay: 1s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation1-packet3-4 {
+    position: absolute;
+    
+    animation-name: animation1-packet3;
+    animation-delay: 1.5s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation1-packet3-5 {
+    position: absolute;
+    
+    animation-name: animation1-packet3;
+    animation-delay: 2.0s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation1-packet3-6 {
+    position: absolute;
+    
+    animation-name: animation1-packet3;
+    animation-delay: 2.5s;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.homepage-animation2 {
+    position: absolute;
+    width: 650px;
+    height: 300px;
+}
+
+.homepage-animation2-box1 {
+    position: absolute;
+    text-align: center;
+    line-height: 45px;
+    
+    background-color: white;
+    width: 70px;
+    height: 150px;
+    border-radius: 5%;
+    border: 2px solid black;
+
+    left:100px;
+    top:150px;
+    z-index: 2;
+}
+
+.homepage-animation2-box2 {
+    position: absolute;
+    text-align: center;
+    line-height: 45px;
+    
+    background-color: white;
+    width: 70px;
+    height: 150px;
+    border-radius: 5%;
+    border: 2px solid black;
+
+    left:290px;
+    top:20px;
+    z-index: 2;
+}
+
+.homepage-animation2-box3 {
+    position: absolute;
+    text-align: center;
+    line-height: 45px;
+    
+    background-color: white;
+    width: 70px;
+    height: 150px;
+    border-radius: 5%;
+    border: 2px solid black;
+
+    left:480px;
+    top:20px;
+    z-index: 2;
+}
+
+@keyframes animation2-packet1 {
+    0%   {
+        background-color:white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 1px solid black;
+
+        left:0px;
+        top:250px;
+    }
+    100% {
+        background-color:white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 1px solid black;
+
+        left:630px;
+        top:250px;
+    }
+}
+.homepage-animation2-packet1-1 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 0s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-2 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 0.5s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-3 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 1.0s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-4 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 1.5s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-5 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 2.0s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-6 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 2.5s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-7 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 3.0s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-8 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 3.5s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-9 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 4.0s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-10 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 4.5s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-11 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 5.0s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-12 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 5.5s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-13 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 6.0s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-14 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 6.5s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-15 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 7.0s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-16 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 7.5s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-17 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 8.0s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-18 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 8.5s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-19 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 9.0s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.homepage-animation2-packet1-20 {
+    position: absolute;
+    
+    animation-name: animation2-packet1;
+    animation-delay: 9.5s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}

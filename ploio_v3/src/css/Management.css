@@ -1,0 +1,29 @@
+.card-section {
+    display: grid;
+    grid-template-columns: 631px 631px;
+    margin-top: 35px;
+}
+
+.card {
+    max-width: "100%";
+    height: "fit-content";
+    margin: 20px;
+}
+
+.manage-menu {
+    position: absolute;
+    display: flex;
+    width: 1280px; /* 너비 설정 */
+    align-items: center; /* 내용을 세로 중앙 정렬 */
+    background-color: #ffffff;
+    padding: 0px;
+    color: black;
+    margin-top: 0px;
+    border: 2px solid #f2f2f2;
+    border-top-left-radius: 15px;
+    z-index: 2;
+  }
+
+.flex-horizontal {
+    display: flex;
+}

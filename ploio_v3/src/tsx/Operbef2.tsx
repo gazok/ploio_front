@@ -1,8 +1,4 @@
 /*
-//Operation.tsx
-//Ops 부문 가시화
-//수정 중 
-
 //Operation.tsx using cytoscape.js
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -37,22 +33,104 @@ const Operation = (Props) => {
 
   // Graph
   const cyRef = Props.cyRef;
-  const inputRef = Props.inputRef;
-  const [searchTerm, setSearchTerm] = useState('');
-  const [inputValue, setInputValue] = [Props.inputValue, Props.setInputValue];
-  const [zoom, setZoom] = useState();
+  //const inputRef = Props.inputRef;
+  //const [searchTerm, setSearchTerm] = useState('');
+  //const [inputValue, setInputValue] = [Props.inputValue, Props.setInputValue];
+  //const [zoom, setZoom] = useState();
+  //const [viewport, setViewport] = useState({x: 0, y: 0});
+
+  // 노드 위치, 색상 및 데이터 관리를 위한 상태
+  //const [nodePositions, setNodePositions] = useState<{ [key: string]: { x: number; y: number } }>({});
+  //const [nodes, setNodes] = [];
+  //const [links, setLinks] = useState<{ source: string; target: string }[]>([]);
+  //const [groupedNodes, setGroupedNodes] = useState<{ [key: string]: number }>({});
+
+  //추가, 알림창 
+  //const [isModalOpen, setIsModalOpen] = [];
+  //const [modalContent, setModalContent] = useState("");
+  //const [modalStatus, setModalStatus] = useState("");
+  //const [notifications, setNotifications] = [];
+  //const [activeModals, setActiveModals] = [];
+
+  // data.json 데이터 로드
+  
+  //const [linkData, setLinkData] = []; // src, dst, data_len
+  //const [podData, setPodData] = []; // 포드들의 실제 데이터 모임
+  //const [pleaseData, setPleaseData] = useState<PodData[] | null>(null); // 포드들의 실제 데이터 모임2
+  
+  //const [securityData, setSecurityData] = [];
+  //const [curPodData, setCurPodData] = useState<Map<string, PodData>>(new Map());
+
+  
+  
+
+  //const graphWidth = 1300;
+  //const graphHeight = 600;
+
+  const ModalHeader = Props.ModalHeader;
+  const removeNotification = Props.removeNotification;
+  
+  return (
+      <div className='content' onMouseMove={Props.handleMouseMove} onWheel={Props.handleWheelMove}>
+        <div id="cy" style={{ width: '100%', height: '93%', marginTop: '40px' }} />
+          {showInfo && (
+            <div className='info-box'>
+              <div className='info-content'>
+                <button onClick={() => setShowInfo(false)} className='info-top'>
+                  <VscExport />
+                  <b>Details</b>
+                </button>
+                <p className='metadata'>{selectedPod}</p>
+                {selectedEdge && <p className='metadata'>{selectedEdge}</p>}
+                <p></p>
+              </div>
+            </div>
+          )}
+          {Props.notifications.map(({ header, src_pod, dst_pod, message, status }, index) => (
+            <Modal key={index} isOpen={Props.activeModals[index]} onDismiss={() => removeNotification(index)} isBlocking={false} isModeless={true} className="modal-slide-up">  
+              <ModalHeader status={status} />                
+              <div>
+                <IconButton
+                  iconProps={{ iconName: 'ChromeClose' }}
+                  title="Close"
+                  ariaLabel="Close"
+                  onClick={() => removeNotification(index)}
+                  style={{ position: 'absolute', right: '5px', top: '10px' }}
+                  styles={{ icon: { fontSize: 13,  color: 'black'} }}
+                />
+                  <h3 style={{textAlign: 'center'}}>{header}</h3>
+                  <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> src: {src_pod}</p> 
+                  <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> dst: {dst_pod}</p>
+                  <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> problem: {message}</p>
+              </div>
+            </Modal>
+          ))}
+    </div>
+);
+}
+
+const OperationM: React.FC = () => {
+  // UI 요소 관리를 위한 상태
+  const [showInfo, setShowInfo] = useState(false);
+  const [selectedPod, setSelectedPod] = useState<JSX.Element | null>(null);
+  const [selectedEdge, setSelectedEdge] = useState<JSX.Element | null>(null);
+  
+  // Graph
+  const cyRef = useRef<any>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const [inputValue, setInputValue] = useState('');
+
   const [viewport, setViewport] = useState({x: 0, y: 0});
 
   // 노드 위치, 색상 및 데이터 관리를 위한 상태
-  const [nodePositions, setNodePositions] = useState<{ [key: string]: { x: number; y: number } }>({});
+  
   const [nodes, setNodes] = useState<{ x: number; y: number; name: string; size: number }[]>([]);
-  const [links, setLinks] = useState<{ source: string; target: string }[]>([]);
-  const [groupedNodes, setGroupedNodes] = useState<{ [key: string]: number }>({});
 
   //추가, 알림창 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [modalContent, setModalContent] = useState("");
-  const [modalStatus, setModalStatus] = useState("");
+
+
   const [notifications, setNotifications] = useState<{ header: string; src_pod: string; dst_pod: string; message: string; status: string; }[]>([]);
   const [activeModals, setActiveModals] = useState<Record<number, boolean>>({});
 
@@ -60,16 +138,13 @@ const Operation = (Props) => {
   const [tdata, setTdata] = useState<JsonData | null>(null); //json 받는 컨테이너
   const [linkData, setLinkData] = useState<Data[] | null>(null); // src, dst, data_len
   const [podData, setPodData] = useState(new Map()); // 포드들의 실제 데이터 모임
-  const [pleaseData, setPleaseData] = useState<PodData[] | null>(null); // 포드들의 실제 데이터 모임2
-  
+
+
   const [securityData, setSecurityData] = useState(new Map<string, SecurityData>());
-  const [curPodData, setCurPodData] = useState<Map<string, PodData>>(new Map());
 
-  
-  
 
-  const graphWidth = 1300;
-  const graphHeight = 600;
+  const [isSearch, setIsSearch] = useState(false);
+
 
   useEffect(() => {
     Logic(setTdata, setPodData, setSecurityData);
@@ -317,187 +392,6 @@ const Operation = (Props) => {
     });
   };
 
-  //추가, 노드 색 결정
-  const getNodeColor = (danger_degree: string) => {
-    switch (danger_degree) {
-      case 'warning':
-        return 'rgb(255, 200, 0)';
-      case 'critical':
-        return 'red';
-      case 'fail':
-        return 'black';
-      default:
-        return 'green';
-    }
-  };
-
-  const commandBarItems = [
-    {
-      key: 'add',
-      text: 'Add'
-    }
-  ]
-  
-
-  
-
-
-
-  const findNodeData = (PodKey: string) => {
-    const NodeData = nodes.find(
-      (node) =>
-        node.name === PodKey
-    );
-    return NodeData || { x: 0, y: 0, name: '', size: 0 };
-  };
-
-  const findEdgeData = (sourcePod: string, destPod: string) => {
-    const edgeData = linkData?.find(
-      (pod) =>
-        `${pod.src_pod}` === sourcePod &&
-        `${pod.dst_pod}` === destPod
-    );
-    return edgeData || { dst_pod: '', data_len: '' };
-  };
-
-
-
-const handleMouseMove = (e: React.MouseEvent) => {
-  if (e.buttons === 1) {
-    const dx = e.movementX;
-    const dy = e.movementY;
-
-    setViewport((prevViewport) => ({
-      x: prevViewport.x - dx,
-      y: prevViewport.y + dy,
-    }));
-  }
-};
-
-  const handleWheelMove = (e: React.WheelEvent) => {
-    const dr = e.deltaY * 0.001; 
-    const newZoom = cyRef.current.zoom() + dr;
-    if (newZoom >= 0.5 && newZoom <= 2.0) {
-      cyRef.current.zoom({ level: newZoom, renderedPosition: { x: 650, y: 300 } });
-    }
-    console.log(newZoom);
-  };
-
-  
-  
-  const handlePodClick = (pod: { x: number; y: number; name: string }) => {
-    const podInfo = podData.get(pod.name);
-    setSelectedPod(
-      <div>
-        <h3>Pod Information</h3>
-        <p>
-          <VscCircleSmall /> namespace: {pod.name.split(':')[0]} <br />
-          <VscCircleSmall /> name: {pod.name.split(':')[1]} <br />
-          <VscCircleSmall /> ip: {podInfo.ip} <br />
-          <VscCircleSmall /> danger_degree: {podInfo.danger_degree} <br />
-          <VscCircleSmall /> description: {podInfo.message} <br />
-        </p>
-      </div>
-    );
-    setSelectedEdge(null);
-    setShowInfo(true);
-  };
-
-  const handleEdgeClick = (edge: { source: string; target: string }) => {
-    const edgeData = findEdgeData(edge.source, edge.target);
-    setSelectedEdge(
-      <div>
-        <h3>Communication Information</h3>
-        <p>
-          <VscCircleSmall /> Communication {edge.source} to {edge.target} <br />
-          <VscCircleSmall /> DstPod Name: {edgeData.dst_pod} <br />
-          <VscCircleSmall /> Data length: {edgeData.data_len} <br />
-        </p>
-      </div>
-    );
-    setSelectedPod(null);
-    setShowInfo(true);
-  };
-
-  
-
-  //추가, 알림창
-  const addNotification = (header: string, src_pod: string, dst_pod: string, status: string, message: string) => {
-    setNotifications((prevNotifications) => {
-      const newNotification = { header, src_pod, dst_pod, status, message };
-      const newIndex = prevNotifications.length;
-      setActiveModals((prevModals) => ({ ...prevModals, [newIndex]: true }));
-      return [...prevNotifications, newNotification];
-    });
-  };
-
-  const removeNotification = (index: number) => {
-    setActiveModals((prevModals) => ({ ...prevModals, [index]: false }));
-  };
-
-  const ModalHeader = ({ status }: { status: string }) => (
-      <div style={{ backgroundColor: getNodeColor(status), height: '10px' }} />
-  );
-    
-  const closeModal = () => {
-      setIsModalOpen(false);
-  };
-  
-  return (
-      <div className='content' onMouseMove={handleMouseMove} onWheel={handleWheelMove}>
-        <div id="cy" style={{ width: '100%', height: '93%', marginTop: '40px' }} />
-          {showInfo && (
-            <div className='info-box'>
-              <div className='info-content'>
-                <button onClick={() => setShowInfo(false)} className='info-top'>
-                  <VscExport />
-                  <b>Details</b>
-                </button>
-                <p className='metadata'>{selectedPod}</p>
-                {selectedEdge && <p className='metadata'>{selectedEdge}</p>}
-              </div>
-            </div>
-          )}
-          {notifications.map(({ header, src_pod, dst_pod, message, status }, index) => (
-            <Modal key={index} isOpen={activeModals[index]} onDismiss={() => removeNotification(index)} isBlocking={false} isModeless={true} className="modal-slide-up">  
-                <ModalHeader status={status} />                
-                <div>
-                <IconButton
-                  iconProps={{ iconName: 'ChromeClose' }}
-                  title="Close"
-                  ariaLabel="Close"
-                  onClick={() => removeNotification(index)}
-                  style={{ position: 'absolute', right: '5px', top: '10px' }}
-                  styles={{ icon: { fontSize: 13,  color: 'black'} }}
-                />
-                  <h3 style={{textAlign: 'center'}}>{header}</h3>
-                  <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> src: {src_pod}</p>
-                  <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> dst: {dst_pod}</p>
-                  <p><Icon iconName="CircleShapeSolid" style={{ marginLeft: '15px' }} styles={{ root: {fontSize: 7}}}/> problem: {message}</p>
-                </div>
-            </Modal>
-          ))}
-    </div>
-);
-}
-
-const OperationM: React.FC = () => {
-  // UI 요소 관리를 위한 상태
-  const [showInfo, setShowInfo] = useState(false);
-  const [selectedPod, setSelectedPod] = useState<JSX.Element | null>(null);
-  const [selectedEdge, setSelectedEdge] = useState<JSX.Element | null>(null);
-  
-  // Graph
-  const cyRef = useRef<any>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const [inputValue, setInputValue] = useState('');
-
-
-  const [isSearch, setIsSearch] = useState(false);
-
-  
-
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -546,6 +440,44 @@ const OperationM: React.FC = () => {
     setIsSearch(true);
   }
 
+  //추가, 노드 색 결정
+  const getNodeColor = (danger_degree: string) => {
+    switch (danger_degree) {
+      case 'warning':
+        return 'rgb(255, 200, 0)';
+      case 'critical':
+        return 'red';
+      case 'fail':
+        return 'black';
+      default:
+        return 'green';
+    }
+  };
+
+  const commandBarItems = [
+    {
+      key: 'add',
+      text: 'Add'
+    }
+  ]
+
+  const findNodeData = (PodKey: string) => {
+    const NodeData = nodes.find(
+      (node) =>
+        node.name === PodKey
+    );
+    return NodeData || { x: 0, y: 0, name: '', size: 0 };
+  };
+
+  const findEdgeData = (sourcePod: string, destPod: string) => {
+    const edgeData = linkData?.find(
+      (pod) =>
+        `${pod.src_pod}` === sourcePod &&
+        `${pod.dst_pod}` === destPod
+    );
+    return edgeData || { dst_pod: '', data_len: '' };
+  };
+
   // 검색창에 입력하는 값을 state에 저장
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log('abc')
@@ -557,6 +489,40 @@ const OperationM: React.FC = () => {
     if (e.key === 'Enter') {
       handleSearch();
     }
+  };
+
+  const handlePodClick = (pod: { x: number; y: number; name: string }) => {
+    const podInfo = podData.get(pod.name);
+    setSelectedPod(
+      <div>
+        <h3>Pod Information</h3>
+        <p>
+          <VscCircleSmall /> namespace: {pod.name.split(':')[0]} <br />
+          <VscCircleSmall /> name: {pod.name.split(':')[1]} <br />
+          <VscCircleSmall /> ip: {podInfo.ip} <br />
+          <VscCircleSmall /> danger_degree: {podInfo.danger_degree} <br />
+          <VscCircleSmall /> description: {podInfo.message} <br />
+        </p>
+      </div>
+    );
+    setSelectedEdge(null);
+    setShowInfo(true);
+  };
+
+  const handleEdgeClick = (edge: { source: string; target: string }) => {
+    const edgeData = findEdgeData(edge.source, edge.target);
+    setSelectedEdge(
+      <div>
+        <h3>Communication Information</h3>
+        <p>
+          <VscCircleSmall /> Communication {edge.source} to {edge.target} <br />
+          <VscCircleSmall /> DstPod Name: {edgeData.dst_pod} <br />
+          <VscCircleSmall /> Data length: {edgeData.data_len} <br />
+        </p>
+      </div>
+    );
+    setSelectedPod(null);
+    setShowInfo(true);
   };
 
   const handleZoomIn = () => {
@@ -578,6 +544,28 @@ const OperationM: React.FC = () => {
     setSelectedEdge(null);
     setShowInfo(false);
     setInputValue('');
+  };
+
+  //추가, 알림창
+  const addNotification = (header: string, src_pod: string, dst_pod: string, status: string, message: string) => {
+    setNotifications((prevNotifications) => {
+      const newNotification = { header, src_pod, dst_pod, status, message };
+      const newIndex = prevNotifications.length;
+      setActiveModals((prevModals) => ({ ...prevModals, [newIndex]: true }));
+      return [...prevNotifications, newNotification];
+    });
+  };
+
+  const removeNotification = (index: number) => {
+    setActiveModals((prevModals) => ({ ...prevModals, [index]: false }));
+  };
+
+  const ModalHeader = ({ status }: { status: string }) => (
+      <div style={{ backgroundColor: getNodeColor(status), height: '10px' }} />
+  );
+    
+  const closeModal = () => {
+      setIsModalOpen(false);
   };
   
   //menu-bar
@@ -606,16 +594,39 @@ const OperationM: React.FC = () => {
       </div>
     );
   };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (e.buttons === 1) {
+      const dx = e.movementX;
+      const dy = e.movementY;
+  
+      setViewport((prevViewport) => ({
+        x: prevViewport.x - dx,
+        y: prevViewport.y + dy,
+      }));
+    }
+  };
+  
+    const handleWheelMove = (e: React.WheelEvent) => {
+      const dr = e.deltaY * 0.001; 
+      const newZoom = cyRef.current.zoom() + dr;
+      if (newZoom >= 0.5 && newZoom <= 2.0) {
+        cyRef.current.zoom({ level: newZoom, renderedPosition: { x: 650, y: 300 } });
+      }
+      console.log(newZoom);
+    };
   
   return (
     <div>
       <MBar />
-      <Operation showInfo={showInfo} setshowInfo={setShowInfo} selectedPod={selectedPod} setSelectedPod={setSelectedPod} selectedEdge={selectedEdge} setSelectedEdge={setSelectedEdge} cyRef={cyRef} inputRef={inputRef} inputValue={inputValue} setInputValue={setInputValue}/>
+      <Operation showInfo={showInfo} setshowInfo={setShowInfo} selectedPod={selectedPod}
+        setSelectedPod={setSelectedPod} selectedEdge={selectedEdge} setSelectedEdge={setSelectedEdge} cyRef={cyRef}
+        inputRef={inputRef} inputValue={inputValue} setInputValue={setInputValue} notifications={notifications} activeModals={activeModals}
+        handleMouseMove={handleMouseMove} handleWheelMove={handleWheelMove} removeNotification={removeNotification} ModalHeader={ModalHeader} />
     </div>
   );
 }
 
 
 export { Operation, OperationM };
-
 */

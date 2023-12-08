@@ -1,5 +1,6 @@
-import { Button, Caption1, Card, CardHeader, Checkbox, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Divider, Input, Label, Text, Tooltip, makeStyles, shorthands, tokens, useId } from '@fluentui/react-components';
-import { MoreHorizontal20Regular, Search32Regular, AddSquareMultiple20Regular, SubtractSquareMultiple20Regular, ArrowClockwise28Regular, SettingsCogMultiple24Regular } from '@fluentui/react-icons'
+/*
+import { Button, Caption1, Card, CardHeader, Checkbox, Divider, Input, Label, Text, Tooltip, makeStyles, shorthands, tokens, useId } from '@fluentui/react-components';
+import { MoreHorizontal20Regular, Search32Regular, Add24Regular, Delete24Regular, ArrowClockwise28Regular } from '@fluentui/react-icons'
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import '../css/Management.css';
 import { ModuleData, ModuleJsonData } from './types';
@@ -67,11 +68,9 @@ const CreateCard = (props) => {
   return (
     <Card className='card'>
       <CardHeader 
-        image={<SettingsCogMultiple24Regular />} //<img className={styles.logo} src={"shipicon.png"} alt="App logo" />
+        image={<img className={styles.logo} src={"shipicon.png"} alt="App logo" />}
         header={<Text weight="semibold">{props.item.Name} </Text>}
-        description={<div>
-          <Caption1 >{props.item.status}</Caption1>
-          </div>}
+        description={<Caption1 >{props.item.status}</Caption1>}
         action={
           <div>
             <Checkbox 
@@ -81,6 +80,7 @@ const CreateCard = (props) => {
                 props.checkHandler(props.item.GUID, chk);
                 //props.print();
               }}
+              disabled={props.item.status=='active' ? true : false}
             />
           </div>
         }
@@ -148,6 +148,31 @@ const Management = (Props) => {
             <Card className='card'>
               <p>Card3</p>
             </Card>
+            <Card className='card'>
+              <p>Card3</p>
+            </Card>
+            <Card className='card'>
+              <p>Card3</p>
+            </Card>
+            <Card className='card'>
+              <p>Card3</p>
+            </Card>
+            <Card className='card'>
+              <p>Card3</p>
+            </Card>
+            <Card className='card'>
+              <p>Card3</p>
+            </Card>
+            <Card className='card'>
+              <p>Card3</p>
+            </Card>
+            <Card className='card'>
+              <p>Card10</p>
+            </Card>
+
+            <Card className='card'>
+              <p>Card11</p>
+            </Card>
           </section>
         </div>
       </div>
@@ -168,32 +193,10 @@ const ManagementM: React.FC = () => {
   const addItemPost = () => {
     //json fetch(POST)
     console.log(checkedItems);
-    /*
-    const res: JsonData = await fetch('http://123.108.168.190:8000/summary/tmp/~', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'}
-        body: JSON.stringify({
-          'email': 'sunghae',
-          'password': '1234'
-        })
-    }).then(response => response.json());
-    callback(res);
-    */
   }
 
   const removeItemPost = () => {
     console.log(checkedItems);
-    /*
-    const res: JsonData = await fetch('http://123.108.168.190:8000/summary/tmp/~', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'}
-        body: JSON.stringify({
-          'email': 'sunghae',
-          'password': '1234'
-        })
-    }).then(response => response.json());
-    callback(res);
-    */
   }
 
   const handleSearch = () => {
@@ -201,20 +204,16 @@ const ManagementM: React.FC = () => {
     let moduleSD: ModuleData[] = [];
 
     if(moduleData) {
-      moduleData.modules.forEach((item: ModuleData) => {
-        if(item.Name.includes(inputValue)) {
-          moduleSD.push(item);
-        }
-      });
+      if(inputValue!=''){
+        moduleData.modules.forEach((item: ModuleData) => {
+          if(item.Name.includes(inputValue)) {
+            moduleSD.push(item);
+          }
+        });
+      }
 
       console.log(moduleSD);
       setModuleSearchData(moduleSD);
-    }
-  }
-
-  const handleReset = () => {
-    if(moduleData) {
-      setModuleSearchData(moduleData.modules);
     }
   }
 
@@ -225,16 +224,10 @@ const ManagementM: React.FC = () => {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key == 'Enter') {
-      handleSearch();
+    if (e.key === 'Enter') {
+      //handleSearch();
     }
   };
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [inputValue]);
 
   const commandBarItems: ICommandBarItemProps[] = [
     {
@@ -255,7 +248,7 @@ const ManagementM: React.FC = () => {
       key: 'reset',
       text: 'Reset',
       iconProps: { iconName: 'Refresh' },
-      onClick: () => handleReset(),
+      onClick: () => console.log(moduleData),
     },
     {
       key: 'div1-3',
@@ -270,53 +263,15 @@ const ManagementM: React.FC = () => {
     },
     {
       key: 'add',
-      onRender: () => 
-        <Dialog>
-          <DialogTrigger disableButtonEnhancement>
-            <Button icon={<AddSquareMultiple20Regular />}>Add</Button>
-          </DialogTrigger>
-          <DialogSurface>
-            <DialogBody>
-            <DialogTitle>Notice</DialogTitle>
-              <DialogContent>
-                Do you really want to <b>Add</b> these modules?
-              </DialogContent>
-              <DialogActions>
-                <DialogTrigger>
-                  <Button appearance="primary" onClick={addItemPost}>OK</Button>
-                </DialogTrigger>
-                <DialogTrigger disableButtonEnhancement>
-                  <Button appearance="secondary">Cancel</Button>
-                </DialogTrigger>
-              </DialogActions>
-            </DialogBody>
-          </DialogSurface>
-        </Dialog>
+      text: 'Add',
+      iconProps: { iconName: 'ExploreContent' },
+      onClick: () => addItemPost(),
     },
     {
       key: 'remove',
-      onRender: () =>
-        <Dialog>
-          <DialogTrigger disableButtonEnhancement>
-            <Button icon={<SubtractSquareMultiple20Regular />}>Remove</Button>
-          </DialogTrigger>
-          <DialogSurface>
-            <DialogBody>
-            <DialogTitle>Notice</DialogTitle>
-              <DialogContent>
-                Do you really want to <b>Remove</b> these modules?
-              </DialogContent>
-              <DialogActions>
-                <DialogTrigger>
-                  <Button appearance="primary" onClick={removeItemPost}>OK</Button>
-                </DialogTrigger>
-                <DialogTrigger disableButtonEnhancement>
-                  <Button appearance="secondary">Cancel</Button>
-                </DialogTrigger>
-              </DialogActions>
-            </DialogBody>
-          </DialogSurface>
-        </Dialog>
+      text: 'Remove',
+      iconProps: { iconName: 'CollapseContent' },
+      onClick: () => removeItemPost(),
     }
   ];
 
@@ -324,7 +279,7 @@ const ManagementM: React.FC = () => {
     return (
       <div className="manage-menu">
         <div style={{marginLeft: '15px'}}>
-          <Input ref={inputRef} type="text" placeholder="Search..." value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyPress} />
+          <Input ref={inputRef} type="text" placeholder="Search..." value={inputValue} onChange={handleInputChange} onKeyPress={handleKeyPress} />
         </div>
         <CommandBar items={commandBarItems} />
 
@@ -346,3 +301,5 @@ const ManagementM: React.FC = () => {
 }
 
 export { Management, ManagementM };
+
+*/

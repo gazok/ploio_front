@@ -27,11 +27,13 @@
     display: flex;
     width: 1280px; /* 너비 설정 */
     align-items: center; /* 내용을 세로 중앙 정렬 */
-    background-color: #f0f0f0;
-    padding: 10px;
+    background-color: #ffffff;
+    padding: 0px;
     color: black;
     margin-top: 0px;
+    border: 2px solid #f2f2f2;
     border-top-left-radius: 15px;
+    z-index: 2;
   }
   
 /* Searching filed */
@@ -83,6 +85,7 @@ circle.fill-lightcoral, rect.fill-lightcoral {
     background: white;
     border-radius: 10px;
     border: 1px solid rgb(190, 190, 190);
+    z-index: 2;
   }
 
   .info-top {

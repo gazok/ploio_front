@@ -39,42 +39,6 @@ function CurLocation(path: string) {
 
 //create menu
 export function Menubar() {
-/*
-  const [activeButton, setActiveButton] = useState('home'); // Default to 'home'
-
-  const handleButtonClick = (buttonName: string) => {
-    setActiveButton(buttonName);
-  };
-  return (
-    <div className="menu-bar">
-      <h1 className="text-lg font-medium" style={{ textAlign: "center" }}>
-        πλοίο
-      </h1>
-      <Link to="/" className={` ${activeButton === 'home' ? 'active-menu' : ''}`} onClick={() => handleButtonClick('home')}>
-        <VscHome style={iconStyle} />
-        Home
-      </Link>
-      <Link to="/summary" className={` ${activeButton === 'summary' ? 'active-menu' : ''}`} onClick={() => handleButtonClick('summary')}>
-        <VscOutput style={iconStyle} />
-        Summary
-      </Link>
-      <Link to="/Notice" className={` ${activeButton === 'notice' ? 'active-menu' : ''}`} onClick={() => handleButtonClick('notice')}>
-        <VscWarning style={iconStyle} />
-        Notice
-      </Link>
-      <div className="bottom-items">
-        <Link to="/Profile" className={` ${activeButton === 'profile' ? 'active-menu' : ''}`} onClick={() => handleButtonClick('profile')}>
-          <VscAccount style={iconStyle} />
-          Profile
-        </Link>
-        <Link to="/Setting" className={` ${activeButton === 'setting' ? 'active-menu' : ''}`} onClick={() => handleButtonClick('setting')}>
-          <VscSettingsGear style={iconStyle} />
-          Setting
-        </Link>
-      </div>
-    </div>
-  );
-  */
   
   //icon 바꾸기!
   return (
