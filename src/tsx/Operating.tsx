@@ -1,20 +1,24 @@
+//Operation.tsx using cytoscape.js 12/9 5:00
+
 import React, { useState, useEffect, useRef } from 'react';
 import cytoscape, { EdgeSingular, EventObject } from 'cytoscape';
 import "../css/App.css";
 import '../css/Summary.css';
 import '../css/modal.css';
-import fcose from 'cytoscape-fcose'; //수정
-import { Modal, Text, IconButton, Icon, initializeIcons, ZIndexes, MessageBar, MessageBarType, CommandBar, ICommandBarItemProps  } from '@fluentui/react'; //수정
+import fcose from 'cytoscape-fcose'; 
+import { Modal, Text, IconButton, Icon, initializeIcons, ZIndexes, MessageBar, MessageBarType, CommandBar, ICommandBarItemProps  } from '@fluentui/react'; 
 import { Logic, LogicPod } from './summary.tsx';
 import { Data, JsonData, PodData, PodJsonData, SecurityData, SecurityJsonData } from './types.tsx';
 import data from'../public/data.json';
+import sampleData1 from '../public/sampleData1.json'; 
+import sampleData2 from '../public/sampleData2.json';
 import { relative } from 'path';
 import { wait } from '@testing-library/user-event/dist/utils';
 import { Button, Divider, Field, Input, Tooltip } from '@fluentui/react-components';
-import { Search32Regular, ZoomIn24Regular, ZoomOut24Regular, ArrowClockwise28Regular, CircleSmallRegular, ArrowExport20Regular  } from '@fluentui/react-icons' //수정
+import { Search32Regular, ZoomIn24Regular, ZoomOut24Regular, ArrowClockwise28Regular, CircleSmallRegular, ArrowExport20Regular  } from '@fluentui/react-icons' 
 
 initializeIcons();
-cytoscape.use(fcose); //추가
+cytoscape.use(fcose); 
 
 // 데이터 정의
 let a = data;
@@ -42,17 +46,18 @@ const Operation = (Props) => {
   const [nodes, setNodes] = useState<{ x: number; y: number; name: string; size: number }[]>([]);
   const [links, setLinks] = useState<{ source: string; target: string }[]>([]);
   const [groupedNodes, setGroupedNodes] = useState<{ [key: string]: number }>({});
-  const [isInitialRender, setIsInitialRender] = useState(true); //추가
-  const [prevNodes, setPrevNodes] = useState<Set<string>>(new Set()); //추가
-  const deletedEdges: any[] = []; //추가, 삭제된 간선 정보 저장
+  const [isInitialRender, setIsInitialRender] = useState(true); 
+  const [prevNodes, setPrevNodes] = useState<Set<string>>(new Set()); 
 
-  //추가, 알림창 
+  //알림창 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [modalContent, setModalContent] = useState("");
   const [modalStatus, setModalStatus] = useState("");
-  const [notifications, setNotifications] = useState<{ header: string; src_pod: string; dst_pod: string; danger_degree: string; message: string; timestamp: string;}[]>([]);
+  const [notifications, setNotifications] = useState<{ header: string; packet_id: string; src_pod: string; dst_pod: string; timestamp: string; data_len: Number; danger_degree: string; message: string;}[]>([]);
   const [activeModals, setActiveModals] = useState<Record<number, NodeJS.Timeout | null>>({}); 
-  
+  const [podDataPerSecond, setPodDataPerSecond] = useState({}); //추가
+  const [selectedPodName, setSelectedPodName] = useState<string | null>(null); //추가
+
   // data.json 데이터 로드
   const [tdata, setTdata] = useState<JsonData | null>(null); //json 받는 컨테이너
   const [linkData, setLinkData] = useState<Data[] | null>(null); // src, dst, data_len
@@ -61,11 +66,14 @@ const Operation = (Props) => {
   const [securityData, setSecurityData] = useState(new Map<string, SecurityData>());
   const [curPodData, setCurPodData] = useState<Map<string, PodData>>(new Map());
   
-  //추가, 애니메이션
+  //애니메이션
   const animationIds: any[] = [];
   const animationRef = Props.animationRef;
 
-
+  //추가, 엣지 histroy
+  const deletedEdges: any[] = []; 
+  const [edgeHistory, setEdgeHistory] = useState({});
+  
   const graphWidth = 1300;
   const graphHeight = 600;
 
@@ -90,21 +98,40 @@ const Operation = (Props) => {
     minTemp: 1.0
   }
 
-  useEffect(() => {
-    Logic(setTdata, setPodData, setSecurityData);
+  // useEffect(() => {
+  //   Logic(setTdata, setPodData, setSecurityData);
 
     
-    let timer = setInterval(() => {
-      Logic(setTdata, setPodData, setSecurityData);
-    }, 6000);
+  //   let timer = setInterval(() => {
+  //     Logic(setTdata, setPodData, setSecurityData);
+  //   }, 6000);
 
-    setTimeout(() => setIsInitialRender(false), 0); //추가
+  //   setTimeout(() => setIsInitialRender(false), 0); //추가
 
+  //   return () => {
+  //       clearInterval(timer);
+  //   }
+
+  //   //return;
+  // }, []);
+
+  useEffect(() => {
+    Logic(setTdata, setPodData, setSecurityData);
+  
+    let timerId: NodeJS.Timeout;
+  
+    const updateData = (isSampleData1: boolean) => {
+      setTdata(isSampleData1 ? sampleData1 : sampleData2);      
+      timerId = setTimeout(updateData, 6000, !isSampleData1);
+    };
+  
+    timerId = setTimeout(updateData, 6000, true);
+  
+    setTimeout(() => setIsInitialRender(false), 0);
+  
     return () => {
-        clearInterval(timer);
-    }
-
-    //return;
+      clearTimeout(timerId);
+    };
   }, []);
 
   //수정
@@ -112,12 +139,14 @@ const Operation = (Props) => {
     for (let pod of securityData.values()) {
       if (['critical', 'warning', 'fail'].includes(pod.danger_degree)) {
         const header = `${pod.danger_degree} Pod Occurs`;
+        const packet_id = pod.packet_id;
         const src_pod = pod.src_pod;
         const dst_pod = pod.dst_pod;
+        const timestamp = pod.timestamp;
+        const data_len = pod.data_len;
         const danger_degree = pod.danger_degree;
         const message = pod.message;
-        const timestamp = pod.timestamp;
-        addNotification(header, src_pod, dst_pod, danger_degree, message, timestamp);
+        addNotification(header, packet_id, src_pod, dst_pod, timestamp, data_len, danger_degree, message);
         setIsModalOpen(true);     
       }
     }
@@ -181,8 +210,8 @@ const Operation = (Props) => {
         } else {
           elements.push({ data: { id: target, parent: targetNamespace, danger_degree: 'noInfo'} }); // no pod Information
         }
-        elements.push({ data: { id: `${source}${target}_1`, source: source, target: target, label: String(item.data_len) } }); //수정, 간선의 동적임 표현 위함
-        elements.push({ data: { id: `${source}${target}_2`, source: source, target: target, label: String(item.data_len) } }); //수정
+        elements.push({ data: { id: `${source}${target}_1`, source: source, target: target, label: String(item.data_len) } }); 
+        elements.push({ data: { id: `${source}${target}_2`, source: source, target: target, label: String(item.data_len) } }); 
       });
 
       Object.keys(namespaces).forEach((namespace) => {
@@ -207,10 +236,10 @@ const Operation = (Props) => {
               'border-color': function(ele){
                 return getNodeColor(ele.data('danger_degree')); 
               },
-              'border-width': '7px', //수정
+              'border-width': '7px'
             },
           },
-          {//수정
+          {
             selector: 'node[?isNamespace]', 
             style: {
               'label': '', 
@@ -231,18 +260,17 @@ const Operation = (Props) => {
               'opacity': 0.8
             },
           },
-        ],//수정
+        ],
         layout: layoutOptions
       });
       setPrevNodes(newNodes);
     }else {
-      cyRef.current.edges().forEach(edge => { //간선 삭제 시 아예 삭제하는 것이 아니라 투명도를 높힘
+      cyRef.current.edges().forEach(edge => {
         const edgeId = edge.data('id').split('_')[0];
         if (newEdges.has(edgeId)) {
           edge.style('opacity', 1);
         } else {
           edge.style('opacity', 0.2);
-          deletedEdges.push(edge.data()); //엣지 데이터 저장
         }
       });
 
@@ -268,7 +296,7 @@ const Operation = (Props) => {
       });
       
       
-      //수정, 노드 클릭 핸들러
+      //노드 클릭 핸들러
       cyRef.current.on('tap', 'node', function(evt: EventObject){
         const node = evt.target;
         if (node.data('isNamespace')) {
@@ -298,7 +326,7 @@ const Operation = (Props) => {
         handlePodClick({ x: node.position().x, y: node.position().y, name: node.id() });
     });
           
-    //수정, 엣지 클릭 시 하이라이팅 구현
+    //엣지 클릭 시 하이라이팅 구현
     cyRef.current.on('tap', 'edge', function(evt: EventObject){
       const edge = evt.target;
       const connectedNodes = edge.connectedNodes();
@@ -327,10 +355,10 @@ const Operation = (Props) => {
     });
           
     tdata.data.forEach(updateNodeData);
-    tdata.data.forEach(updateEdgeData); //추가
+    tdata.data.forEach(updateEdgeData); 
     
     updateNodeSizes();
-    updateEdgeSizes(); //추가
+    updateEdgeSizes(); 
   }
 }, [tdata]);
 
@@ -342,7 +370,7 @@ const nodeChange = (newNodes: Set<string>, prevNodes: Set<string>) => {
   return false; // 노드의 변화가 없으면 false 반환
 };
 
-//수정, 초당 트래픽에 비례한 노드 크기
+//초당 트래픽에 비례한 노드 크기
 const updateNodeData = (item: any) => {
   const src = item.src_pod;
   const dst = item.dst_pod;
@@ -356,12 +384,17 @@ const updateNodeData = (item: any) => {
       const totalDataLen = (node.data('totalDataLen') || 0) + dataLen;
 
       const dataPerSecond = totalDataLen / ((lastUpdateTime - firstUpdateTime) + 1);
+
       node.data({
-        totalDataLen: totalDataLen,
-        dataPerSecond: dataPerSecond,
-        firstUpdateTime: Math.min(firstUpdateTime, item.timestamp),
-        lastUpdateTime: Math.max(lastUpdateTime, item.timestamp),
+          totalDataLen: totalDataLen,
+          dataPerSecond: dataPerSecond,
+          firstUpdateTime: Math.min(firstUpdateTime, item.timestamp),
+          lastUpdateTime: Math.max(lastUpdateTime, item.timestamp),
       });
+      setPodDataPerSecond(prev => ({
+        ...prev,
+        [node.id()]: [...(prev[node.id()] || []), { time: item.timestamp, data: dataPerSecond }],
+      }));
     };
 
     updateNode(srcNode, item.data_len); // 보내는 데이터 양
@@ -369,7 +402,6 @@ const updateNodeData = (item: any) => {
   }
 };
 
-//수정
 const updateNodeSizes = () => {
   cyRef.current.nodes().forEach((node: cytoscape.NodeSingular) => { 
     const dataPerSecond = Math.abs(node.data('dataPerSecond') || 0);
@@ -392,12 +424,12 @@ const updateNodeSizes = () => {
   });
 };
 
-  //추가, datalen에 비례한 간선 두께 계산
+  //datalen에 비례한 간선 두께 계산
   const calculateEdgeWidth = (edge: cytoscape.EdgeSingular) => {
     return Math.max(edge.data('data_len') * 0.005, 1.5);
   };
 
-  //추가, 간선 두께 계산
+  //간선 두께 계산
   const updateEdgeData = (item: any) => {
     const edgeId1 = `${item.src_pod}${item.dst_pod}_1`; 
     const edgeId2 = `${item.src_pod}${item.dst_pod}_2`; 
@@ -413,7 +445,7 @@ const updateNodeSizes = () => {
     });
   };
 
-  //추가, datalen의 변화를 동적으로 보여줌
+  //datalen의 변화를 동적으로 보여줌
   const updateEdgeSizes = () => {
     cyRef.current.edges().forEach((edge: cytoscape.EdgeSingular) => {
       const edgeWidth = calculateEdgeWidth(edge);
@@ -434,7 +466,7 @@ const updateNodeSizes = () => {
     });
   };
 
-  //추가, 간선에 동적임 추가
+  //간선에 동적임 추가
   const animateEdge = (edge: EdgeSingular, animationIds: any[]) => {
     const originalLineStyle = edge.style('line-style').value;
     const animationDuration = 5000; 
@@ -471,7 +503,7 @@ const updateNodeSizes = () => {
     animationRef.current = {}; 
   };
 
-  //추가, 노드 색 결정
+  //노드 색 결정
   const getNodeColor = (danger_degree: string) => {
     switch (danger_degree) {
       case 'warning':
@@ -493,7 +525,6 @@ const updateNodeSizes = () => {
     return NodeData || { x: 0, y: 0, name: '', size: 0 };
   };
 
-  //수정
   const findEdgeData = (source: string, target: string): Data | null => {
     if(tdata === null) {
       return null;
@@ -529,48 +560,91 @@ const updateNodeSizes = () => {
     }
     console.log(newZoom);
   };
-
-  //아이콘 수정
+  
+  //수정
   const handlePodClick = (pod: { x: number; y: number; name: string }) => {
     const podInfo = podData.get(pod.name);
     setSelectedPod(
       <div>
-        <h3>Pod Information</h3>
-        <p>
-          <CircleSmallRegular /> namespace: {pod.name.split(':')[0]} <br />
-          <CircleSmallRegular /> name: {pod.name.split(':')[1]} <br />
-          <CircleSmallRegular /> ip: {podInfo.ip} <br />
-          <CircleSmallRegular /> danger_degree: {podInfo.danger_degree} <br />
-        </p>
+        <h3><CircleSmallRegular />Pod Information</h3>
+        <table className="pod-info-table">
+          <tbody>
+            <tr>
+              <td> <b>id</b> </td>
+              <td>{podInfo.id}</td>
+            </tr>
+            <tr>
+              <td> <b>namespace</b> </td>
+              <td>{pod.name.split(':')[0]}</td>
+            </tr>
+            <tr>
+              <td> <b>name</b> </td>
+              <td>{pod.name.split(':')[1]}</td>
+            </tr>
+            <tr>
+              <td> <b>type</b> </td>
+              <td>{podInfo.type}</td>
+            </tr>
+            <tr>
+              <td> <b>ip</b> </td>
+              <td>{podInfo.ip}</td>
+            </tr>
+            <tr>
+              <td> <b>pod status</b></td>
+              <td>{podInfo.danger_degree}</td>
+            </tr>
+            <tr>
+              <td> <b>description</b> </td>
+              <td>{podInfo.message}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     );
-    setSelectedEdge(null);
+    setSelectedPodName(pod.name);
     setShowInfo(true);
   };
 
-  //수정
+  //수정 
   const handleEdgeClick = (edge: { source: string; target: string }) => {
     const edgeInfo = findEdgeData(edge.source, edge.target);
     setSelectedEdge(
       <div>
         <h3>Communication Information</h3>
-        <p>
-          <CircleSmallRegular /> Communication {edge.source} to {edge.target} <br />
-          <CircleSmallRegular /> SrcPod: {edgeInfo?.src_pod} <br />
-          <CircleSmallRegular /> DstPod: {edgeInfo?.dst_pod} <br />
-          <CircleSmallRegular /> Data length: {edgeInfo?.data_len} <br />
-          <CircleSmallRegular /> Timestamp: {edgeInfo?.timestamp} <br />
-        </p>
+        <table className="pod-info-table">
+          <tbody>
+            <tr>
+              <td> <b>packe id</b></td>
+              <td>{edgeInfo?.packet_id}</td>
+            </tr>
+            <tr>
+              <td> <b>source pod</b> </td>
+              <td>{edgeInfo?.src_pod}</td>
+            </tr>
+            <tr>
+              <td> <b>destination pod</b> </td>
+              <td>{edgeInfo?.dst_pod}</td>
+            </tr>
+            <tr>
+              <td> <b>data lenght</b> </td>
+              <td>{edgeInfo?.data_len}</td>
+            </tr>
+            <tr>
+              <td> <b>timestamp</b></td>
+              <td>{edgeInfo?.timestamp}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     );
     setSelectedPod(null);
     setShowInfo(true);
   };
 
- //추가, 알림창
- const addNotification = (header: string, src_pod: string, dst_pod: string, danger_degree: string, message: string, timestamp: string) => {
+ //알림창
+ const addNotification = (header: string, packet_id: string, src_pod: string, dst_pod: string, timestamp: string, data_len: number, danger_degree: string, message: string) => {
   setNotifications((prevNotifications) => {
-    const newNotification = { header, src_pod, dst_pod, danger_degree, message, timestamp };
+    const newNotification = { header, packet_id, src_pod, dst_pod, timestamp, data_len, danger_degree, message };
 
     // 알림 추가 시 타이머 설정
     const timer = setTimeout(() => {
@@ -615,7 +689,6 @@ const getMessageBarType = (danger_degree: string) => {
   }
 };
 
-  
   return (
       <div className='content' onMouseMove={handleMouseMove} onWheel={handleWheelMove}>
         <div id="cy" style={{ width: '100%', height: '93%', marginTop: '40px' }} />
@@ -631,10 +704,10 @@ const getMessageBarType = (danger_degree: string) => {
               </div>
             </div>
           )}
-          <Modal isOpen={isModalOpen} isBlocking={false} isModeless={true} className="modal-slide-up" focusTrapZoneProps={{isClickableOutsideFocusTrap: true, forceFocusInsideTrap: false, autoFocus: false }}   styles={{ main: { boxShadow: 'none' } }}>  
-            {notifications.map(({ header, src_pod, dst_pod, danger_degree, message, timestamp}, index) => (
+          <Modal isOpen={isModalOpen} isBlocking={false} isModeless={true} className="modal-slide-up" focusTrapZoneProps={{isClickableOutsideFocusTrap: true, forceFocusInsideTrap: false, autoFocus: false }}   styles={{ main: { boxShadow: 'none', backgroundColor: 'transparent' } }}> {/*수정*/} 
+            {notifications.map(({ header, packet_id, src_pod, dst_pod, timestamp, data_len, danger_degree, message}, index) => (
               <MessageBar
-              messageBarType={getMessageBarType(danger_degree)} // 수정된 부분
+              messageBarType={getMessageBarType(danger_degree)} 
               isMultiline={false}
                 onDismiss={() => removeNotification(index)}
                 dismissButtonAriaLabel="Close"
@@ -662,7 +735,7 @@ const OperationM: React.FC = () => {
 
   const [isSearch, setIsSearch] = useState(false);
 
-  //추가
+  //애니메이션
   const animationIds: any[] = [];
   const animationRef = useRef<{[key: string]: number}>({});
 
@@ -672,7 +745,7 @@ const OperationM: React.FC = () => {
     }
   }, [inputValue]);
 
-  //수정, 검색
+  //검색
   const handleSearch = () => {
     const nodes = cyRef.current.nodes();
     const edges = cyRef.current.edges();
@@ -733,7 +806,6 @@ const OperationM: React.FC = () => {
     return Math.max(edge.data('data_len') * 0.005, 1.5);
   };
 
-  //추가
   const animateEdge = (edge: EdgeSingular, animationIds: any[]) => {
     const originalLineStyle = edge.style('line-style').value;
     const animationDuration = 5000; 
@@ -762,7 +834,6 @@ const OperationM: React.FC = () => {
     animationRef.current[edge.id()] = requestAnimationFrame(animate);
   };  
 
-  //추가
   const animateDelete = () => {
     cyRef.current.edges().removeStyle('line-color target-arrow-color opacity line-style')
     for (let id in animationRef.current) {
@@ -788,7 +859,7 @@ const OperationM: React.FC = () => {
     console.log(cyRef.current.zoom());
   };
 
-  //수정, reset
+  //reset
   const handleReset = () => {
     cyRef.current.fit(); //화면 크기에 맞추어 전체 view 보여줌
     cyRef.current.nodes().removeStyle('border-width opacity visibility')
@@ -862,7 +933,7 @@ const OperationM: React.FC = () => {
     );
   };
   
-  return ( //수정
+  return (
     <div>
       <MBar />
       <Operation showInfo={showInfo} setShowInfo={setShowInfo} selectedPod={selectedPod} setSelectedPod={setSelectedPod}
