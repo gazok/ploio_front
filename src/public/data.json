@@ -1,5 +1,5 @@
 {
-  "data": [{
+  "packets": [{
     "packet_id": "1234",
     "src_pod": "default:front-end3",
     "dst_pod": "default:api-server",
