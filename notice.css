@@ -1,0 +1,13 @@
+.notice-menu {
+  position: absolute;
+  display: flex;
+  width: 1280px;  
+  align-items: center; 
+  background-color: #ffffff;
+  padding: 0px;
+  color: black;
+  margin-top: 0; 
+  border: 2px solid #f2f2f2;
+  border-top-left-radius: 15px;
+  z-index: 2;
+}
