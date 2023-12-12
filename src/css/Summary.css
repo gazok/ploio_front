@@ -25,7 +25,7 @@
 .summary-menu {
   position: absolute;
   display: flex;
-  width: 1280px; /* 너비 설정 */
+  width: 1300px; /* 너비 설정 */
   align-items: center; /* 내용을 세로 중앙 정렬 */
   background-color: #ffffff;
   padding: 0px;
@@ -86,6 +86,7 @@ line {
   border-radius: 10px;
   border: 1px solid rgb(190, 190, 190);
   z-index: 2;
+  overflow: auto;
 }
 
 .info-top {
@@ -109,7 +110,6 @@ line {
   width: 100%;
 }
 
-/*추가*/
 .pod-info-table td:first-child {
   border: 1px solid black;
   text-align: center;
@@ -117,11 +117,23 @@ line {
   width: 30%;
 }
 
-/*추가*/
 .pod-info-table td:last-child {
   border: 1px solid black;
   text-align: center;
   padding: 5px;
   width: 70%;
+}
+
+/*추가*/
+.edge-info-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/*추가*/
+.edge-info-table td, .edge-info-table th {
+  border: 1px solid black;
+  padding: 5px; 
+  text-align: center;
 }
 
