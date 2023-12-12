@@ -1,4 +1,4 @@
-export interface Data { //수정
+export interface Data { 
     packet_id: string;
     src_pod: string;
     dst_pod: string;
@@ -6,7 +6,7 @@ export interface Data { //수정
     data_len: number;
 }
 
-export interface PodData { //수정
+export interface PodData { 
     id: string;
     name: string; // 복잡한 것.
     name_space: string;
@@ -16,7 +16,7 @@ export interface PodData { //수정
     message: string;
 }
 
-export interface SecurityData { //수정
+export interface NoticeData { 
     packet_id: string;
     src_pod: string; 
     dst_pod: string;
@@ -33,28 +33,28 @@ export interface ModuleData {
 	status: string;
 }
 
-export interface NoticeData { //추가
-    Warnig: number;
+export interface NoticeAnalysisData { 
+    Warning: number;
     Fail: number;
     Critical: number;
 }
 
-export interface JsonData {
-    data: Data[];
+export interface JsonData { //수정
+    packets: Data[];
 }
 
-export interface PodJsonData {
-    data: PodData[];
+export interface PodJsonData { //수정
+    pods: { [name: string]: PodData }[];
 }
 
-export interface SecurityJsonData { 
-    data: SecurityData[];
+export interface NoticeJsonData { //수정
+    notices: NoticeData[];
 }
 
 export interface ModuleJsonData {
     modules: ModuleData[];
 }
 
-export interface NoticeJsonData { //추가
-    [timestamp: string]: NoticeData;
+export interface NoticeAnalysisJsonData {
+    [timestamp: string]: NoticeAnalysisData;
 }
