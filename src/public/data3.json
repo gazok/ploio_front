@@ -1,5 +1,6 @@
 { 
-    "notices": [{
+    "notices": [
+    {
       "packet_id": "6739",
       "src_pod": "default:postgres3",
       "dst_pod": "default:api-server",
