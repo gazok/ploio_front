@@ -1,59 +1,307 @@
-//Notice.tsx
-//1차 발표 이후 보완 예정
+//notice.tsx 
+import React, { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import {  Divider, Input } from '@fluentui/react-components';
+import { Line } from 'react-chartjs-2';
+import { CommandBar, ICommandBarItemProps } from '@fluentui/react';
+import '../css/notice.css';
+import '../css/App.css';
+import { Data, JsonData, NoticeData, NoticeJsonData, NoticeAnalysisData, NoticeAnalysisJsonData } from './types';
+import data from '../public/data.json';
+import data3 from '../public/data3.json';
+import data_notice from '../public/data_notice.json';
+import {ErrorCircle16Regular, Warning16Regular, PresenceBlocked12Regular, ChevronUp20Regular, ChevronDown20Regular, CircleFilled } from '@fluentui/react-icons';
 
+const LogicNotice = async (callback: (data: any) => void, callback2: (data: any) => void, callback3: (data: any) => void) => {
+  callback(data);
+  callback2(data3);
+  callback3(data_notice);
+  return;
+}
 
-import React, {useState} from 'react';
-import "./App.css";
-import "./Notice.css";
-import { Link, Outlet } from "react-router-dom";
-import { VscSync, VscShield, VscSearch } from "react-icons/vsc"; //icon
+const Notice = (Props) => {
 
-const iconStyle: React.CSSProperties = {
-  marginRight: '8px',
-  fontSize: '25px',
-};
+  const [tdata, setTdata] = useState<JsonData | null>(null); //json 받는 컨테이너
+  const [noticeData, setNoticeData] = useState<NoticeJsonData | null>(null); // 초기값을 배열로 설정
+  const [noticeAnalysisData, setNoticeAnalysisData] = useState<NoticeAnalysisJsonData | null>(null);
+  const [allNoticeData, setAllNoticeData] = useState<NoticeJsonData[]>([]); 
+  const [chartData, setChartData] = useState<any>(null); 
+  const [packetChartData, setPacketChartData] = useState<{ labels: string[], datasets: { label: string, data: number[], backgroundColor: string }[] }>({
+    labels: [],
+    datasets: [
+      { label: 'Total Packet', data: [], backgroundColor: 'black' },
+      { label: 'Anomaly Packet', data: [], backgroundColor: 'red' },
+      { label: 'Normal Packet', data: [], backgroundColor: 'green' }
+    ]
+  });
+  const [expanded, setExpanded] = useState({});
+  const [highlighted, setHighlighted] = useState({});
+  const location = useLocation();
+  const id = new URLSearchParams(location.search).get('id');  
+  const [firstClick, setFirstClick] = useState(true);
 
-function NoticeTop() {
-  const [activeButton, setActiveButton] = useState('nops'); // Default to 'nops'
-  const handleButtonClick = (buttonName: string) => {
-    setActiveButton(buttonName);
+  useEffect(() => {
+    LogicNotice(setTdata, setNoticeData, setNoticeAnalysisData);
+    let timer = setInterval(() => {
+        LogicNotice(setTdata, setNoticeData, setNoticeAnalysisData);
+      }, 6000);
+    return () => {
+      clearInterval(timer);
+    }
+  }, []);  
+
+//malicious, secure 패킷 수 비교
+  useEffect(() => {
+    if (!tdata?.packets || !noticeData?.notices) {
+        console.log('empty');
+        return; 
+    }        
+  
+    const totalPacket = Array.isArray(tdata.packets) ? tdata.packets.length : 0; 
+    const anomalyPacket = Array.isArray(noticeData.notices) ? noticeData.notices.length : 0;  
+    const normalPacket = totalPacket - anomalyPacket;
+  
+    setPacketChartData(prevData => {
+        const totalData = prevData.datasets[0]?.data || [];
+        const anomalyData = prevData.datasets[1]?.data || [];
+        const normalData = prevData.datasets[2]?.data || [];
+        const timestamp = tdata.packets[tdata.packets.length - 1]?.timestamp;
+      
+        return {
+          labels: timestamp ? [...prevData.labels, timestamp] : prevData.labels,
+          datasets: [
+            {
+              label: 'Total Packet',
+              data: totalPacket > 0 ? [...totalData, totalPacket] : totalData,
+              backgroundColor: 'black',
+            },
+            {
+              label: 'Anomaly Packet',
+              data: anomalyPacket > 0 ? [...anomalyData, anomalyPacket] : anomalyData,
+              backgroundColor: 'red',
+            },
+            {
+              label: 'Normal Packet',
+              data: normalPacket > 0 ? [...normalData, normalPacket] : normalData,
+              backgroundColor: 'green',
+            },
+          ]
+        };
+      });
+  }, [tdata, noticeData]);
+
+  //malicious 종류 비교
+  useEffect(() => {
+    if (!noticeAnalysisData || typeof noticeAnalysisData !== 'object') {
+        return; 
+    }
+
+    const labels = Object.keys(noticeAnalysisData);
+    const warningData = labels.map(label => noticeAnalysisData[label].Warning);
+    const failData = labels.map(label => noticeAnalysisData[label].Fail);
+    const criticalData = labels.map(label => noticeAnalysisData[label].Critical);
+
+    setChartData({
+      labels: labels,
+      datasets: [
+        {
+          label: 'Warning',
+          data: warningData,
+          borderColor: 'orange'
+        },
+        {
+          label: 'Fail',
+          data: failData,
+          borderColor: 'black',
+        },
+        {
+          label: 'Critical',
+          data: criticalData,
+          borderColor: 'red',
+        }
+      ]
+    });
+  }, [noticeAnalysisData]);
+
+  //malicious packet list
+  useEffect(() => {
+    if (noticeData) {
+      setAllNoticeData(prevData => [...prevData, noticeData]);
+    }
+  }, [noticeData]);
+
+  const onToggle = (index, currentHighlight) => {
+    setExpanded(prevState => {
+      const isExpanded = !prevState[index];
+      
+      if (highlighted[index] || currentHighlight) {
+        setFirstClick(false);
+      }
+  
+      return { ...prevState, [index]: isExpanded };
+    });
   };
 
-  return (
-    <nav className="notice-top">
-      <Link to="NOps" className={` ${activeButton === 'nops' ? 'active-notice' : ''}`} onClick={() => handleButtonClick('nops')}> 
-        <VscSync style={iconStyle} />
-        Operation
-      </Link>
-      <Link to="NSec" className={` ${activeButton === 'nsec' ? 'active-notice' : ''}`} onClick={() => handleButtonClick('nsec')}>
-        <VscShield style={iconStyle} />
-        Security
-      </Link>
-    </nav>
-  );
-}
+  const renderData = (data, index = '0', highlight = false) => {
+    return Object.entries(data).map(([key, value], idx) => {
+      const currentIndex = `${index}-${idx+1}`;
+      const isNoticeData = value && typeof value === 'object' && 'packet_id' in value; 
+      const currentHighlight = Boolean(isNoticeData && String(value.packet_id) === id);
+      const highlightStyle = (!expanded[currentIndex] && firstClick && (highlighted[currentIndex] || currentHighlight)) ? { backgroundColor: '#FFC6C6' } : {};
+    
+      if (value && typeof value === 'object') { 
+        const status = value['danger_degree'] ? value['danger_degree'] : '';
+        const timestamp = value['timestamp'] ? value['timestamp'] : '';
+        const message = value['message'] ? value['message'] : '';
+        let color;
+        let icon;
+        switch (status) {
+          case 'fail': 
+            color = 'black';
+            icon = <ErrorCircle16Regular color={color}/>
+            break;
+          case 'critical':
+            color = 'red';
+            icon = <PresenceBlocked12Regular color={color} />
+            break;
+          case 'warning':
+            color = 'orange';
+            icon = <Warning16Regular color={color}/>
+            break;
+          default:
+            color = 'grey';
+        }
+  
+        return (
+          <div onClick={() => onToggle(currentIndex, currentHighlight)}>
+            <div key={currentIndex} style={{...highlightStyle, border: '1px solid black', borderLeft:`5px solid ${color}`, margin: '10px', position: 'relative', width: '600px'}}>
+              <div style={{display: 'flex', justifyContent: 'space-between'}} >                 
+                <p style={{ marginLeft: '5px'}}>{icon} {`[${status}] ${message}`}</p>
+                {!expanded[currentIndex] && <p style={{ fontSize: '10px', position: 'absolute', right: '20px', bottom: 0 }}>{`${timestamp}`}</p>}
+                {expanded[currentIndex] ? <ChevronUp20Regular style={{ marginTop: '15px' }} /> : <ChevronDown20Regular style={{ marginTop: '15px' }} />}
+              </div>
+              {expanded[currentIndex] && 
+                <div style={{overflow: 'auto', maxHeight: '80px', marginLeft: '10px'}}> 
+                  {renderData(value, currentIndex, currentHighlight)}
+                </div>
+              }
+            </div>
+          </div>
+          );
+        } else {
+          return <p key={currentIndex}><CircleFilled style={{ fontSize: '5px', marginRight: '5px', marginBottom: '2px' }} />{`${key}: ${value}`}</p>;
+        }
+      });
+    };
 
-function NoticeMenu() {
   return (
-    <div className="notice-menu">
-      <div className="search">
-        <input type="text" placeholder="Search..." />
-        <button>
-          <VscSearch style={{ fontSize: '15px', strokeWidth: '2', marginTop: '3px' }} />
-        </button>
+    <div className='content' style={{ display: 'flex' }}>
+      <div style={{ flex: 1, borderRight: '1px solid #ddd', marginLeft: '20px' }}>
+        <div style={{ marginTop: '45px', width: '80%' }}>
+          <h3>Packet Analysis</h3>
+          {packetChartData && <Line data={packetChartData} />}
+        </div>
+        <div style={{ marginTop: '10px', width: '80%' }}>
+          <h3>Notice Analysis</h3>
+          {chartData && <Line data={chartData} />}
+        </div>
+      </div>
+      <div style={{ flex: 1, paddingLeft: '20px', overflow: 'auto', maxHeight: '100vh' }}>
+      <div style={{ marginTop: '45px', width: '80%' }}>
+        <h3>Notice Information</h3>
+        {allNoticeData && allNoticeData.length > 0 ? 
+          allNoticeData.flatMap((data, idx) => Object.entries(data).map(([key, value]) => renderData(value, `${idx}-${key}`, String(value.packet_id) === id)))
+          : <p>No data</p>}
       </div>
     </div>
+    </div>
   );
-}
+ }
 
-function Notice() {
+const NoticeM: React.FC = () => {
+
+  const [ noticeData, setNoticeData] = useState<NoticeJsonData | null>(null);
+  const [ noticeAnalysisData, setNoticeAnalysisData] = useState<NoticeJsonData | null>(null);
+  const [ noticeSearchData, setNoticeSearchData] = useState<NoticeJsonData[] | null>(null);
+
+  //search
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [inputValue, setInputValue] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [inputValue]);
+
+  const handleSearch = () => {
+  }
+  
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleReset = () => {
+    setInputValue('');
+    if(noticeData) {
+      setNoticeData(noticeData);
+    }
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key == 'Enter') {
+      handleSearch();
+    }
+  };
+
+  const commandBarItems: ICommandBarItemProps[] = [
+    {
+      key: 'div1-1',
+      onRender: () => <Divider vertical/>
+    },
+    {
+      key: 'search',
+      text: 'Search',
+      iconProps: { iconName: 'Search' },
+      onClick: () => handleSearch(),
+    },
+    {
+      key: 'div1-2',
+      onRender: () => <Divider vertical/>
+    },
+    {
+      key: 'reset',
+      text: 'Reset',
+      iconProps: { iconName: 'Refresh' },
+      onClick: () => handleReset(),
+    },
+    {
+      key: 'div1-3',
+      onRender: () => <Divider vertical/>
+    }
+  ]; //<CommandBar items={commandBarItems}></CommandBar>
+
+
+  const MBar = () => {
+    return (
+      <div className="notice-menu">
+        <div style={{marginLeft: '15px'}}>
+          <Input ref={inputRef} type="text" placeholder="Search..." value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyPress} />
+        </div>
+        <CommandBar items={commandBarItems} />      
+      </div>
+    );
+  };
+  
   return (
     <div>
-      <NoticeTop />
-      <NoticeMenu />
-      <Outlet /> {/*Operation, Security 라우팅*/}
+      <MBar />
+      <Notice noticeData={noticeData} setNoticeData={setNoticeData} noticeAnalysisData={noticeAnalysisData} setNoticeAnalysisData={setNoticeAnalysisData}
+        noticeSearchData={noticeSearchData} setNoticeSearchData={setNoticeSearchData} />
     </div>
   );
 }
 
-export default Notice;
+export { Notice, NoticeM };
