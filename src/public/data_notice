@@ -1,0 +1,17 @@
+{
+    "2023-12-11T15:14:03Z": {
+            "Warning": 5,
+            "Fail": 2,
+            "Critical": 1
+    },
+    "2023-12-11T15:14:03Z": {
+            "Warning": 1,
+            "Fail": 2,
+            "Critical": 2
+    },
+    "2023-12-11T15:14:03Z": {
+            "Warning": 2,
+            "Fail": 0,
+            "Critical": 1
+    }
+}
