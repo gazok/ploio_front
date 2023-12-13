@@ -11,7 +11,7 @@ import fcose from 'cytoscape-fcose';
 import { Modal, Text, IconButton, Icon, initializeIcons, ZIndexes, MessageBar, MessageBarType, CommandBar, ICommandBarItemProps  } from '@fluentui/react'; 
 import { Logic, LogicPod } from './summary.tsx';
 import { Data, JsonData, PodData, PodJsonData, NoticeData, NoticeJsonData } from './types.tsx'; //수정
-import data from'../public/data.json';
+import data from '../public/data.json';
 import { relative } from 'path';
 import { wait } from '@testing-library/user-event/dist/utils';
 import { Button, Divider, Field, Input, Tooltip } from '@fluentui/react-components';
