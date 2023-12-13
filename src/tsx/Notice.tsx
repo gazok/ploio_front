@@ -1,4 +1,4 @@
-//notice.tsx 
+//notice.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {  Divider, Input } from '@fluentui/react-components';
@@ -21,10 +21,12 @@ const LogicNotice = async (callback: (data: any) => void, callback2: (data: any)
 
 const Notice = (Props) => {
 
-  const [tdata, setTdata] = useState<JsonData | null>(null); //json 받는 컨테이너
-  const [noticeData, setNoticeData] = useState<NoticeJsonData | null>(null); // 초기값을 배열로 설정
+  const [tdata, setTdata] = useState<JsonData | null>(null); 
+  const [noticeData, setNoticeData] = [Props.noticeData, Props.setNoticeData]; //수정
   const [noticeAnalysisData, setNoticeAnalysisData] = useState<NoticeAnalysisJsonData | null>(null);
-  const [allNoticeData, setAllNoticeData] = useState<NoticeJsonData[]>([]); 
+  const [allNoticeData, setAllNoticeData] = [Props.allNoticeData, Props.setAllNoticeData]; //수정
+
+  //차트
   const [chartData, setChartData] = useState<any>(null); 
   const [packetChartData, setPacketChartData] = useState<{ labels: string[], datasets: { label: string, data: number[], backgroundColor: string }[] }>({
     labels: [],
@@ -34,6 +36,8 @@ const Notice = (Props) => {
       { label: 'Normal Packet', data: [], backgroundColor: 'green' }
     ]
   });
+
+  //리스트
   const [expanded, setExpanded] = useState({});
   const [highlighted, setHighlighted] = useState({});
   const location = useLocation();
@@ -124,12 +128,6 @@ const Notice = (Props) => {
   }, [noticeAnalysisData]);
 
   //malicious packet list
-  useEffect(() => {
-    if (noticeData) {
-      setAllNoticeData(prevData => [...prevData, noticeData]);
-    }
-  }, [noticeData]);
-
   const onToggle = (index, currentHighlight) => {
     setExpanded(prevState => {
       const isExpanded = !prevState[index];
@@ -208,10 +206,15 @@ const Notice = (Props) => {
       </div>
       <div style={{ flex: 1, paddingLeft: '20px', overflow: 'auto', maxHeight: '100vh' }}>
       <div style={{ marginTop: '45px', width: '80%' }}>
-        <h3>Notice Information</h3>
+        <h3>Notice Information</h3> {/*수정*/}
         {allNoticeData && allNoticeData.length > 0 ? 
-          allNoticeData.flatMap((data, idx) => Object.entries(data).map(([key, value]) => renderData(value, `${idx}-${key}`, String(value.packet_id) === id)))
-          : <p>No data</p>}
+          allNoticeData.flatMap((data, idx) => 
+            Object.entries(data).map(([key, value]) => {
+              const noticeData = value as NoticeData;
+              return renderData(noticeData, `${idx}-${key}`, String(noticeData.packet_id) === id);
+            })
+          )
+        : <p>No data</p>}
       </div>
     </div>
     </div>
@@ -220,9 +223,17 @@ const Notice = (Props) => {
 
 const NoticeM: React.FC = () => {
 
-  const [ noticeData, setNoticeData] = useState<NoticeJsonData | null>(null);
-  const [ noticeAnalysisData, setNoticeAnalysisData] = useState<NoticeJsonData | null>(null);
-  const [ noticeSearchData, setNoticeSearchData] = useState<NoticeJsonData[] | null>(null);
+  const [noticeData, setNoticeData] = useState<NoticeJsonData | null>(null); 
+  const [noticeAnalysisData, setNoticeAnalysisData] = useState<NoticeJsonData | null>(null);
+  const [noticeSearchData, setNoticeSearchData] = useState<NoticeJsonData[] | null>(null);
+  const [allNoticeData, setAllNoticeData] = useState<NoticeJsonData[]>([]); //추가
+
+  //추가
+  useEffect(() => {
+    if (noticeData) {
+      setAllNoticeData(prevData => [...prevData, noticeData]);
+    }
+  }, [noticeData]);
 
   //search
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -236,8 +247,8 @@ const NoticeM: React.FC = () => {
   }, [inputValue]);
 
   const handleSearch = () => {
-  }
-  
+
+  };  
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -298,8 +309,7 @@ const NoticeM: React.FC = () => {
   return (
     <div>
       <MBar />
-      <Notice noticeData={noticeData} setNoticeData={setNoticeData} noticeAnalysisData={noticeAnalysisData} setNoticeAnalysisData={setNoticeAnalysisData}
-        noticeSearchData={noticeSearchData} setNoticeSearchData={setNoticeSearchData} />
+      <Notice allNoticeData={allNoticeData} setAllNoticeData={setAllNoticeData} noticeData={noticeData} setNoticeData={setNoticeData} noticeAnalysisData={noticeAnalysisData} setNoticeAnalysisData={setNoticeAnalysisData} noticeSearchData={noticeSearchData} setNoticeSearchData={setNoticeSearchData} /> {/*수정*/}
     </div>
   );
 }
