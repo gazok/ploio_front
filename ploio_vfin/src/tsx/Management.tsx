@@ -44,7 +44,7 @@ const useStyles = makeStyles({
 //use card footer?
 
 const LogicModule = async (callback: (data: any) => void, callback2: (data: any) => void, callback3: (data: any) => void) => {
-  /*
+  
   const res = await fetch('http://3.25.167.109:80/management', {
     method: 'GET',
     headers: {'Content-Type': 'application/json'}
@@ -56,15 +56,15 @@ const LogicModule = async (callback: (data: any) => void, callback2: (data: any)
     count++;
   }
   callback3(count);
-  */
-
+  
+  /*
   callback(dataM);
 
   let count = 0;
   for(let item in dataM.modules) {
     count++;
   }
-  callback3(count);
+  callback3(count);*/
 
   return;
 }
@@ -173,6 +173,7 @@ const ManagementM: React.FC = () => {
   const addItemPost = () => {
     console.log(checkedItems);
     
+    
     //set 원소마다 반복되게 설정. 하나하나 fetch해서 데이터 전달.
     checkedItems.forEach(async (item) => {
       const res = await fetch('http://3.25.167.109:80/management', {
@@ -202,8 +203,6 @@ const ManagementM: React.FC = () => {
         })
       }).then(response => response.json());
     });
-    //변수 만들고 add(res) 하기.
-    //callback(res_s); //이건 맨 마지막에
   }
 
   const handleSearch = () => {
