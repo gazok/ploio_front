@@ -1,0 +1,40 @@
+/*Notice.css
+1차 발표 이후 보완 예정*/
+
+
+/*top bar*/
+.notice-top {
+    color: black;
+    display: flex;
+    position: absolute;
+    margin-left: 15px;
+    top: 0;
+  }
+  
+  /*When clicking on the top bar menu*/
+  .notice-top a {
+    padding: 9px 10px;
+    color: black;
+    text-decoration: none;
+    margin-right: 10px;
+  }
+  
+  .notice-top a:hover, .active-notice {
+    border-bottom: 4px solid rgb(24, 108, 243);
+    color: rgb(24, 108, 243);
+  }
+  
+  .notice-menu {
+    position: absolute;
+    display: flex;
+    width: 1280px;  
+    align-items: center; 
+    background-color: #ffffff;
+    padding: 0px;
+    color: black;
+    margin-top: 0; 
+    border: 2px solid #f2f2f2;
+    border-top-left-radius: 15px;
+    z-index: 2;
+  }
+  

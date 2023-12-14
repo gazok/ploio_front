@@ -1,0 +1,49 @@
+{ 
+    "notices": [
+      {
+      "packet_id": "6739",
+      "src_pod": "default:postgres3",
+      "dst_pod": "default:api-server",
+      "timestamp": "2023-12-11 15:14:04",
+      "data_len": 2048,
+      "danger_degree": "fail",
+      "message": "Partial service was dead"
+    },
+    {
+      "packet_id": "2857",
+      "src_pod": "default:postgres2",
+      "dst_pod": "default:web-app",
+      "timestamp": "2023-12-11 15:14:04",
+      "data_len": 512,
+      "danger_degree": "warning",
+      "message": "Partial service may be dead"
+    },
+    {
+      "packet_id": "3837",
+      "src_pod": "ireonu:payment-gateway4",
+      "dst_pod": "ireonu:payment-gateway5",
+      "danger_degree": "critical",
+      "timestamp": "2023-12-11 15:14:04",
+      "data_len": 2048,
+      "message": "Service was already dead"
+    },
+    {
+      "packet_id": "2216",
+      "src_pod": "ireonu:payment-gateway4",
+      "dst_pod": "ireonu:nginx",
+      "timestamp": "2023-12-11 15:14:04",
+      "data_len": 2048,
+      "danger_degree": "critical",
+      "message": "Service was already dead"
+    },
+    {
+      "packet_id": "8800",
+      "src_pod": "ireonu:payment-gateway3",
+      "dst_pod": "ireonu:postgres4",
+      "timestamp": "2023-12-11 15:14:04",
+      "data_len": 1024,
+      "danger_degree": "fail",
+      "message": "Partial service was dead"
+    }
+  ]
+}
