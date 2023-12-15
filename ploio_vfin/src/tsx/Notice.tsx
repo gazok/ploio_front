@@ -38,6 +38,7 @@ const LogicNotice = async (callback: (data: any) => void, callback2: (data: any)
   }).then(response => response.json());
   callback3(res3);
   //callback3(data_notice);
+  
   return;
 }
 

@@ -5,6 +5,8 @@ import '../css/Management.css';
 import { ModuleData, ModuleJsonData } from './types';
 import dataM from'../public/data_module.json';
 import { CommandBar, ICommandBarItemProps } from '@fluentui/react';
+import { active } from 'd3';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles({
   field: {
@@ -43,28 +45,16 @@ const useStyles = makeStyles({
 });
 //use card footer?
 
-const LogicModule = async (callback: (data: any) => void, callback2: (data: any) => void, callback3: (data: any) => void) => {
+const LogicModule = async (callback: (data: any) => void, callback2: (data: any) => void) => {
   
   const res = await fetch('http://3.25.167.109:80/management', {
     method: 'GET',
     headers: {'Content-Type': 'application/json'}
   }).then(response => response.json());
   callback(res);
-
-  let count = 0;
-  for(let item in res.modules) {
-    count++;
-  }
-  callback3(count);
   
-  /*
-  callback(dataM);
-
-  let count = 0;
-  for(let item in dataM.modules) {
-    count++;
-  }
-  callback3(count);*/
+  
+  //callback(dataM);
 
   return;
 }
@@ -98,7 +88,7 @@ const CreateCard = (props) => {
           </div>
         }
       />
-      <Label>Description<br></br>Card {props.item.GUID}</Label>
+      <Label>{props.item.Description}<br></br>Card {props.item.GUID}</Label>
     </Card>
   );
 }
@@ -108,7 +98,6 @@ const Management = (Props) => {
 
   const [ moduleData, setModuleData] = [Props.moduleData, Props.setModuleData];
   const [ moduleSearchData, setModuleSearchData] = [Props.moduleSearchData, Props.setModuleSearchData];
-  const [ moduleNumber, setModuleNumber] = useState<number>(0);
   let moduleCount = -1; //0이면 1개라는 뜻.
 
   const [checkedItems, setCheckedItems] = [Props.checkedItems, Props.setCheckedItems];
@@ -118,7 +107,7 @@ const Management = (Props) => {
   //const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
-    LogicModule(setModuleData, setModuleSearchData, setModuleNumber);
+    LogicModule(setModuleData, setModuleSearchData);
     
   }, []);
 
@@ -171,8 +160,21 @@ const ManagementM: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
 
   const addItemPost = () => {
+    /*
     console.log(checkedItems);
-    
+
+    const temp = moduleData;
+    if(temp) {
+      temp.modules.forEach((item) => {
+        checkedItems.forEach((checkedId) => {
+          if(item.GUID == checkedId) {
+            item.status = 'active';
+          }
+        });
+      });
+    }
+    setModuleData(temp);*/
+
     
     //set 원소마다 반복되게 설정. 하나하나 fetch해서 데이터 전달.
     checkedItems.forEach(async (item) => {
@@ -191,8 +193,22 @@ const ManagementM: React.FC = () => {
   }
 
   const removeItemPost = () => {
-    //console.log(checkedItems);
+    /*
+    console.log(checkedItems);
 
+    const temp = moduleData;
+    if(temp) {
+      temp.modules.forEach((item) => {
+        checkedItems.forEach((checkedId) => {
+          if(item.GUID == checkedId) {
+            item.status = 'inactive';
+          }
+        });
+      });
+    }
+    setModuleData(temp);*/
+
+    
     //set 원소마다 반복되게 설정. 하나하나 fetch해서 데이터 전달.
     checkedItems.forEach(async (item) => {
       const res = await fetch('http://3.25.167.109:80/management', {
@@ -292,7 +308,9 @@ const ManagementM: React.FC = () => {
               </DialogContent>
               <DialogActions>
                 <DialogTrigger>
-                  <Button appearance="primary" onClick={addItemPost}>OK</Button>
+                  <Link to='/Management'>
+                    <Button appearance="primary" onClick={addItemPost}>OK</Button>
+                  </Link>
                 </DialogTrigger>
                 <DialogTrigger disableButtonEnhancement>
                   <Button appearance="secondary">Cancel</Button>
@@ -317,7 +335,9 @@ const ManagementM: React.FC = () => {
               </DialogContent>
               <DialogActions>
                 <DialogTrigger>
-                  <Button appearance="primary" onClick={removeItemPost}>OK</Button>
+                  <Link to='/Management'>
+                    <Button appearance="primary" onClick={removeItemPost}>OK</Button>
+                  </Link>
                 </DialogTrigger>
                 <DialogTrigger disableButtonEnhancement>
                   <Button appearance="secondary">Cancel</Button>

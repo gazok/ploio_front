@@ -1,20 +1,38 @@
 {
     "modules":[{
-	    "GUID": "A1-2-3-4",
+	    "GUID": "a41bf61a-aa05-40b5-b8a1-252a9884e768/c9478e3c-0c5b-4eac-815a-c5682263574f",
 	    "Name": "module1.so",
-	    "Description": "desc A",
+	    "Description": "IDS module #1",
 		"status": "active"
 	},
 	{
-	    "GUID": "B1-2-3-4",
+	    "GUID": "b41bf61a-aa05-40b5-b8a1-252a9884e768/c9478e3c-0c5b-4eac-815a-c5682263574f",
 	    "Name": "module2.so",
-	    "Description": "desc B",
+	    "Description": "IDS module #2",
 	    "status": "active"
 	},
 	{
-	    "GUID": "C1-2-3-4",
+	    "GUID": "c41bf61a-aa05-40b5-b8a1-252a9884e768/c9478e3c-0c5b-4eac-815a-c5682263574f",
 	    "Name": "module3.so",
-	    "Description": "desc C",
+	    "Description": "IDS module #3",
 		"status": "inactive"
+	},
+	{
+	    "GUID": "d41bf61a-aa05-40b5-b8a1-252a9884e768/c9478e3c-0c5b-4eac-815a-c5682263574f",
+	    "Name": "PF1.so",
+	    "Description": "Packet Filter type-A",
+	    "status": "active"
+	},
+	{
+	    "GUID": "e41bf61a-aa05-40b5-b8a1-252a9884e768/c9478e3c-0c5b-4eac-815a-c5682263574f",
+	    "Name": "PF2.so",
+	    "Description": "Packet Filter type-B",
+	    "status": "inactive"
+	},
+	{
+	    "GUID": "f41bf61a-aa05-40b5-b8a1-252a9884e768/c9478e3c-0c5b-4eac-815a-c5682263574f",
+	    "Name": "proxy_firewall.so",
+	    "Description": "Modifiable firewall with proxy server",
+	    "status": "inactive"
 	}]
 }
